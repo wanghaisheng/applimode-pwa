@@ -1,0 +1,285 @@
+import 'package:flutter/foundation.dart';
+import 'package:applimode_app/src/common_widgets/percent_circular_indicator.dart';
+import 'package:applimode_app/src/common_widgets/web_back_button.dart';
+import 'package:applimode_app/src/constants/constants.dart';
+import 'package:applimode_app/src/features/editor/presentation/editor_bottom_bar.dart';
+import 'package:applimode_app/src/features/editor/presentation/editor_field.dart';
+import 'package:applimode_app/src/features/editor/presentation/editor_screen_controller.dart';
+import 'package:applimode_app/src/features/editor/presentation/markdown_field.dart';
+import 'package:applimode_app/src/features/posts/data/post_contents_repository.dart';
+import 'package:applimode_app/src/features/posts/data/posts_repository.dart';
+import 'package:applimode_app/src/features/posts/domain/post_and_writer.dart';
+import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
+import 'package:applimode_app/src/utils/async_value_ui.dart';
+import 'package:applimode_app/src/utils/build_remote_media.dart';
+import 'package:applimode_app/src/utils/show_adaptive_alert_dialog.dart';
+import 'package:applimode_app/src/utils/show_image_picker.dart';
+import 'package:applimode_app/custom_settings.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
+import 'package:applimode_app/src/utils/upload_progress_state.dart';
+
+// tabBar comp
+class TabTitle {
+  const TabTitle({
+    this.icon,
+    this.title,
+  });
+
+  final Icon? icon;
+  final String? title;
+}
+
+class EditorScreen extends ConsumerStatefulWidget {
+  const EditorScreen({
+    super.key,
+    this.postId,
+    this.postAndWriter,
+  });
+
+  final String? postId;
+  final PostAndWriter? postAndWriter;
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _EditorScreenState();
+}
+
+class _EditorScreenState extends ConsumerState<EditorScreen> {
+  final _controller = TextEditingController();
+  late FocusNode _focusNode;
+  int currentCategory = 0;
+  bool hasPostContent = false;
+  List<String>? _remoteMedia;
+
+  static const bottomBarHeight = 80.0;
+  static const widthBreak = 800.0;
+
+  @override
+  void initState() {
+    _focusNode = FocusNode();
+    if (widget.postId != null) {
+      if (widget.postAndWriter != null) {
+        if (widget.postAndWriter!.post.isLongContent) {
+          buildLongContent();
+        } else {
+          _controller.text = widget.postAndWriter?.post.content ?? '';
+          currentCategory = widget.postAndWriter?.post.category ?? 0;
+          _remoteMedia = buildRemoteMedia(_controller.text);
+        }
+      } else {
+        buildCurrentPost();
+      }
+    } else {}
+    super.initState();
+  }
+
+  Future<void> buildLongContent() async {
+    try {
+      hasPostContent = true;
+      final postContent =
+          await ref.read(postContentFutureProvider(widget.postId!).future);
+      _controller.text = postContent?.content ?? '';
+      currentCategory = postContent?.category ?? 0;
+      setState(() {});
+      _remoteMedia = buildRemoteMedia(_controller.text);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> buildCurrentPost() async {
+    try {
+      final currentPost =
+          await ref.read(postFutureProvider(widget.postId!).future);
+      if (currentPost != null && currentPost.isLongContent) {
+        buildLongContent();
+      } else {
+        _controller.text = currentPost?.content ?? '';
+        currentCategory = currentPost?.category ?? 0;
+        setState(() {});
+        _remoteMedia = buildRemoteMedia(_controller.text);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  String _buildAppBarTitle(BuildContext context) => widget.postId == null
+      ? context.loc.writeAppBarTitle
+      : context.loc.editAppBarTitle;
+
+  List<TabTitle> _buildTabTitles(BuildContext context) {
+    return [
+      TabTitle(title: context.loc.editor),
+      TabTitle(title: context.loc.preview),
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.listen(editorScreenControllerProvider, (_, state) {
+      state.showAlertDialogOnError(context, content: state.error.toString());
+    });
+
+    final isLoading = ref.watch(editorScreenControllerProvider).isLoading;
+    final uploadState = ref.watch(uploadProgressStateProvider);
+
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final tabTitles = _buildTabTitles(context);
+
+    return DefaultTabController(
+      length: tabTitles.length,
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: kIsWeb ? false : true,
+          leading: kIsWeb ? const WebBackButton() : null,
+          title: Text(_buildAppBarTitle(context)),
+        ),
+        body: Column(
+          children: [
+            IgnorePointer(
+              ignoring: screenWidth < widthBreak ? false : true,
+              child: TabBar(
+                physics: const NeverScrollableScrollPhysics(),
+                tabs: tabTitles.map((e) => Tab(text: e.title)).toList(),
+                onTap: (value) {
+                  if (value == 1) {
+                    FocusScope.of(context).unfocus();
+                  }
+                },
+              ),
+            ),
+            if (screenWidth < widthBreak)
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    EditorField(
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      onChanged: (value) {
+                        setState(() {});
+                      },
+                      bottomBarHeight: bottomBarHeight,
+                    ),
+                    MarkdownField(
+                      data: _controller.text,
+                      bottomBarHeight: bottomBarHeight,
+                    ),
+                  ],
+                ),
+              ),
+            if (screenWidth >= widthBreak)
+              Expanded(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: EditorField(
+                              controller: _controller,
+                              focusNode: _focusNode,
+                              onChanged: (value) {
+                                setState(() {});
+                              },
+                              bottomBarHeight: bottomBarHeight,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const VerticalDivider(),
+                    Expanded(
+                      flex: 1,
+                      child: MarkdownField(
+                        data: _controller.text,
+                        bottomBarHeight: bottomBarHeight,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            const Divider(),
+            EditorBottomBar(
+              bottomBarHeight: bottomBarHeight,
+              getMedia: _getMedia,
+              content: _controller.text,
+              postId: widget.postId,
+              catetory: currentCategory,
+              hasPostContent: hasPostContent,
+              remoteMedia: _remoteMedia,
+              writer: widget.postAndWriter?.writer,
+            ),
+          ],
+        ),
+        floatingActionButton: isLoading
+            ? Center(
+                child: PercentCircularIndicator(
+                  strokeWidth: 8,
+                  percentage: uploadState.percentage,
+                  index: uploadState.index,
+                ),
+              )
+            : null,
+      ),
+    );
+  }
+
+  Future<void> _getMedia({
+    bool isMedia = false,
+    bool isVideo = false,
+  }) async {
+    final XFile? pickedFile = await showImagePicker(
+      isMedia: isMedia,
+      isVideo: isVideo,
+    ).catchError((error) {
+      showAdaptiveAlertDialog(
+          context: context,
+          title: context.loc.maxFileSizeErrorTitle,
+          content:
+              '${context.loc.maxFileSizedErrorContent} (${mediaMaxMBSize}MB)');
+      return null;
+    });
+
+    if (pickedFile != null) {
+      setState(
+        () {
+          final text = _controller.text;
+          final selection = _controller.selection;
+          final mediaType = lookupMimeType(pickedFile.path);
+          if (mediaType == null) {
+            isVideo = isVideo;
+          } else {
+            isVideo = mediaType == contentTypeMp4;
+          }
+          final inserted = isVideo
+              ? '\n[localVideo][][${pickedFile.path}]\n'
+              : '\n[localImage][${pickedFile.path}][]\n';
+
+          final newText = text.replaceRange(
+            selection.start,
+            selection.end,
+            inserted,
+          );
+          _controller.value = TextEditingValue(
+            text: newText,
+            selection: TextSelection.collapsed(
+                offset: selection.baseOffset + inserted.length),
+          );
+          _focusNode.requestFocus();
+        },
+      );
+    }
+  }
+}

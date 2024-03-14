@@ -1,0 +1,15 @@
+rules_version = '2';
+
+// 관리자가 지정한 사용자만 사용 가능
+// Allow read access to verified user
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isVerified() {
+      return request.auth.uid in ["verifiedUid", "verifiedUid"];
+    }
+    match /{allPaths=**} {
+      allow read: if isVerified();
+      allow write: if isVerified();
+    }
+  }
+}

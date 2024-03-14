@@ -1,0 +1,54 @@
+rules_version = '2';
+
+// 관리자가 지정한 사용자만 사용 가능
+// Allow read access to verified user
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isVerified() {
+      return request.auth.uid in ["verifiedUid", "verifiedUid"];
+    }
+    function isAdmin() {
+      return request.auth.uid in ["adminUid", "adminUid"];
+    }
+
+  	match /users/{document} {
+      allow read: if request.auth != null;
+      allow create: if request.auth.uid == request.resource.data.uid;
+      allow update: if request.auth.uid == resource.data.uid || (isVerified() && request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['likeCount', 'dislikeCount', 'sumCount'])) || isAdmin();
+      allow delete: if request.auth.uid == resource.data.uid || isAdmin();
+    }
+    match /posts/{document} {
+      allow read: if isVerified();
+      allow create: if isVerified() && request.auth.uid == request.resource.data.uid;
+      allow update: if request.auth.uid == resource.data.uid || (isVerified() && request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['postCommentCount','viewCount','likeCount', 'dislikeCount', 'sumCount'])) || isAdmin();
+      allow delete: if request.auth.uid == resource.data.uid || isAdmin();
+    }
+    match /postContents/{document} {
+    	allow read: if isVerified();
+      allow create: if isVerified() && request.auth.uid == request.resource.data.uid;
+      allow update: if request.auth.uid == resource.data.uid || isAdmin();
+      allow delete: if request.auth.uid == resource.data.uid || isAdmin();
+    }
+    match /postLikes/{document} {
+      allow read: if isVerified();
+      allow create: if isVerified() && request.auth.uid == request.resource.data.uid;
+      allow update: if false;
+      allow delete: if isVerified();
+    }
+    match /postComments/{document} {
+      allow read: if isVerified();
+      allow create: if isVerified() && request.auth.uid == request.resource.data.uid;
+      allow update: if request.auth.uid == resource.data.uid || (isVerified() && request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['replyCount','likeCount', 'dislikeCount', 'sumCount'])) || isAdmin();
+      allow delete: if isVerified();
+    }
+    match /postCommentLikes/{document} {
+      allow read: if isVerified();
+      allow create: if isVerified() && request.auth.uid == request.resource.data.uid;
+      allow update: if false;
+      allow delete: if isVerified();
+    }
+  }
+}

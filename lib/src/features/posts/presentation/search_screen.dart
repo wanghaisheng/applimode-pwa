@@ -1,0 +1,108 @@
+import 'package:flutter/foundation.dart';
+import 'package:applimode_app/custom_settings.dart';
+import 'package:applimode_app/src/common_widgets/search_page_list_view.dart';
+import 'package:applimode_app/src/common_widgets/simple_page_list_view.dart';
+import 'package:applimode_app/src/common_widgets/web_back_button.dart';
+import 'package:applimode_app/src/features/posts/data/posts_repository.dart';
+import 'package:applimode_app/src/features/posts/domain/post.dart';
+import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/small_posts_item.dart';
+import 'package:applimode_app/src/features/posts/presentation/search_bar.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:applimode_app/src/features/search/data/d_one_repository.dart';
+import 'package:applimode_app/src/utils/list_state.dart';
+import 'package:applimode_app/src/utils/updated_post_ids_list.dart';
+
+class SearchScreen extends StatefulWidget {
+  const SearchScreen({super.key});
+
+  @override
+  State<SearchScreen> createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends State<SearchScreen> {
+  final controller = TextEditingController();
+  String searchWords = '';
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  void _setState() {
+    searchWords = controller.text;
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: kIsWeb ? false : true,
+        leading: kIsWeb ? const WebBackButton() : null,
+        title: CustomSearchBar(
+          controller: controller,
+          onComplete: _setState,
+        ),
+        shape: const Border(
+            bottom: BorderSide(
+          color: Colors.black12,
+        )),
+      ),
+      body: Consumer(
+        builder: (context, ref, child) {
+          final postsRepository = ref.watch(postsRepositoryProvider);
+          final dOneRepository = ref.watch(dOneRepositoryProvider);
+          final updatedPostQuery =
+              ref.watch(postsRepositoryProvider).postsRef();
+          final resetUpdatedDocIds =
+              ref.watch(updatedPostIdsListProvider.notifier).removeAll;
+
+          if (useDOneForSearch) {
+            return SearchPageListView(
+              searchWords: searchWords,
+              searchQuery: dOneRepository.getPostsSearchAll,
+              query: postsRepository.postRef,
+              itemExtent: listSmallItemHeight,
+              listState: postsListStateProvider,
+              useDidUpdateWidget: true,
+              refreshUpdatedDocs: true,
+              resetUpdatedDocIds: resetUpdatedDocIds,
+              updatedDocsState: updatedPostIdsListProvider,
+              itemBuilder: (context, index, doc) {
+                final post = doc.data();
+                if (post == null) {
+                  return SmallPostsItem(post: Post.deleted());
+                }
+                return SmallPostsItem(
+                  post: post,
+                  index: index,
+                );
+              },
+            );
+          }
+
+          return SimplePageListView(
+            isSearchView: true,
+            query: postsRepository.searchTagQuery(controller.text),
+            useDidUpdateWidget: true,
+            itemExtent: listSmallItemHeight,
+            itemBuilder: (context, index, doc) {
+              final post = doc.data();
+              return SmallPostsItem(
+                post: post,
+                index: index,
+              );
+            },
+            listState: postsListStateProvider,
+            refreshUpdatedDocs: true,
+            updatedDocQuery: updatedPostQuery,
+            resetUpdatedDocIds: resetUpdatedDocIds,
+            updatedDocsState: updatedPostIdsListProvider,
+          );
+        },
+      ),
+    );
+  }
+}
