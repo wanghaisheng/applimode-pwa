@@ -1,8 +1,3 @@
-// Have a copy for updates (paste)
-// 업데이트를 위해 복사본을 가지고 있기 (붙여넣기 할 것)
-// Select between true and false for Boolean type
-// 불타입은 true, false 중 선택
-
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:flutter/widgets.dart';
 
