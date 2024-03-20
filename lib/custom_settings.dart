@@ -373,7 +373,7 @@ const String noBio = 'noBio';
 // Single color box basic color. If you set it yourself, use boxCustomColorPalettes at the bottom.
 // 싱글 컬러 박스 기본 컬러. 직접 설정할 경우 하단의 boxCustomColorPalettes를 사용
 const boxSingleColorPalettes = [
-  Color(0xFFFCB126),
+  Color(0xFFFF930F),
   Color(0xFF4CB0A6),
   Color(0xFFFF6F68),
   Color(0xFF5cb270),
@@ -403,7 +403,7 @@ const boxGradientColorPalettes = [
 // Used when directly specifying single color box.
 // 싱글 컬러 박스 직접 지정할 경우 사용.
 const boxCustomColorPalettes = [
-  Color(0xFFFCB126),
+  Color(0xFFFF930F),
   Color(0xFF4CB0A6),
   Color(0xFFFF6F68),
   Color(0xFF5cb270),

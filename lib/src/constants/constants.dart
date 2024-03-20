@@ -51,6 +51,8 @@ const String contentJson = 'application/json';
 const String deleted = 'deleted';
 
 const String storageShortUrl = r'${psu}';
+const String firebaseStorageUrlHead = 'https://firebasestorage.googleapis.com';
+const String gcpStorageUrlHead = 'https://storage.googleapis.com/';
 
 const String spareHomeBarImageUrl = 'assets/images/app-bar-logo.png';
 

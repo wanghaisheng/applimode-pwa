@@ -52,16 +52,28 @@ class PostDeleteService {
     }
 
     // delete comment medias
-    await deleteStorageList(ref, '$commentsPath/$postId');
+    try {
+      await deleteStorageList(ref, '$commentsPath/$postId');
+    } catch (e) {
+      debugPrint('already delete');
+    }
 
     // delete post medias
+    // for firebase storage
+    try {
+      await deleteStorageList(ref, '$uid/$postsPath/$postId');
+    } catch (e) {
+      debugPrint('already delete');
+    }
     // useFirebaseStorage
     if (useRTwoStorage) {
-      await ref
-          .read(rTwoStorageRepositoryProvider)
-          .deleteAssetsList('$uid/$postsPath/$postId');
-    } else {
-      await deleteStorageList(ref, '$uid/$postsPath/$postId');
+      try {
+        await ref
+            .read(rTwoStorageRepositoryProvider)
+            .deleteAssetsList('$uid/$postsPath/$postId');
+      } catch (e) {
+        debugPrint('already delete');
+      }
     }
 
     // delete d1 search index

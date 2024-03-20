@@ -112,12 +112,22 @@ class EditorScreenController extends _$EditorScreenController {
         final newRemoteMedia = buildRemoteMedia(content);
         final deletedMedia = compareLists(oldRemoteMedia, newRemoteMedia);
         for (final mediaUrl in deletedMedia) {
+          final isFbStorage = mediaUrl.startsWith(storageShortUrl) ||
+              mediaUrl.startsWith(firebaseStorageUrlHead) ||
+              mediaUrl.startsWith(gcpStorageUrlHead);
           try {
+            if (isFbStorage) {
+              storageRepository.deleteAsset(mediaUrl);
+            } else {
+              rTwoRepository.deleteAsset(mediaUrl);
+            }
+            /*
             if (useRTwoStorage) {
               rTwoRepository.deleteAsset(mediaUrl);
             } else {
               storageRepository.deleteAsset(mediaUrl);
             }
+            */
           } catch (e) {
             debugPrint('error: $e');
           }

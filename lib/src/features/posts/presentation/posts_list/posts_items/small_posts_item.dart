@@ -3,6 +3,7 @@ import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/small_block_item.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/small_posts_item_contents.dart';
 import 'package:applimode_app/custom_settings.dart';
+import 'package:applimode_app/src/utils/get_full_url.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -75,7 +76,7 @@ class SmallPostsItem extends ConsumerWidget {
                             if (mainMediaUrl != null &&
                                 mainMediaUrl.isNotEmpty) ...[
                               CachedBorderImage(
-                                imgUrl: mainMediaUrl,
+                                imgUrl: getFsUrl(mainMediaUrl)!,
                                 index: index,
                               ),
                               const SizedBox(width: 12),

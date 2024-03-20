@@ -9,6 +9,7 @@ import 'package:applimode_app/src/features/posts/domain/post_and_writer.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/page_item_buttons.dart';
 import 'package:applimode_app/src/features/video_player/main_video_player.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
+import 'package:applimode_app/src/utils/get_full_url.dart';
 import 'package:applimode_app/src/utils/get_max_width.dart';
 import 'package:applimode_app/src/utils/regex.dart';
 import 'package:applimode_app/custom_settings.dart';
@@ -95,8 +96,8 @@ class BasicPostsItem extends ConsumerWidget {
                       MainVideoPlayer(
                         // when delete video post, resolve old video remain
                         key: UniqueKey(),
-                        videoUrl: post.mainVideoUrl!,
-                        videoImageUrl: mainVideoImageUrl,
+                        videoUrl: getFsUrl(mainVideoUrl)!,
+                        videoImageUrl: getFsUrl(mainVideoImageUrl),
                         aspectRatio: aspectRatio ?? 1.0,
                         writer: writer,
                         post: post,
@@ -112,7 +113,7 @@ class BasicPostsItem extends ConsumerWidget {
                                 image: DecorationImage(
                                   fit: BoxFit.cover,
                                   image: CachedNetworkImageProvider(
-                                    post.mainImageUrl!,
+                                    getFsUrl(mainImageUrl)!,
                                     headers: useRTwoSecureGet
                                         ? {
                                             "X-Custom-Auth-Key": Env.workerKey,
