@@ -128,13 +128,14 @@ coverage/lcov.info
 
 # customAdd
 # Firebase CLI config
-.firebaserc
+# .firebaserc
 # myCustom
-firebase.json
-firestore.indexes.json
-firestore.rules
-storage.rules
-functions/
+# firebase.json
+# firestore.indexes.json
+# firestore.rules
+# storage.rules
+# remoteconfig.template.json
+# functions/
 
 # customAdd
 # Firebase

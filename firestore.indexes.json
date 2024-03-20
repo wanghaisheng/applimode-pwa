@@ -1,0 +1,391 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "postComments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "day",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "dislikeCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "postComments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "day",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "likeCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "postComments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "day",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "sumCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "postComments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "month",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "dislikeCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "postComments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "month",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "likeCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "postComments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "month",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "sumCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "postComments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "parentCommentId",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "postComments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "postId",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "isReply",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "postComments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "postId",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "isReply",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "sumCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "postComments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "postComments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "year",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "dislikeCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "postComments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "year",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "likeCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "postComments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "year",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "sumCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "category",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "day",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "dislikeCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "day",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "likeCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "day",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "sumCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isHeader",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isRecommended",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "month",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "dislikeCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "month",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "likeCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "month",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "sumCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "tags",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "year",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "dislikeCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "year",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "likeCount",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "year",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "sumCount",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
