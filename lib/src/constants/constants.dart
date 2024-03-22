@@ -37,12 +37,21 @@ const String storyPath = 'story';
 
 // stroage file content type
 // 절대 만지지 말 것. 변경 시 직접 코드 수정 필요
+// image
 const String contentTypeJpeg = 'image/jpeg';
 const String contentTypeGif = 'image/gif';
 const String contentTypePng = 'image/png';
 const String contentTypeWebp = 'image/webp';
+
+// video
 const String contentTypeMp4 = 'video/mp4';
+const String contentTypeM4v = 'video/x-m4v';
 const String contentTypeWebm = 'video/webm';
+const String contentTypeQv = 'video/quicktime';
+
+// audio
+const String contentTypeMp3 = 'audio/mpeg';
+const String contentTypeWave = 'audio/x-wav';
 
 const String contentTextPlain = 'text/plain';
 const String contentTextHtml = 'text/html';

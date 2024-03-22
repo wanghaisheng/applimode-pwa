@@ -296,7 +296,8 @@ class EditorScreenController extends _$EditorScreenController {
         }
       }
 
-      if (useDOneForSearch) {
+      if (useDOneForSearch &&
+          StringConverter.toSearch(newContent).trim().isNotEmpty) {
         if (postId == null) {
           ref
               .read(dOneRepositoryProvider)

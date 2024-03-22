@@ -81,6 +81,7 @@ class WvtWeb implements WvtStub {
     });
 
     video.onSeeked.listen((Event e) async {
+      await Future.delayed(const Duration(milliseconds: 100));
       if (!completer.isCompleted) {
         final canvas = document.createElement('canvas') as CanvasElement;
         final ctx = canvas.getContext('2d')! as CanvasRenderingContext2D;

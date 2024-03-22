@@ -258,10 +258,18 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
           final text = _controller.text;
           final selection = _controller.selection;
           final mediaType = lookupMimeType(pickedFile.path);
+          debugPrint('mediaType: $mediaType');
           if (mediaType == null) {
             isVideo = isVideo;
           } else {
-            isVideo = mediaType == contentTypeMp4;
+            isVideo = mediaType == contentTypeMp4 ||
+                mediaType == contentTypeM4v ||
+                mediaType == contentTypeWebm ||
+                mediaType == contentTypeQv ||
+                mediaType == contentTypeMp3 ||
+                pickedFile.path.endsWith('.mp4') ||
+                pickedFile.path.endsWith('.mp3') ||
+                pickedFile.path.endsWith('.mov');
           }
           final inserted = isVideo
               ? '\n[localVideo][][${pickedFile.path}]\n'

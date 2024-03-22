@@ -2,7 +2,7 @@
     "parameters": {
       "mainSettings": {
         "defaultValue": {
-          "value": "{\"homeBarTitle\":\"My Applimode\",\"homeBarImageUrl\":\"assets/images/app-bar-logo.png\",\"homeBarStyle\":0,\"mainColor\":\"FCB126\",\"mainCategory\":[{\"index\":0,\"path\":\"/common\",\"title\":\"일반\",\"color\":\"FCB126\"},{\"index\":1,\"path\":\"/notice\",\"title\":\"공지\",\"color\":\"F37D76\"},{\"index\":2,\"path\":\"/story\",\"title\":\"스토리\",\"color\":\"76D17F\"},{\"index\":3,\"path\":\"/news\",\"title\":\"뉴스\",\"color\":\"967ADC\"}]}"
+          "value": "{\"homeBarTitle\":\"My Applimode\",\"homeBarImageUrl\":\"assets/images/app-bar-logo.png\",\"homeBarStyle\":0,\"mainColor\":\"FCB126\",\"mainCategory\":[{\"index\":0,\"path\":\"/common\",\"title\":\"일반\",\"color\":\"FF930F\"},{\"index\":1,\"path\":\"/notice\",\"title\":\"공지\",\"color\":\"F37D76\"},{\"index\":2,\"path\":\"/story\",\"title\":\"스토리\",\"color\":\"76D17F\"},{\"index\":3,\"path\":\"/news\",\"title\":\"뉴스\",\"color\":\"967ADC\"}]}"
         },
         "valueType": "JSON"
       }
