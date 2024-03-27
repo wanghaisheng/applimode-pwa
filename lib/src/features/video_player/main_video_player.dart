@@ -4,7 +4,6 @@ import 'package:applimode_app/src/common_widgets/sized_circular_progress_indicat
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/posts/domain/post.dart';
-import 'package:applimode_app/src/features/video_player/video_player_components/video_contents.dart';
 import 'package:applimode_app/src/features/video_player/video_player_components/video_gesture_detector.dart';
 import 'package:applimode_app/src/features/video_player/video_player_components/video_player_center_icon.dart';
 import 'package:applimode_app/src/features/video_player/video_player_components/video_progress_bar.dart';
@@ -12,6 +11,7 @@ import 'package:applimode_app/src/features/video_player/video_player_components/
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/posts_item_mute_state.dart';
 import 'package:applimode_app/custom_settings.dart';
+import 'package:applimode_app/src/utils/posts_item_playing_state.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -107,6 +107,11 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     final appSetting = ref.watch(appSettingsControllerProvider);
+    ref.listen(postsItemPlayingStateProvider, (_, next) {
+      if (next == false) {
+        _controller.pause();
+      }
+    });
     return ClipRRect(
       child: AspectRatio(
         aspectRatio: widget.aspectRatio ?? 1.0,
@@ -222,6 +227,7 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
               ),
               SafeArea(child: VideoProgressBar(controller: _controller)),
             ],
+            /*
             if (widget.writer != null && widget.post != null)
               VideoContents(
                 controller: _controller,
@@ -231,6 +237,7 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
                 isPage: widget.isPage,
                 showVideoTitle: widget.showVideoTitle,
               ),
+              */
           ],
         ),
       ),

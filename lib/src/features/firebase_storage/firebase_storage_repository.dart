@@ -13,6 +13,8 @@ class FirebaseStorageRepository {
   final FirebaseStorage _storage;
 
   Reference storageRef(String path) => _storage.ref(path);
+  Reference storageRefChild(String path) => _storage.ref().child(path);
+  Reference storageRefFromUrl(String url) => _storage.refFromURL(url);
 
   Future<Uint8List> getBytes(XFile file) async {
     final bytes = await file.readAsBytes();

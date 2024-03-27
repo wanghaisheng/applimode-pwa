@@ -1,4 +1,3 @@
-import 'package:applimode_app/src/utils/string_converter.dart';
 import 'package:flutter/material.dart';
 
 class TitleTextWidget extends StatelessWidget {
@@ -18,7 +17,7 @@ class TitleTextWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      StringConverter.toTitle(title),
+      title,
       style: textStyle ?? Theme.of(context).textTheme.titleMedium,
       textAlign: textAlign,
       overflow: TextOverflow.ellipsis,

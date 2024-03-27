@@ -84,7 +84,7 @@ class VideoContents extends StatelessWidget {
                   SizedBox(
                     width: maxWidth,
                     child: TitleTextWidget(
-                      title: post.content,
+                      title: post.title,
                       textStyle: postTitleStyle,
                       maxLines: basicPostsItemVideoTitleMaxLines,
                     ),

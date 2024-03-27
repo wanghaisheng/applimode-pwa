@@ -1,3 +1,4 @@
+import 'package:applimode_app/src/utils/format.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/constants/constants.dart';
@@ -63,6 +64,8 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
 
     final id = nanoid();
 
+    bool needUpdate = false;
+
     final storageRepository = ref.read(firebaseStorageRepositoryProvider);
     final rTwoRepository = ref.read(rTwoStorageRepositoryProvider);
 
@@ -82,6 +85,7 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
     } else {
       mediaType = isVideo ? contentTypeMp4 : contentTypeJpeg;
     }
+    final ext = Format.mimeTypeToExt(mediaType);
 
     final needCompress =
         mediaType == contentTypeJpeg || mediaType == contentTypePng;
@@ -97,7 +101,12 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
 
       // video thumbnail for mobile
       if (isVideo) {
+        String thumbnailFilename = '$filename-thumbnail.jpeg';
         if (kIsWeb) {
+          if (defaultTargetPlatform == TargetPlatform.iOS) {
+            needUpdate = true;
+            thumbnailFilename = '$filename-thumbnail-needupdate.jpeg';
+          }
           final videoThumbnail = await WvtStub().getThumbnailData(
             video: match[2]!,
             maxWidth: 0,
@@ -110,7 +119,7 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
               final url = await rTwoRepository.uploadBytes(
                 bytes: videoThumbnail,
                 storagePathname: '${user.uid}/$postsPath/$id',
-                filename: '$filename-thumbnail',
+                filename: thumbnailFilename,
                 showPercentage: false,
               );
               videoThumbnailUrl = url;
@@ -118,7 +127,7 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
               final url = await storageRepository.uploadBytes(
                 bytes: videoThumbnail,
                 storagePathname: '${user.uid}/$postsPath/$id',
-                filename: '$filename-thumbnail',
+                filename: thumbnailFilename,
               );
               videoThumbnailUrl = url;
             }
@@ -135,7 +144,7 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
               final url = await rTwoRepository.uploadBytes(
                 bytes: videoThumbnail,
                 storagePathname: '${user.uid}/$postsPath/$id',
-                filename: '$filename-thumbnail',
+                filename: thumbnailFilename,
                 showPercentage: false,
               );
               videoThumbnailUrl = url;
@@ -143,7 +152,7 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
               final url = await storageRepository.uploadBytes(
                 bytes: videoThumbnail,
                 storagePathname: '${user.uid}/$postsPath/$id',
-                filename: '$filename-thumbnail',
+                filename: thumbnailFilename,
               );
               videoThumbnailUrl = url;
             }
@@ -157,7 +166,7 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
         final uploadTask = storageRepository.uploadTask(
           bytes: bytes,
           storagePathname: '${user.uid}/$postsPath/$id',
-          filename: filename,
+          filename: isVideo ? '$filename.mp4' : '$filename$ext',
           contentType: mediaType,
         );
 
@@ -188,7 +197,7 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
           ? await rTwoRepository.uploadBytes(
               bytes: bytes,
               storagePathname: '${user.uid}/$postsPath/$id',
-              filename: filename,
+              filename: isVideo ? '$filename.mp4' : '$filename$ext',
               contentType: mediaType,
               index: 0,
             )
@@ -227,6 +236,8 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
             id: id,
             uid: user.uid,
             content: newContent,
+            title: '',
+            needUpdate: needUpdate,
             mainImageUrl: mainImageUrl,
             mainVideoUrl: mainVideoUrl,
             mainVideoImageUrl: mainVideoImageUrl,

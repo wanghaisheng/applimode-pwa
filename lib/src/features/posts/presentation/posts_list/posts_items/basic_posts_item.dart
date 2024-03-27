@@ -11,6 +11,7 @@ import 'package:applimode_app/src/features/video_player/main_video_player.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/get_full_url.dart';
 import 'package:applimode_app/src/utils/get_max_width.dart';
+import 'package:applimode_app/src/utils/posts_item_playing_state.dart';
 import 'package:applimode_app/src/utils/regex.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -50,8 +51,10 @@ class BasicPostsItem extends ConsumerWidget {
     final mainImageUrl = post.mainImageUrl;
     final mainVideoUrl = post.mainVideoUrl;
     final mainVideoImageUrl = post.mainVideoImageUrl;
-    final isVideo =
-        mainVideoUrl != null && !Regex.ytRegexB.hasMatch(mainVideoUrl);
+    final isVideo = mainVideoUrl != null &&
+        mainVideoUrl.trim().isNotEmpty &&
+        !Regex.ytRegexB.hasMatch(mainVideoUrl);
+    final hasTitle = post.title.isNotEmpty;
 
     final postTitleStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(
           color: Colors.white,
@@ -105,7 +108,7 @@ class BasicPostsItem extends ConsumerWidget {
                         isPage: isPage,
                         showVideoTitle: showVideoTitle,
                       ),
-                    if (isContent && !isVideo) ...[
+                    if (isContent && !isVideo)
                       mainImageUrl != null
                           ? Container(
                               decoration: BoxDecoration(
@@ -129,7 +132,7 @@ class BasicPostsItem extends ConsumerWidget {
                                 padding: const EdgeInsets.all(64.0),
                                 child: SafeArea(
                                   child: TitleTextWidget(
-                                    title: post.content,
+                                    title: post.title,
                                     textStyle: postTitleStyle,
                                     maxLines: basicPostsItemMiddleTitleMaxLines,
                                     textAlign: switch (titleTextAlign) {
@@ -141,12 +144,12 @@ class BasicPostsItem extends ConsumerWidget {
                                 ),
                               ),
                             ),
-                      /*
+                    /*
                       Padding(
                         padding: const EdgeInsets.all(64.0),
                         child: SafeArea(
                           child: TitleTextWidget(
-                            title: post.content,
+                            title: post.title,
                             textStyle: postTitleStyle,
                             maxLines: basicPostsItemTitleMaxLines,
                             textAlign: TextAlign.center,
@@ -154,51 +157,71 @@ class BasicPostsItem extends ConsumerWidget {
                         ),
                       ),
                       */
+                    if (isContent) ...[
                       Positioned(
                         left: 16,
                         bottom: 24,
                         child: SafeArea(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              WriterItem(
-                                writer: writer,
-                                post: post,
-                                width: getMaxWidth(context),
-                                profileImagesize: basicPostsItemProfileSize,
-                                nameColor: Colors.white,
-                                showSubtitle: true,
-                                showMainCategory: useCategory,
-                                showLikeCount: isPage ? false : showLikeCount,
-                                showDislikeCount:
-                                    isPage ? false : showDislikeCount,
-                                showCommentCount:
-                                    isPage ? false : showCommentCount,
-                                showCommentPlusLikeCount:
-                                    isPage ? false : showCommentPlusLikeCount,
-                                showSumCount: isPage ? false : showSumCount,
-                                isThumbUpToHeart: isThumbUpToHeart,
-                                captionColor: Colors.white,
-                                countColor: Colors.white,
-                                index: index,
-                                categoryColor: Colors.white,
-                                nameSize: basicPostsItemNameSize,
-                                subInfoFontSize: basicPostsItemSubInfoSize,
-                                subInfoIconSize: basicPostsItemSubInfoSize + 2,
-                                writerLabelFontSize: basicPostsItemNameSize - 6,
-                              ),
-                              if (mainImageUrl != null) ...[
-                                const SizedBox(height: 12),
-                                SizedBox(
-                                  width: getMaxWidth(context),
-                                  child: TitleTextWidget(
-                                    title: post.content,
-                                    textStyle: postTitleStyle,
-                                    maxLines: basicPostsItemBottomTitleMaxLines,
-                                  ),
+                          child: InkWell(
+                            onTap: () {
+                              ref
+                                  .read(postsItemPlayingStateProvider.notifier)
+                                  .setFalseAndTrue();
+                              context.push(
+                                ScreenPaths.post(post.id),
+                                extra: PostAndWriter(
+                                  post: post,
+                                  writer: writer,
                                 ),
+                              );
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                WriterItem(
+                                  writer: writer,
+                                  post: post,
+                                  width: getMaxWidth(context),
+                                  profileImagesize: basicPostsItemProfileSize,
+                                  nameColor: Colors.white,
+                                  showSubtitle: true,
+                                  showMainCategory: useCategory,
+                                  showLikeCount: isPage ? false : showLikeCount,
+                                  showDislikeCount:
+                                      isPage ? false : showDislikeCount,
+                                  showCommentCount:
+                                      isPage ? false : showCommentCount,
+                                  showCommentPlusLikeCount:
+                                      isPage ? false : showCommentPlusLikeCount,
+                                  showSumCount: isPage ? false : showSumCount,
+                                  isThumbUpToHeart: isThumbUpToHeart,
+                                  captionColor: Colors.white,
+                                  countColor: Colors.white,
+                                  index: index,
+                                  categoryColor: Colors.white,
+                                  nameSize: basicPostsItemNameSize,
+                                  subInfoFontSize: basicPostsItemSubInfoSize,
+                                  subInfoIconSize:
+                                      basicPostsItemSubInfoSize + 2,
+                                  writerLabelFontSize:
+                                      basicPostsItemNameSize - 6,
+                                ),
+                                if ((mainImageUrl != null || isVideo) &&
+                                    hasTitle) ...[
+                                  const SizedBox(height: 12),
+                                  SizedBox(
+                                    width: getMaxWidth(context),
+                                    child: TitleTextWidget(
+                                      title: post.title,
+                                      textStyle: postTitleStyle,
+                                      maxLines: isVideo
+                                          ? basicPostsItemVideoTitleMaxLines
+                                          : basicPostsItemBottomTitleMaxLines,
+                                    ),
+                                  ),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
                         ),
                       ),

@@ -59,7 +59,7 @@ class _SearchScreenState extends State<SearchScreen> {
           final resetUpdatedDocIds =
               ref.watch(updatedPostIdsListProvider.notifier).removeAll;
 
-          if (useDOneForSearch) {
+          if (useDOneForSearch && !searchWords.startsWith(r'#')) {
             return SearchPageListView(
               searchWords: searchWords,
               searchQuery: dOneRepository.getPostsSearchAll,
@@ -85,7 +85,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
           return SimplePageListView(
             isSearchView: true,
-            query: postsRepository.searchTagQuery(controller.text),
+            query: postsRepository.searchTagQuery(
+                controller.text.replaceAll(RegExp(r'[#_ ]'), '').trim()),
             useDidUpdateWidget: true,
             itemExtent: listSmallItemHeight,
             itemBuilder: (context, index, doc) {

@@ -47,6 +47,10 @@ class Regex {
 
   static RegExp searchRegex = RegExp(searchRegExp);
 
+  static RegExp blackVideoImageFileName =
+      RegExp(r'''posts\%2F(.*)-needupdate''');
+  static RegExp firebaseObjectPath = RegExp(r'''\/o\/(.*)\?''');
+
   // old version
   static RegExp markDownImageRegex = RegExp(r'!\[(.*)\]\((.+)\)');
   static RegExp markDownUserImageRegex =

@@ -98,6 +98,8 @@ class EditorScreenController extends _$EditorScreenController {
     String? mainVideoUrl;
     final List<String> hashtags = [];
 
+    bool needUpdate = false;
+
     final storageRepository = ref.read(firebaseStorageRepositoryProvider);
     final rTwoRepository = ref.read(rTwoStorageRepositoryProvider);
 
@@ -177,20 +179,16 @@ class EditorScreenController extends _$EditorScreenController {
 
           // generate video thumbnail
           if (isVideo) {
-            if (kIsWeb) {
-              final videoThumbnail = await WvtStub().getThumbnailData(
-                video: match[2]!,
-                maxWidth: 0,
-                maxHeight: 0,
-                quality: 100,
-              );
-              // ignore: unnecessary_null_comparison
-              if (videoThumbnail != null) {
+            String thumbnailFilename = '$filename-thumbnail.jpeg';
+            if (match[1] != null && match[1]!.isNotEmpty) {
+              try {
+                final videoThumbnail =
+                    await storageRepository.getBytes(XFile(match[1]!));
                 if (useRTwoStorage) {
                   final url = await rTwoRepository.uploadBytes(
                     bytes: videoThumbnail,
                     storagePathname: '${user.uid}/$postsPath/$id',
-                    filename: '$filename-thumbnail.jpeg',
+                    filename: thumbnailFilename,
                     showPercentage: false,
                   );
                   videoThumbnailUrl = url;
@@ -198,34 +196,68 @@ class EditorScreenController extends _$EditorScreenController {
                   final url = await storageRepository.uploadBytes(
                     bytes: videoThumbnail,
                     storagePathname: '${user.uid}/$postsPath/$id',
-                    filename: '$filename-thumbnail.jpeg',
+                    filename: thumbnailFilename,
                   );
                   videoThumbnailUrl = url;
                 }
+              } catch (e) {
+                debugPrint(e.toString());
               }
             } else {
-              final videoThumbnail = await VideoThumbnail.thumbnailData(
-                video: match[2]!,
-                imageFormat: ImageFormat.JPEG,
-                maxWidth: 1080,
-                quality: 100,
-              );
-              if (videoThumbnail != null) {
-                if (useRTwoStorage) {
-                  final url = await rTwoRepository.uploadBytes(
-                    bytes: videoThumbnail,
-                    storagePathname: '${user.uid}/$postsPath/$id',
-                    filename: '$filename-thumbnail.jpeg',
-                    showPercentage: false,
-                  );
-                  videoThumbnailUrl = url;
-                } else {
-                  final url = await storageRepository.uploadBytes(
-                    bytes: videoThumbnail,
-                    storagePathname: '${user.uid}/$postsPath/$id',
-                    filename: '$filename-thumbnail.jpeg',
-                  );
-                  videoThumbnailUrl = url;
+              if (kIsWeb) {
+                if (defaultTargetPlatform == TargetPlatform.iOS) {
+                  needUpdate = true;
+                  thumbnailFilename = '$filename-thumbnail-needupdate.jpeg';
+                }
+                final videoThumbnail = await WvtStub().getThumbnailData(
+                  video: match[2]!,
+                  maxWidth: 0,
+                  maxHeight: 0,
+                  quality: 100,
+                );
+                // ignore: unnecessary_null_comparison
+                if (videoThumbnail != null) {
+                  if (useRTwoStorage) {
+                    final url = await rTwoRepository.uploadBytes(
+                      bytes: videoThumbnail,
+                      storagePathname: '${user.uid}/$postsPath/$id',
+                      filename: thumbnailFilename,
+                      showPercentage: false,
+                    );
+                    videoThumbnailUrl = url;
+                  } else {
+                    final url = await storageRepository.uploadBytes(
+                      bytes: videoThumbnail,
+                      storagePathname: '${user.uid}/$postsPath/$id',
+                      filename: thumbnailFilename,
+                    );
+                    videoThumbnailUrl = url;
+                  }
+                }
+              } else {
+                final videoThumbnail = await VideoThumbnail.thumbnailData(
+                  video: match[2]!,
+                  imageFormat: ImageFormat.JPEG,
+                  maxWidth: 1080,
+                  quality: 100,
+                );
+                if (videoThumbnail != null) {
+                  if (useRTwoStorage) {
+                    final url = await rTwoRepository.uploadBytes(
+                      bytes: videoThumbnail,
+                      storagePathname: '${user.uid}/$postsPath/$id',
+                      filename: thumbnailFilename,
+                      showPercentage: false,
+                    );
+                    videoThumbnailUrl = url;
+                  } else {
+                    final url = await storageRepository.uploadBytes(
+                      bytes: videoThumbnail,
+                      storagePathname: '${user.uid}/$postsPath/$id',
+                      filename: thumbnailFilename,
+                    );
+                    videoThumbnailUrl = url;
+                  }
                 }
               }
             }
@@ -288,11 +320,61 @@ class EditorScreenController extends _$EditorScreenController {
         debugPrint(newContent);
       }
 
+      if (postId != null) {
+        final remoteVideoMatches =
+            Regex.remoteVideoRegex.allMatches(content).toList();
+        if (remoteVideoMatches.isNotEmpty) {
+          for (final match in remoteVideoMatches) {
+            if (match[1] != null &&
+                match[1]!.isNotEmpty &&
+                (oldRemoteMedia == null ||
+                    !oldRemoteMedia.contains(match[1]))) {
+              try {
+                final videoThumbnail =
+                    await storageRepository.getBytes(XFile(match[1]!));
+                String thumbnailFilename = '${nanoid()}-thumbnail.jpeg';
+                String newUrl = '';
+                if (useRTwoStorage) {
+                  newUrl = await rTwoRepository.uploadBytes(
+                    bytes: videoThumbnail,
+                    storagePathname: '${user.uid}/$postsPath/$id',
+                    filename: thumbnailFilename,
+                    showPercentage: false,
+                  );
+                } else {
+                  newUrl = await storageRepository.uploadBytes(
+                    bytes: videoThumbnail,
+                    storagePathname: '${user.uid}/$postsPath/$id',
+                    filename: thumbnailFilename,
+                  );
+                }
+                newContent = newContent.replaceFirst(match[1]!, newUrl);
+              } catch (e) {
+                debugPrint(e.toString());
+              }
+            }
+          }
+        }
+      }
+
       // hashtags
       final hashtagMatches = Regex.hashtagRegex.allMatches(newContent);
       if (hashtagMatches.isNotEmpty) {
         for (final tag in hashtagMatches) {
-          hashtags.add(tag[1]!);
+          if (tag[1] != null && tag[1]!.trim().isNotEmpty) {
+            hashtags.add(tag[1]!.trim());
+            if (tag[1]!.contains('_')) {
+              if (tag[1]!.replaceAll('_', '').trim().isNotEmpty) {
+                hashtags.add(tag[1]!.replaceAll('_', '').trim());
+              }
+              final splits = tag[1]!.split('_');
+              for (final split in splits) {
+                if (split.trim().isNotEmpty) {
+                  hashtags.add(split.trim());
+                }
+              }
+            }
+          }
         }
       }
 
@@ -334,12 +416,16 @@ class EditorScreenController extends _$EditorScreenController {
       newContent = newContent.replaceAll(preStorageUrl, storageShortUrl);
       final postContent = newContent;
 
+      final modifiedNewContent = StringConverter.toTitle(newContent);
+      final contentTitle = modifiedNewContent.length > contentTitleSize
+          ? modifiedNewContent.substring(0, contentTitleSize)
+          : modifiedNewContent;
+
       final isLongContent = utf8.encode(newContent).length > longContentSize;
       if (isLongContent) {
-        final contentTitle = StringConverter.toTitle(newContent);
-        newContent = contentTitle.length > longContentTitleSize
-            ? contentTitle.substring(0, longContentTitleSize)
-            : contentTitle;
+        newContent = modifiedNewContent.length > contentTitleSize
+            ? modifiedNewContent.substring(0, contentTitleSize)
+            : modifiedNewContent;
       }
 
       if (postId == null) {
@@ -348,6 +434,8 @@ class EditorScreenController extends _$EditorScreenController {
               id: id,
               uid: user.uid,
               content: newContent,
+              title: contentTitle,
+              needUpdate: needUpdate,
               isLongContent: isLongContent,
               category: category,
               mainImageUrl: mainImageUrl,
@@ -362,6 +450,8 @@ class EditorScreenController extends _$EditorScreenController {
               id: id,
               // uid: user.uid,
               content: newContent,
+              title: contentTitle,
+              needUpdate: needUpdate,
               isLongContent: isLongContent,
               category: category,
               mainImageUrl: mainImageUrl,

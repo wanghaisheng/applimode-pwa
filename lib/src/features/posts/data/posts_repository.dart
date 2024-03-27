@@ -20,6 +20,8 @@ class PostsRepository {
     required String id,
     required String uid,
     required String content,
+    required String title,
+    bool needUpdate = false,
     bool isLongContent = false,
     bool isHeader = false,
     int category = 0,
@@ -33,6 +35,8 @@ class PostsRepository {
         'id': id,
         'uid': uid,
         'content': content,
+        'title': title,
+        'needUpdate': needUpdate,
         'isLongContent': isLongContent,
         'isHeader': isHeader,
         'isBlock': false,
@@ -57,6 +61,8 @@ class PostsRepository {
     required String id,
     // required String uid,
     required String content,
+    required String title,
+    bool needUpdate = false,
     bool isLongContent = false,
     // bool isHeader = false,
     int category = 0,
@@ -70,6 +76,8 @@ class PostsRepository {
         // 'id': id,
         // 'uid': uid,
         'content': content,
+        'title': title,
+        'needUpdate': needUpdate,
         'isLongContent': isLongContent,
         // 'isHeader': isHeader,
         'category': category,
@@ -145,12 +153,19 @@ class PostsRepository {
         'viewCount': FieldValue.increment(-1),
       });
 
+  Future<void> updateMainVideoImageUrl(String id, String url) =>
+      _firestore.doc(postPath(id)).update({
+        'mainVideoImageUrl': url,
+      });
+
   Future<void> deletePost(String id) => _firestore.doc(postPath(id)).delete();
 
   Future<void> createTestPost({
     required String id,
     required String uid,
     required String content,
+    required String title,
+    bool needUpdate = false,
     bool isLongContent = false,
     bool isHeader = false,
     bool isRecommended = false,
@@ -168,6 +183,8 @@ class PostsRepository {
         'id': id,
         'uid': uid,
         'content': content,
+        'title': title,
+        'needUpdate': needUpdate,
         'isLongContent': isLongContent,
         'isHeader': isHeader,
         'isBlock': false,

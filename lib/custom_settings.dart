@@ -87,7 +87,7 @@ const isPostsItemVideoMute = false;
 
 // Use direct upload button on page type
 // 페이지 타입에서 다이렉트 업로드 버튼 사용
-const useDirectUploadButton = true;
+const useDirectUploadButton = false;
 
 // Color type of basic post box. single, gradient, animation. basic gradient
 // 베이직 포스트 박스의 컬러 타입. single, gradient, animattion. 기본 gradient
@@ -360,10 +360,10 @@ const int colorAnimationDuration = 2000;
 
 // Minimum bytes to specify long content. default 1200
 // 긴 컨텐츠 지정을 위한 최소 바이트. 기본 1200
-const int longContentSize = 1200;
+const int longContentSize = 2400;
 // Maximum length saved as a title when specified as long content. default 140
 // 긴 컨텐츠로 지정되었을 경우 타이틀로 저장하는 최대 길이. 기본 140
-const int longContentTitleSize = 140;
+const int contentTitleSize = 140;
 
 // Text displayed if there is no self-introduction on the bio edit screen.
 // default noBio

@@ -52,7 +52,7 @@ class SmallPostsItemContents extends StatelessWidget {
                     ),
                   Expanded(
                     child: TitleTextWidget(
-                      title: post.content,
+                      title: post.title,
                       textStyle: titleTextStyle,
                       maxLines: smallPostsItemTitleMaxLines,
                     ),
@@ -60,7 +60,7 @@ class SmallPostsItemContents extends StatelessWidget {
                 ],
               )
             : TitleTextWidget(
-                title: post.content,
+                title: post.title,
                 textStyle: titleTextStyle,
                 maxLines: smallPostsItemTitleMaxLines,
               ),

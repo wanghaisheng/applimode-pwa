@@ -6,6 +6,8 @@ class Post extends Equatable {
     required this.id,
     required this.uid,
     this.content = 'No content',
+    this.title = '',
+    this.needUpdate = false,
     this.isLongContent = false,
     this.isHeader = false,
     this.isBlock = false,
@@ -30,6 +32,8 @@ class Post extends Equatable {
   final String id;
   final String uid;
   final String content;
+  final String title;
+  final bool needUpdate;
   final bool isLongContent;
   final bool isHeader;
   final bool isBlock;
@@ -57,6 +61,8 @@ class Post extends Equatable {
       id: map['id'] as String,
       uid: map['uid'] as String,
       content: map['content'] as String? ?? 'No content',
+      title: map['title'] as String? ?? '',
+      needUpdate: map['needUpdate'] as bool? ?? false,
       isLongContent: map['isLongContent'] as bool? ?? false,
       isHeader: map['isHeader'] as bool? ?? false,
       isBlock: map['isBlock'] as bool? ?? false,
@@ -88,6 +94,8 @@ class Post extends Equatable {
       'id': id,
       'uid': uid,
       'content': content,
+      'title': title,
+      'needUpdate': needUpdate,
       'isLongContent': isLongContent,
       'isHeader': isHeader,
       'isBlock': isBlock,
@@ -129,6 +137,8 @@ class Post extends Equatable {
         id,
         uid,
         content,
+        title,
+        needUpdate,
         isLongContent,
         isHeader,
         isBlock,
