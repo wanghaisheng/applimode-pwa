@@ -37,7 +37,7 @@ class _PostCommentLikeButtonState extends ConsumerState<PostCommentLikeButton> {
   Widget build(BuildContext context) {
     final mainColor = Theme.of(context).colorScheme.secondary;
     final textTheme = Theme.of(context).textTheme;
-    final user = ref.watch(authRepositoryProvider).currentUser;
+    final user = ref.watch(authStateChangesProvider).value;
 
     final postCommentController =
         ref.watch(postCommentControllerProvider.notifier);

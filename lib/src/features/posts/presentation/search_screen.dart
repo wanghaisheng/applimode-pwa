@@ -86,7 +86,7 @@ class _SearchScreenState extends State<SearchScreen> {
           return SimplePageListView(
             isSearchView: true,
             query: postsRepository.searchTagQuery(
-                controller.text.replaceAll(RegExp(r'[#_ ]'), '').trim()),
+                searchWords.replaceAll(RegExp(r'[#_ ]'), '').trim()),
             useDidUpdateWidget: true,
             itemExtent: listSmallItemHeight,
             itemBuilder: (context, index, doc) {
@@ -101,6 +101,7 @@ class _SearchScreenState extends State<SearchScreen> {
             updatedDocQuery: updatedPostQuery,
             resetUpdatedDocIds: resetUpdatedDocIds,
             updatedDocsState: updatedPostIdsListProvider,
+            searchWords: searchWords.replaceAll(RegExp(r'[#_ ]'), '').trim(),
           );
         },
       ),

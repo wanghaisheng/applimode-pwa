@@ -92,8 +92,7 @@ class DeleteAccountService {
     }
 
     // delete app user and assets
-    final appUser =
-        await _ref.read(appUserRepositoryProvider).fetchAppUser(uid);
+    final appUser = await _ref.read(appUserFutureProvider(uid).future);
     if (appUser != null) {
       if (appUser.photoUrl != null) {
         await _ref

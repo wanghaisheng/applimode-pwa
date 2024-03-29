@@ -53,8 +53,14 @@ class SmallPostsItem extends ConsumerWidget {
       child: AsyncValueWidget(
         value: writerAsync,
         data: (writer) {
-          if (writer == null || writer.isBlock || post.isBlock) {
+          if (writer == null) {
             return const SmallBlockItem();
+          }
+          if (writer.isBlock || post.isBlock) {
+            return SmallBlockItem(
+              postId: post.id,
+              postAndWriter: PostAndWriter(post: post, writer: writer),
+            );
           }
           return InkWell(
             onTap: () {

@@ -41,9 +41,9 @@ class CustomProfileScreen extends ConsumerWidget {
       next.showAlertDialogOnError(context);
     });
 
-    final user = ref.watch(authRepositoryProvider).currentUser;
+    final user = ref.watch(authStateChangesProvider).value;
     final userEmail = user?.email;
-    final appUserFuture = user != null && user.uid == uid
+    final profileUserFuture = user != null && user.uid == uid
         ? ref.watch(appUserFutureProvider(uid))
         : ref.watch(writerFutureProvider(uid));
     final screenState = ref.watch(profileScreenControllerProvider);
@@ -67,13 +67,16 @@ class CustomProfileScreen extends ConsumerWidget {
               ],
             ))
           : AsyncValueWidget(
-              value: appUserFuture,
-              data: (appUser) {
-                if (appUser == null) {
+              value: profileUserFuture,
+              data: (profileUser) {
+                if (profileUser == null) {
                   return ErrorScaffold(errorMessage: context.loc.userNotExist);
                 }
+                final adminUser = user != null
+                    ? ref.watch(appUserFutureProvider(user.uid)).value
+                    : null;
                 return AnimatedColorContainer(
-                  storyImageUrl: appUser.storyUrl,
+                  storyImageUrl: profileUser.storyUrl,
                   child: SafeArea(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -87,7 +90,7 @@ class CustomProfileScreen extends ConsumerWidget {
                                   ),
                             Expanded(
                               child: UserItem(
-                                appUser: appUser,
+                                appUser: profileUser,
                                 isProfileScreen: true,
                                 profileImageSize: profileSizeMax,
                                 titleColor: Colors.white,
@@ -100,22 +103,29 @@ class CustomProfileScreen extends ConsumerWidget {
                                 subtitleColor: Colors.white,
                               ),
                             ),
-                            if (isAccount && user != null)
+                            if (isAccount && user != null ||
+                                !isAccount &&
+                                    user != null &&
+                                    adminUser != null &&
+                                    uid != adminUser.uid &&
+                                    adminUser.isAdmin)
                               ProfileAppBarMore(
-                                appUser: appUser,
+                                profileUser: profileUser,
                                 user: user,
                                 color: Colors.white,
+                                isAccount: isAccount,
+                                isAdmin: adminUser != null && adminUser.isAdmin,
                               ),
                           ],
                         ),
-                        if (appUser.bio.trim().isNotEmpty)
+                        if (profileUser.bio.trim().isNotEmpty)
                           Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 24,
                               vertical: 16,
                             ),
                             child: Text(
-                              appUser.bio,
+                              profileUser.bio,
                               textAlign: TextAlign.center,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 3,

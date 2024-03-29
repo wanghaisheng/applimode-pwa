@@ -72,9 +72,6 @@ class _PostScreenState extends ConsumerState<PostScreen> {
           : ref.watch(writerFutureProvider(postAsync.value!.uid));
     }
 
-    final postContentAsync =
-        ref.watch(postContentFutureProvider(widget.postId));
-
     /*
     final postAsync = widget.postAndWriter != null
         ? AsyncData(widget.postAndWriter!.post)
@@ -106,6 +103,8 @@ class _PostScreenState extends ConsumerState<PostScreen> {
             );
           }
           if (post.isLongContent) {
+            final postContentAsync =
+                ref.watch(postContentFutureProvider(widget.postId));
             return postContentAsync.when(
               data: (postContent) {
                 final itemsList = StringConverter.stringToElements(
@@ -146,7 +145,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                 );
               },
               error: (error, stackTrace) => Center(
-                child: Text(error.toString()),
+                child: Text(context.loc.tryLater),
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
             );

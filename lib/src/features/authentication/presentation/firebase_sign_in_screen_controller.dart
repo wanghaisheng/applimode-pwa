@@ -27,8 +27,7 @@ class FirebaseSignInScreenController extends _$FirebaseSignInScreenController {
 
     state = const AsyncLoading();
     final key = this.key;
-    final appUser =
-        await ref.read(appUserRepositoryProvider).fetchAppUser(user.uid);
+    final appUser = await ref.read(appUserFutureProvider(user.uid).future);
     if (appUser == null) {
       final appUserCheckService = ref.read(appUserCheckServiceProvider);
       final newState = await AsyncValue.guard(

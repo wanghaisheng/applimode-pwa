@@ -81,9 +81,7 @@ class PostCommentController extends _$PostCommentController {
           final post =
               await ref.read(postsRepositoryProvider).fetchPost(postId);
           if (post != null) {
-            postWriter = await ref
-                .read(appUserRepositoryProvider)
-                .fetchAppUser(post.uid);
+            postWriter = await ref.read(appUserFutureProvider(post.uid).future);
           }
         }
 
@@ -191,7 +189,7 @@ class PostCommentController extends _$PostCommentController {
     if (useFcmMessage) {
       try {
         commentWriter ??=
-            await ref.read(appUserRepositoryProvider).fetchAppUser(writerId);
+            await ref.read(appUserFutureProvider(writerId).future);
 
         if (commentWriter != null &&
             commentWriter.fcmToken != null &&

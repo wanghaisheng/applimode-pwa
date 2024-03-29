@@ -49,8 +49,7 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
     // If only the administrator can write, check permissions
     // 관리자만 글쓰기가 가능할 경우, 권한 체크
     if (adminOnlyWrite) {
-      final appUser =
-          await ref.read(appUserRepositoryProvider).fetchAppUser(user.uid);
+      final appUser = await ref.read(appUserFutureProvider(user.uid).future);
       if (appUser == null || !appUser.isAdmin) {
         WakelockPlus.disable();
         state =

@@ -62,5 +62,11 @@ PostContentsRepository postContentsRepository(PostContentsRepositoryRef ref) {
 
 @riverpod
 FutureOr<PostContent?> postContentFuture(PostContentFutureRef ref, String id) {
-  return ref.watch(postContentsRepositoryProvider).fetchPostContent(id);
+  return ref.watch(postContentsRepositoryProvider).fetchPostContent(id).timeout(
+        const Duration(seconds: 5),
+        onTimeout: () => ref
+            .watch(postContentsRepositoryProvider)
+            .fetchPostContent(id)
+            .timeout(const Duration(seconds: 5)),
+      );
 }

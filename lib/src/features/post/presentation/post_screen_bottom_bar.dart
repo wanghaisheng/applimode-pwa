@@ -8,8 +8,10 @@ import 'package:applimode_app/src/features/posts/data/posts_repository.dart';
 import 'package:applimode_app/src/features/posts/domain/post.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
-import 'package:applimode_app/src/utils/async_value_ui.dart';
 import 'package:applimode_app/src/utils/format.dart';
+import 'package:applimode_app/src/utils/list_state.dart';
+import 'package:applimode_app/src/utils/now_to_int.dart';
+import 'package:applimode_app/src/utils/show_message_snack_bar.dart';
 import 'package:applimode_app/src/utils/updated_post_ids_list.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +64,14 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
     final countTextStyle = textTheme.bodyLarge?.copyWith(color: mainColor);
 
     ref.listen(postLikesControllerProvider, (_, next) {
-      next.showAlertDialogOnError(context);
+      // next.showAlertDialogOnError(context, content: context.loc.deletePost);
+      if (!next.isLoading && next.hasError) {
+        showMessageSnackBar(context, context.loc.deletedPost);
+        ref.read(postsListStateProvider.notifier).set(nowToInt());
+        if (context.canPop()) {
+          context.pop();
+        }
+      }
     });
 
     ref.listen(updatedPostIdsListProvider, (_, next) {

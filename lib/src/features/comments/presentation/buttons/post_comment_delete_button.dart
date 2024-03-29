@@ -26,15 +26,17 @@ class _PostCommentDeleteButtonState
     extends ConsumerState<PostCommentDeleteButton> {
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(authRepositoryProvider).currentUser!;
-    final appUser = ref.watch(appUserFutureProvider(user.uid));
+    final user = ref.watch(authStateChangesProvider).value;
+    final appUser = user != null
+        ? ref.watch(appUserFutureProvider(user.uid))
+        : const AsyncData(null);
 
     final postCommentState = ref.watch(postCommentControllerProvider);
 
     return appUser.when(
       data: (appUser) {
         if (appUser == null ||
-            user.uid != widget.writerId && !appUser.isAdmin) {
+            (user != null && user.uid != widget.writerId && !appUser.isAdmin)) {
           return const SizedBox.shrink();
         }
         return IconButton(

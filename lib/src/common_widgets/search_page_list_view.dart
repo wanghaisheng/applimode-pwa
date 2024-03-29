@@ -109,6 +109,9 @@ class _SearchPageListViewState<Document>
   @override
   void initState() {
     super.initState();
+    if (widget.searchWords.trim().length > 1) {
+      _fechDocs();
+    }
   }
 
   @override
@@ -119,6 +122,12 @@ class _SearchPageListViewState<Document>
   @override
   void didUpdateWidget(covariant SearchPageListView<Document> oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (widget.useDidUpdateWidget && widget.searchWords.trim().length > 1) {
+      pids = [];
+      docs = [];
+      _fechDocs();
+    }
+    /*
     if (widget.useDidUpdateWidget &&
         oldWidget.searchWords != widget.searchWords) {
       if (widget.searchWords.length < 2) {
@@ -130,6 +139,7 @@ class _SearchPageListViewState<Document>
         _fechDocs();
       }
     }
+    */
   }
 
   void _fetchNextPage() {

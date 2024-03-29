@@ -30,8 +30,10 @@ class PostAppBarMore extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authRepositoryProvider).currentUser!;
-    final appUser = ref.watch(appUserFutureProvider(user.uid));
+    final user = ref.watch(authStateChangesProvider).value;
+    final appUser = user != null
+        ? ref.watch(appUserFutureProvider(user.uid))
+        : const AsyncData(null);
     final postAndWriter =
         PostAndWriter(post: postAsync.value!, writer: writerAsync.value!);
     return AsyncValueWidget(
@@ -42,7 +44,8 @@ class PostAppBarMore extends ConsumerWidget {
           position: PopupMenuPosition.under,
           itemBuilder: (context) {
             return [
-              if (user.uid == writerAsync.value?.uid)
+              if ((user != null && user.uid == writerAsync.value?.uid) ||
+                  (appUser != null && appUser.isAdmin))
                 PopupMenuItem(
                   onTap: () {
                     context.push(
@@ -148,8 +151,8 @@ class PostAppBarMore extends ConsumerWidget {
                   ),
                 ),
               ],
-              if (user.uid == writerAsync.value?.uid ||
-                  appUser != null && appUser.isAdmin == true)
+              if ((user != null && user.uid == writerAsync.value?.uid) ||
+                  (appUser != null && appUser.isAdmin == true))
                 PopupMenuItem(
                   onTap: () async {
                     final result = await ref

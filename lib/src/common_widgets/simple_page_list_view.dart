@@ -70,6 +70,7 @@ class SimplePageListView<Document> extends ConsumerStatefulWidget {
     this.updatedDocsState,
     this.useUid = false,
     this.isSearchView = false,
+    this.searchWords,
   });
 
   final Query<Document> query;
@@ -115,6 +116,7 @@ class SimplePageListView<Document> extends ConsumerStatefulWidget {
   final ProviderListenable<List<String>>? updatedDocsState;
   final bool useUid;
   final bool isSearchView;
+  final String? searchWords;
 
   @override
   ConsumerState<SimplePageListView<Document>> createState() =>
@@ -135,7 +137,10 @@ class _SimplePageListViewState<Document>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    if (!widget.isSearchView) {
+    if (!widget.isSearchView ||
+        widget.isSearchView &&
+            widget.searchWords != null &&
+            widget.searchWords!.length > 1) {
       _fechDocs();
     }
   }
@@ -156,11 +161,19 @@ class _SimplePageListViewState<Document>
 
   @override
   void didUpdateWidget(covariant SimplePageListView<Document> oldWidget) {
+    if (widget.useDidUpdateWidget &&
+        widget.searchWords != null &&
+        widget.searchWords!.length > 1) {
+      docs = [];
+      _fechDocs();
+    }
     super.didUpdateWidget(oldWidget);
+    /*
     if (widget.useDidUpdateWidget && oldWidget.query != widget.query) {
       docs = [];
       _fechDocs();
     }
+    */
   }
 
   Future<void> _checkRecentDoc() async {

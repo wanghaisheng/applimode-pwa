@@ -26,7 +26,7 @@ class PostsDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     debugPrint('Posts Drawer build');
-    final user = ref.watch(authRepositoryProvider).currentUser;
+    final user = ref.watch(authStateChangesProvider).value;
     final appUser =
         user != null ? ref.watch(appUserFutureProvider(user.uid)).value : null;
     final categories = ref.watch(remoteConfigServiceProvider).mainCategory;

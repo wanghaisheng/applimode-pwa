@@ -43,7 +43,7 @@ class PostCommentsItem extends ConsumerWidget {
     });
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final user = ref.watch(authRepositoryProvider).currentUser;
+    final user = ref.watch(authStateChangesProvider).value;
 
     final writerAsync = ref.watch(writerFutureProvider(comment.uid));
 

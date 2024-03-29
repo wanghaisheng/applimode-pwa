@@ -31,7 +31,7 @@ class PostLikeButton extends ConsumerWidget {
     final postLikesController = ref.watch(postLikesControllerProvider.notifier);
     final postLikesState = ref.watch(postLikesControllerProvider);
 
-    final user = ref.watch(authRepositoryProvider).currentUser;
+    final user = ref.watch(authStateChangesProvider).value;
     final userPostLikes = user != null
         ? ref
             .watch(postLikesByUserFutureProvider(

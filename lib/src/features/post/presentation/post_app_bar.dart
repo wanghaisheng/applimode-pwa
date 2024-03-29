@@ -33,7 +33,7 @@ class PostAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authRepositoryProvider).currentUser;
+    final user = ref.watch(authStateChangesProvider).value;
     final appUser =
         user != null ? ref.watch(appUserStreamProvider(user.uid)).value : null;
 

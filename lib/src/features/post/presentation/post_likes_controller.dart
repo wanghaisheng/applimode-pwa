@@ -59,8 +59,7 @@ class PostLikesController extends _$PostLikesController {
 
     if (useFcmMessage) {
       try {
-        postWriter ??=
-            await ref.read(appUserRepositoryProvider).fetchAppUser(writerId);
+        postWriter ??= await ref.read(appUserFutureProvider(writerId).future);
 
         if (postWriter != null &&
             postWriter.fcmToken != null &&

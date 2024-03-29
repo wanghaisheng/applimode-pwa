@@ -134,6 +134,16 @@ class AppUserRepository {
         'sumCount': FieldValue.increment(1),
       });
 
+  Future<void> blockAppUser(String uid) =>
+      _firestore.doc(_appUserPath(uid)).update({
+        'isBlock': true,
+      });
+
+  Future<void> unblockAppUser(String uid) =>
+      _firestore.doc(_appUserPath(uid)).update({
+        'isBlock': false,
+      });
+
   Future<void> deleteAppUser(String id) =>
       _firestore.doc(_appUserPath(id)).delete();
 

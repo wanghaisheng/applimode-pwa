@@ -14,14 +14,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ProfileAppBarMore extends ConsumerWidget {
   const ProfileAppBarMore({
     super.key,
-    required this.appUser,
+    required this.profileUser,
     required this.user,
     this.color,
+    this.isAccount = false,
+    this.isAdmin = false,
   });
 
-  final AppUser appUser;
+  final AppUser profileUser;
   final User user;
   final Color? color;
+  final bool isAccount;
+  final bool isAdmin;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -50,43 +54,18 @@ class ProfileAppBarMore extends ConsumerWidget {
         position: PopupMenuPosition.under,
         itemBuilder: (context) {
           return [
-            PopupMenuItem(
-              onTap: () {
-                context.push(
-                  ScreenPaths.editUsername(
-                    appUser.uid,
-                    appUser.displayName,
-                  ),
-                );
-              },
-              child: Text(context.loc.editUsername),
-            ),
-            PopupMenuItem(
-              onTap: () {
-                showSelectionDialog(
-                  context: context,
-                  firstTitle: context.loc.defaultImage,
-                  firstTap: () async {
-                    context.pop();
-                    await ref
-                        .read(profileAppBarMoreControllerProvider.notifier)
-                        .changeProfileImage(null);
-                  },
-                  secondTitle: context.loc.chooseFromGallery,
-                  secondTap: () async {
-                    context.pop();
-                    final xFile = await showImagePicker();
-                    if (xFile != null) {
-                      await ref
-                          .read(profileAppBarMoreControllerProvider.notifier)
-                          .changeProfileImage(xFile);
-                    }
-                  },
-                );
-              },
-              child: Text(context.loc.changeProfileImage),
-            ),
-            if (user.email != null)
+            if (isAccount && user.uid == profileUser.uid) ...[
+              PopupMenuItem(
+                onTap: () {
+                  context.push(
+                    ScreenPaths.editUsername(
+                      profileUser.uid,
+                      profileUser.displayName,
+                    ),
+                  );
+                },
+                child: Text(context.loc.editUsername),
+              ),
               PopupMenuItem(
                 onTap: () {
                   showSelectionDialog(
@@ -96,7 +75,7 @@ class ProfileAppBarMore extends ConsumerWidget {
                       context.pop();
                       await ref
                           .read(profileAppBarMoreControllerProvider.notifier)
-                          .changeStoryImage(null);
+                          .changeProfileImage(null);
                     },
                     secondTitle: context.loc.chooseFromGallery,
                     secondTap: () async {
@@ -105,25 +84,52 @@ class ProfileAppBarMore extends ConsumerWidget {
                       if (xFile != null) {
                         await ref
                             .read(profileAppBarMoreControllerProvider.notifier)
-                            .changeStoryImage(xFile);
+                            .changeProfileImage(xFile);
                       }
                     },
                   );
                 },
-                child: Text(context.loc.changeStoryImage),
+                child: Text(context.loc.changeProfileImage),
               ),
-            PopupMenuItem(
-              onTap: () {
-                context.push(
-                  ScreenPaths.editBio(
-                    appUser.uid,
-                    appUser.bio.trim().isEmpty ? noBio : appUser.bio,
-                  ),
-                );
-              },
-              child: Text(context.loc.editBio),
-            ),
-            /*
+              if (user.email != null)
+                PopupMenuItem(
+                  onTap: () {
+                    showSelectionDialog(
+                      context: context,
+                      firstTitle: context.loc.defaultImage,
+                      firstTap: () async {
+                        context.pop();
+                        await ref
+                            .read(profileAppBarMoreControllerProvider.notifier)
+                            .changeStoryImage(null);
+                      },
+                      secondTitle: context.loc.chooseFromGallery,
+                      secondTap: () async {
+                        context.pop();
+                        final xFile = await showImagePicker();
+                        if (xFile != null) {
+                          await ref
+                              .read(
+                                  profileAppBarMoreControllerProvider.notifier)
+                              .changeStoryImage(xFile);
+                        }
+                      },
+                    );
+                  },
+                  child: Text(context.loc.changeStoryImage),
+                ),
+              PopupMenuItem(
+                onTap: () {
+                  context.push(
+                    ScreenPaths.editBio(
+                      profileUser.uid,
+                      profileUser.bio.trim().isEmpty ? noBio : profileUser.bio,
+                    ),
+                  );
+                },
+                child: Text(context.loc.editBio),
+              ),
+              /*
                   PopupMenuItem(
                     onTap: () {
                       context.push(
@@ -133,14 +139,30 @@ class ProfileAppBarMore extends ConsumerWidget {
                     child: Text(context.loc.changeEmail),
                   ),
                   */
-            PopupMenuItem(
-              onTap: () {
-                context.push(
-                  ScreenPaths.changePassword(appUser.uid),
-                );
-              },
-              child: Text(context.loc.changePassword),
-            ),
+              PopupMenuItem(
+                onTap: () {
+                  context.push(
+                    ScreenPaths.changePassword(profileUser.uid),
+                  );
+                },
+                child: Text(context.loc.changePassword),
+              ),
+            ],
+            if (!isAccount && isAdmin)
+              PopupMenuItem(
+                onTap: () async {
+                  profileUser.isBlock
+                      ? await ref
+                          .read(profileAppBarMoreControllerProvider.notifier)
+                          .unblockAppUser(profileUser.uid)
+                      : ref
+                          .read(profileAppBarMoreControllerProvider.notifier)
+                          .blockAppUser(profileUser.uid);
+                },
+                child: Text(profileUser.isBlock
+                    ? context.loc.unblockUser
+                    : context.loc.blockUser),
+              ),
           ];
         },
       ),

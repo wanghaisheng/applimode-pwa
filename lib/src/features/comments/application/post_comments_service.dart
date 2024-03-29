@@ -22,24 +22,6 @@ class PostCommentsService {
     String? content,
     XFile? xFile,
   }) async {
-    String? remoteImageUrl;
-    if (xFile != null) {
-      remoteImageUrl =
-          await ref.read(firebaseStorageRepositoryProvider).uploadXFile(
-                file: xFile,
-                storagePathname: '$commentsPath/$postId',
-                filename: nanoid(),
-              );
-    }
-    await ref.read(postCommentsRepositoryProvider).createPostComment(
-          id: id,
-          uid: uid,
-          postId: postId,
-          parentCommentId: parentCommentId,
-          isReply: isReply,
-          content: content,
-          imageUrl: remoteImageUrl,
-        );
     await ref
         .read(postsRepositoryProvider)
         .updatePostCommentCount(id: postId, number: 1);
@@ -49,6 +31,26 @@ class PostCommentsService {
           .read(postCommentsRepositoryProvider)
           .updateReplyCount(id: parentCommentId, number: 1);
     }
+
+    String? remoteImageUrl;
+    if (xFile != null) {
+      remoteImageUrl =
+          await ref.read(firebaseStorageRepositoryProvider).uploadXFile(
+                file: xFile,
+                storagePathname: '$commentsPath/$postId',
+                filename: nanoid(),
+              );
+    }
+
+    await ref.read(postCommentsRepositoryProvider).createPostComment(
+          id: id,
+          uid: uid,
+          postId: postId,
+          parentCommentId: parentCommentId,
+          isReply: isReply,
+          content: content,
+          imageUrl: remoteImageUrl,
+        );
   }
 
   Future<void> deletePostComment({
@@ -117,6 +119,8 @@ class PostCommentsService {
     required String commentId,
     required String writerId,
   }) async {
+    await ref.read(postCommentsRepositoryProvider).increaseLikeCount(commentId);
+    await ref.read(appUserRepositoryProvider).increaseLikeCount(writerId);
     await ref.read(postCommentLikesRepositoryProvider).createPostCommentLike(
           id: id,
           uid: uid,
@@ -124,8 +128,6 @@ class PostCommentsService {
           commentId: commentId,
           createdAt: DateTime.now(),
         );
-    await ref.read(postCommentsRepositoryProvider).increaseLikeCount(commentId);
-    await ref.read(appUserRepositoryProvider).increaseLikeCount(writerId);
   }
 
   Future<void> decreasePostCommentLike({
@@ -133,11 +135,11 @@ class PostCommentsService {
     required String commentId,
     required String writerId,
   }) async {
+    await ref.read(postCommentsRepositoryProvider).decreaseLikeCount(commentId);
+    await ref.read(appUserRepositoryProvider).decreaseLikeCount(writerId);
     await ref
         .read(postCommentLikesRepositoryProvider)
         .deletePostCommentLike(id);
-    await ref.read(postCommentsRepositoryProvider).decreaseLikeCount(commentId);
-    await ref.read(appUserRepositoryProvider).decreaseLikeCount(writerId);
   }
 
   Future<void> increasePostCommentDislike({
@@ -147,6 +149,10 @@ class PostCommentsService {
     required String commentId,
     required String writerId,
   }) async {
+    await ref
+        .read(postCommentsRepositoryProvider)
+        .increaseDislikeCount(commentId);
+    await ref.read(appUserRepositoryProvider).increaseDislikeCount(writerId);
     await ref.read(postCommentLikesRepositoryProvider).createPostCommentLike(
           id: id,
           uid: uid,
@@ -155,10 +161,6 @@ class PostCommentsService {
           isDislike: true,
           createdAt: DateTime.now(),
         );
-    await ref
-        .read(postCommentsRepositoryProvider)
-        .increaseDislikeCount(commentId);
-    await ref.read(appUserRepositoryProvider).increaseDislikeCount(writerId);
   }
 
   Future<void> decreasePostCommentDislike({
@@ -167,11 +169,11 @@ class PostCommentsService {
     required String writerId,
   }) async {
     await ref
-        .read(postCommentLikesRepositoryProvider)
-        .deletePostCommentLike(id);
-    await ref
         .read(postCommentsRepositoryProvider)
         .decreaseDislikeCount(commentId);
     await ref.read(appUserRepositoryProvider).decreaseDislikeCount(writerId);
+    await ref
+        .read(postCommentLikesRepositoryProvider)
+        .deletePostCommentLike(id);
   }
 }

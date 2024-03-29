@@ -6,9 +6,9 @@ import 'package:applimode_app/src/common_widgets/title_text_widget.dart';
 import 'package:applimode_app/src/common_widgets/user_items/writer_item.dart';
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/posts/domain/post_and_writer.dart';
+import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/basic_block_item.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/page_item_buttons.dart';
 import 'package:applimode_app/src/features/video_player/main_video_player.dart';
-import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/get_full_url.dart';
 import 'package:applimode_app/src/utils/get_max_width.dart';
 import 'package:applimode_app/src/utils/posts_item_playing_state.dart';
@@ -67,6 +67,22 @@ class BasicPostsItem extends ConsumerWidget {
       value: writerAsync,
       data: (writer) {
         final isContent = writer != null && !writer.isBlock && !post.isBlock;
+        if (writer == null) {
+          return BasicBlockItem(
+            aspectRatio: aspectRatio,
+            isPage: isPage,
+            index: index,
+          );
+        }
+        if (writer.isBlock || post.isBlock) {
+          return BasicBlockItem(
+            aspectRatio: aspectRatio,
+            isPage: isPage,
+            index: index,
+            postId: post.id,
+            postAndWriter: PostAndWriter(post: post, writer: writer),
+          );
+        }
         return InkWell(
           onTap: isContent && isTappable && !isVideo
               ? () => context.push(
@@ -81,6 +97,7 @@ class BasicPostsItem extends ConsumerWidget {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
+                    /*
                     if (!isContent)
                       AnimatedColorBox(
                         index: index,
@@ -95,6 +112,7 @@ class BasicPostsItem extends ConsumerWidget {
                           ),
                         ),
                       ),
+                    */
                     if (isContent && isVideo)
                       MainVideoPlayer(
                         // when delete video post, resolve old video remain

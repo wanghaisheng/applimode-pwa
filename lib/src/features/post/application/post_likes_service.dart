@@ -23,14 +23,14 @@ class PostLikesService {
     required String postId,
     required String writerId,
   }) async {
+    await postsRepository.increaseLikeCount(postId);
+    await appUserRepository.increaseLikeCount(writerId);
     await postLikesRepository.createPostLike(
       id: id,
       uid: uid,
       postId: postId,
       createdAt: DateTime.now(),
     );
-    await postsRepository.increaseLikeCount(postId);
-    await appUserRepository.increaseLikeCount(writerId);
   }
 
   Future<void> decreasePostLikeCount({
@@ -38,9 +38,9 @@ class PostLikesService {
     required String postId,
     required String writerId,
   }) async {
-    await postLikesRepository.deletePostLike(id);
     await postsRepository.decreaseLikeCount(postId);
     await appUserRepository.decreaseLikeCount(writerId);
+    await postLikesRepository.deletePostLike(id);
   }
 
   Future<void> increasePostDislikeCount({
@@ -49,6 +49,8 @@ class PostLikesService {
     required String postId,
     required String writerId,
   }) async {
+    await postsRepository.increaseDislikeCount(postId);
+    await appUserRepository.increaseDislikeCount(writerId);
     await postLikesRepository.createPostLike(
       id: id,
       uid: uid,
@@ -56,8 +58,6 @@ class PostLikesService {
       isDislike: true,
       createdAt: DateTime.now(),
     );
-    await postsRepository.increaseDislikeCount(postId);
-    await appUserRepository.increaseDislikeCount(writerId);
   }
 
   Future<void> decreasePostDislikeCount({
@@ -65,9 +65,9 @@ class PostLikesService {
     required String postId,
     required String writerId,
   }) async {
-    await postLikesRepository.deletePostLike(id);
     await postsRepository.decreaseDislikeCount(postId);
     await appUserRepository.decreaseDislikeCount(writerId);
+    await postLikesRepository.deletePostLike(id);
   }
 }
 

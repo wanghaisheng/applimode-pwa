@@ -14,7 +14,7 @@ class PostsFloatingActionButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user =
-        adminOnlyWrite ? ref.watch(authRepositoryProvider).currentUser : null;
+        adminOnlyWrite ? ref.watch(authStateChangesProvider).value : null;
     final appUser =
         user != null ? ref.watch(appUserFutureProvider(user.uid)).value : null;
     return !adminOnlyWrite ||

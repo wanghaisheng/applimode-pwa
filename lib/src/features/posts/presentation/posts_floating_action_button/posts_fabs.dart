@@ -1,4 +1,7 @@
+import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/common_widgets/percent_circular_indicator.dart';
+import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
+import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_floating_action_button/direct_upload_button.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_floating_action_button/direct_upload_button_controller.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_floating_action_button/posts_floating_action_button.dart';
@@ -16,6 +19,10 @@ class PostsFabs extends ConsumerWidget {
     ref.listen(directUploadButtonControllerProvider, (_, state) {
       state.showAlertDialogOnError(context);
     });
+    final user =
+        adminOnlyWrite ? ref.watch(authStateChangesProvider).value : null;
+    final appUser =
+        user != null ? ref.watch(appUserFutureProvider(user.uid)).value : null;
     final isLoading = ref.watch(directUploadButtonControllerProvider).isLoading;
     final uploadState = ref.watch(uploadProgressStateProvider);
     return kIsWeb
@@ -28,15 +35,18 @@ class PostsFabs extends ConsumerWidget {
                   percentage: uploadState.percentage,
                 ),
               )
-            : const Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  DirectUploadButton(
-                    heroTag: 'uploadFab',
-                  ),
-                  SizedBox(height: 12),
-                  PostsFloatingActionButton(heroTag: 'publishFab'),
-                ],
-              );
+            : !adminOnlyWrite ||
+                    (adminOnlyWrite && appUser != null && appUser.isAdmin)
+                ? const Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      DirectUploadButton(
+                        heroTag: 'uploadFab',
+                      ),
+                      SizedBox(height: 12),
+                      PostsFloatingActionButton(heroTag: 'publishFab'),
+                    ],
+                  )
+                : const SizedBox.shrink();
   }
 }
