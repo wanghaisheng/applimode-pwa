@@ -240,9 +240,21 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     bool isMedia = false,
     bool isVideo = false,
   }) async {
+    final text = _controller.text;
+    final selection = _controller.selection;
+    final start = selection.start;
+    final end = selection.end;
+
+    final isThumbnail = start > 1 &&
+        end + 1 < text.length &&
+        text[start - 1] == r'[' &&
+        text[start - 2] == r']' &&
+        text[end] == r']' &&
+        text[end + 1] == r'[';
+
     final XFile? pickedFile = await showImagePicker(
-      isMedia: isMedia,
-      isVideo: isVideo,
+      isMedia: isThumbnail ? false : isMedia,
+      isVideo: isThumbnail ? false : isVideo,
     ).catchError((error) {
       showAdaptiveAlertDialog(
           context: context,
@@ -255,8 +267,6 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     if (pickedFile != null) {
       setState(
         () {
-          final text = _controller.text;
-          final selection = _controller.selection;
           final mediaType = lookupMimeType(pickedFile.path);
           debugPrint('mediaType: $mediaType');
           if (mediaType == null) {
@@ -271,13 +281,22 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                 pickedFile.path.endsWith('.mp3') ||
                 pickedFile.path.endsWith('.mov');
           }
+
+          /*
           final inserted = isVideo
               ? '\n[localVideo][][${pickedFile.path}]\n'
               : '\n[localImage][${pickedFile.path}][]\n';
+          */
+
+          final inserted = isThumbnail
+              ? pickedFile.path
+              : isVideo
+                  ? '\n[localVideo][][${pickedFile.path}]\n'
+                  : '\n[localImage][${pickedFile.path}][]\n';
 
           final newText = text.replaceRange(
-            selection.start,
-            selection.end,
+            start,
+            end,
             inserted,
           );
           _controller.value = TextEditingValue(

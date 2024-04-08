@@ -1,7 +1,6 @@
 import 'package:applimode_app/src/common_widgets/center_circular_indicator.dart';
 import 'package:applimode_app/src/common_widgets/error_widgets/error_message_button.dart';
 import 'package:applimode_app/src/common_widgets/lazy_loading_widget.dart';
-import 'package:applimode_app/src/common_widgets/sized_circular_progress_indicator.dart';
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/post/presentation/post_app_bar.dart';
@@ -15,6 +14,7 @@ import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/async_value_ui.dart';
 import 'package:applimode_app/src/utils/string_converter.dart';
 import 'package:applimode_app/custom_settings.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -118,7 +118,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                         child: LazyLoadingWidget(
                           // lazyDuration: 200,
                           loadingWidget: const Center(
-                            child: SizedCircularProgressIndicator(),
+                            child: CupertinoActivityIndicator(),
                           ),
                           child: ListView(
                             // shrinkWrap: true,
@@ -147,7 +147,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
               error: (error, stackTrace) => Center(
                 child: Text(context.loc.tryLater),
               ),
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CupertinoActivityIndicator()),
             );
           }
           final itemsList = StringConverter.stringToElements(
@@ -188,7 +188,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
         error: (error, stackTrace) => Center(
           child: Text(error.toString()),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CupertinoActivityIndicator()),
       ),
       floatingActionButton: isLoading ? const CenterCircularIndicator() : null,
     );
