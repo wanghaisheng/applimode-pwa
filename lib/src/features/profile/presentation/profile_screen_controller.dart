@@ -1,4 +1,5 @@
 import 'package:applimode_app/src/features/authentication/application/delete_account_service.dart';
+import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/list_state.dart';
@@ -40,6 +41,9 @@ class ProfileScreenController extends _$ProfileScreenController {
       return;
     }
 
+    ref.invalidate(authStateChangesProvider);
+    ref.invalidate(appUserFutureProvider);
+    ref.invalidate(appUserStreamProvider);
     ref.read(postsListStateProvider.notifier).set(nowToInt());
     ref.read(commentsListStateProvider.notifier).set(nowToInt());
     ref.read(likesListStateProvider.notifier).set(nowToInt());

@@ -24,7 +24,7 @@ final postContentsRepositoryProvider =
 
 typedef PostContentsRepositoryRef
     = AutoDisposeProviderRef<PostContentsRepository>;
-String _$postContentFutureHash() => r'c0e5798969e76d8f0d3bfec9633a1eb5484b26aa';
+String _$postContentFutureHash() => r'b05852d18edd4bb5a2b84335c45bbe4c40d7f501';
 
 /// Copied from Dart SDK
 class _SystemHash {

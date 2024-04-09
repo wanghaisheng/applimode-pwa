@@ -35,6 +35,8 @@ class FirebaseSignInScreenController extends _$FirebaseSignInScreenController {
       if (key == this.key) {
         state = newState;
       }
+      ref.invalidate(appUserFutureProvider);
+      // ref.invalidate(appUserStreamProvider);
     }
     if (state.hasError) {
       debugPrint(state.error.toString());
