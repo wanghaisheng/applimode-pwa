@@ -1,9 +1,8 @@
 import 'package:applimode_app/src/app_settings/app_settings_controller.dart';
-import 'package:applimode_app/src/common_widgets/sized_circular_progress_indicator.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/constants/constants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -162,18 +161,19 @@ class _SimplePageListViewState<Document>
   @override
   void didUpdateWidget(covariant SimplePageListView<Document> oldWidget) {
     if (widget.useDidUpdateWidget &&
+        widget.isSearchView &&
         widget.searchWords != null &&
         widget.searchWords!.length > 1) {
       docs = [];
       _fechDocs();
     }
-    super.didUpdateWidget(oldWidget);
-    /*
-    if (widget.useDidUpdateWidget && oldWidget.query != widget.query) {
+    if (widget.useDidUpdateWidget &&
+        !widget.isSearchView &&
+        oldWidget.query != widget.query) {
       docs = [];
       _fechDocs();
     }
-    */
+    super.didUpdateWidget(oldWidget);
   }
 
   Future<void> _checkRecentDoc() async {
@@ -312,7 +312,7 @@ class _SimplePageListViewState<Document>
         return widget.loadingBuilder!.call(context);
       }
 
-      return const Center(child: SizedCircularProgressIndicator());
+      return const Center(child: CupertinoActivityIndicator());
     }
 
     // when doc is empty

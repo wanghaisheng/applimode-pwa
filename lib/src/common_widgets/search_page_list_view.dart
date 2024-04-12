@@ -1,7 +1,6 @@
 import 'package:applimode_app/custom_settings.dart';
-import 'package:applimode_app/src/common_widgets/sized_circular_progress_indicator.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -243,7 +242,7 @@ class _SearchPageListViewState<Document>
         return widget.loadingBuilder!.call(context);
       }
 
-      return const Center(child: SizedCircularProgressIndicator());
+      return const Center(child: CupertinoActivityIndicator());
     }
 
     // when doc is empty

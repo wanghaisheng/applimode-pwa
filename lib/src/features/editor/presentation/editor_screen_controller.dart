@@ -68,11 +68,10 @@ class EditorScreenController extends _$EditorScreenController {
       state = AsyncError(Exception(needLogin), StackTrace.current);
       return false;
     }
-
+    final appUser = await ref.read(appUserFutureProvider(user.uid).future);
     // If only the administrator can write, check permissions
     // 관리자만 글쓰기가 가능할 경우, 권한 체크
     if (adminOnlyWrite) {
-      final appUser = await ref.read(appUserFutureProvider(user.uid).future);
       if (appUser == null || !appUser.isAdmin) {
         WakelockPlus.disable();
         state = AsyncError(Exception(needPermission), StackTrace.current);
@@ -80,7 +79,22 @@ class EditorScreenController extends _$EditorScreenController {
       }
     }
 
-    if (postId != null && writer != null && user.uid != writer.uid) {
+    if (appUser == null || appUser.isBlock) {
+      WakelockPlus.disable();
+      state = AsyncError(Exception(needPermission), StackTrace.current);
+      return false;
+    }
+
+    if (postId != null && writer == null) {
+      WakelockPlus.disable();
+      state = AsyncError(Exception(needPermission), StackTrace.current);
+      return false;
+    }
+
+    if (postId != null &&
+        writer != null &&
+        user.uid != writer.uid &&
+        !appUser.isAdmin) {
       // auth user and writer user are different
       // Auth 와 작성자가 다를 경우
       // 팝업창 작성하고 팝
