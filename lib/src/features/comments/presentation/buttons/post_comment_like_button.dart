@@ -62,8 +62,10 @@ class _PostCommentLikeButtonState extends ConsumerState<PostCommentLikeButton> {
                       await postCommentController.increasePostCommentLike(
                         postId: widget.comment.postId,
                         commentId: widget.comment.id,
-                        writerId: widget.comment.uid,
+                        commentWriterId: widget.comment.uid,
                         commentWriter: widget.commentWriter,
+                        postWriterId: widget.comment.postWriterId,
+                        parentCommentId: widget.comment.parentCommentId,
                         commentLikeNotiString: context.loc.commentLikeNoti,
                       );
                     }
@@ -71,7 +73,7 @@ class _PostCommentLikeButtonState extends ConsumerState<PostCommentLikeButton> {
                       await postCommentController.decreasePostCommentLike(
                         id: userCommentLikes!.first.id,
                         commentId: widget.comment.id,
-                        writerId: widget.comment.uid,
+                        commentWriterId: widget.comment.uid,
                       );
                     },
           icon: Icon(

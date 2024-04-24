@@ -95,7 +95,7 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
               if (showLikeCount) ...[
                 PostLikeButton(
                   postId: currentPost.id,
-                  writerId: currentPost.uid,
+                  postWriterId: currentPost.uid,
                   isHeart: isThumbUpToHeart,
                   postWriter: widget.postWriter,
                 ),
@@ -113,7 +113,9 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
               ],
               if (showDislikeCount) ...[
                 PostDislikeButton(
-                    postId: currentPost.id, writerId: currentPost.uid),
+                  postId: currentPost.id,
+                  postWriterId: currentPost.uid,
+                ),
                 InkWell(
                   onTap: () =>
                       context.push(ScreenPaths.postDislikes(currentPost.id)),

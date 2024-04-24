@@ -27,7 +27,7 @@ class PostLikesController extends _$PostLikesController {
 
   Future<bool> increasePostLikeCount({
     required String postId,
-    required String writerId,
+    required String postWriterId,
     AppUser? postWriter,
     required String postLikeNotiString,
   }) async {
@@ -45,7 +45,7 @@ class PostLikesController extends _$PostLikesController {
         id: id,
         uid: user.uid,
         postId: postId,
-        writerId: writerId,
+        postWriterId: postWriterId,
       ),
     );
     if (key == this.key) {
@@ -59,7 +59,8 @@ class PostLikesController extends _$PostLikesController {
 
     if (useFcmMessage) {
       try {
-        postWriter ??= await ref.read(appUserFutureProvider(writerId).future);
+        postWriter ??=
+            await ref.read(appUserFutureProvider(postWriterId).future);
 
         if (postWriter != null &&
             postWriter.fcmToken != null &&
@@ -78,7 +79,7 @@ class PostLikesController extends _$PostLikesController {
     }
 
     ref.read(updatedPostIdsListProvider.notifier).set(postId);
-    ref.read(updatedUserIdsListProvider.notifier).set(writerId);
+    ref.read(updatedUserIdsListProvider.notifier).set(postWriterId);
     ref.invalidate(writerFutureProvider);
 
     ref.invalidate(postLikesByUserFutureProvider);
@@ -90,7 +91,7 @@ class PostLikesController extends _$PostLikesController {
   Future<bool> decreasePostLikeCount({
     required String id,
     required String postId,
-    required String writerId,
+    required String postWriterId,
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
@@ -104,7 +105,7 @@ class PostLikesController extends _$PostLikesController {
       () => PostLikesService(ref).decreasePostLikeCount(
         id: id,
         postId: postId,
-        writerId: writerId,
+        postWriterId: postWriterId,
       ),
     );
 
@@ -118,7 +119,7 @@ class PostLikesController extends _$PostLikesController {
     }
 
     ref.read(updatedPostIdsListProvider.notifier).set(postId);
-    ref.read(updatedUserIdsListProvider.notifier).set(writerId);
+    ref.read(updatedUserIdsListProvider.notifier).set(postWriterId);
     ref.invalidate(writerFutureProvider);
 
     ref.invalidate(postLikesByUserFutureProvider);
@@ -129,7 +130,7 @@ class PostLikesController extends _$PostLikesController {
 
   Future<bool> increasePostDislikeCount({
     required String postId,
-    required String writerId,
+    required String postWriterId,
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
@@ -145,7 +146,7 @@ class PostLikesController extends _$PostLikesController {
         id: id,
         uid: user.uid,
         postId: postId,
-        writerId: writerId,
+        postWriterId: postWriterId,
       ),
     );
 
@@ -159,7 +160,7 @@ class PostLikesController extends _$PostLikesController {
     }
 
     ref.read(updatedPostIdsListProvider.notifier).set(postId);
-    ref.read(updatedUserIdsListProvider.notifier).set(writerId);
+    ref.read(updatedUserIdsListProvider.notifier).set(postWriterId);
     ref.invalidate(writerFutureProvider);
 
     ref.invalidate(postLikesByUserFutureProvider);
@@ -171,7 +172,7 @@ class PostLikesController extends _$PostLikesController {
   Future<bool> decreasePostDislikeCount({
     required String id,
     required String postId,
-    required String writerId,
+    required String postWriterId,
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
@@ -182,8 +183,11 @@ class PostLikesController extends _$PostLikesController {
     state = const AsyncLoading();
     final key = this.key;
     final newState = await AsyncValue.guard(
-      () => PostLikesService(ref)
-          .decreasePostDislikeCount(id: id, postId: postId, writerId: writerId),
+      () => PostLikesService(ref).decreasePostDislikeCount(
+        id: id,
+        postId: postId,
+        postWriterId: postWriterId,
+      ),
     );
 
     if (key == this.key) {
@@ -196,7 +200,7 @@ class PostLikesController extends _$PostLikesController {
     }
 
     ref.read(updatedPostIdsListProvider.notifier).set(postId);
-    ref.read(updatedUserIdsListProvider.notifier).set(writerId);
+    ref.read(updatedUserIdsListProvider.notifier).set(postWriterId);
     ref.invalidate(writerFutureProvider);
 
     ref.invalidate(postLikesByUserFutureProvider);

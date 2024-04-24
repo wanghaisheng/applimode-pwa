@@ -51,7 +51,22 @@ class PostCommentController extends _$PostCommentController {
       state = AsyncError(Exception('content is empty'), StackTrace.current);
       return false;
     }
+
     state = const AsyncLoading();
+
+    if (postWriter == null) {
+      final post = await ref.read(postsRepositoryProvider).fetchPost(postId);
+      if (post != null) {
+        postWriter = await ref.read(appUserFutureProvider(post.uid).future);
+      }
+    }
+
+    if (postWriter == null) {
+      state = AsyncError(
+          Exception('this post has been deleted'), StackTrace.current);
+      return false;
+    }
+
     final key = this.key;
     final id = nanoid();
     final newState = await AsyncValue.guard(
@@ -60,6 +75,7 @@ class PostCommentController extends _$PostCommentController {
         uid: user.uid,
         postId: postId,
         parentCommentId: parentCommentId ?? id,
+        postWriterId: postWriter!.uid,
         isReply: isReply,
         content: content,
         xFile: xFile,
@@ -77,17 +93,7 @@ class PostCommentController extends _$PostCommentController {
 
     if (useFcmMessage) {
       try {
-        if (postWriter == null) {
-          final post =
-              await ref.read(postsRepositoryProvider).fetchPost(postId);
-          if (post != null) {
-            postWriter = await ref.read(appUserFutureProvider(post.uid).future);
-          }
-        }
-
-        if (postWriter != null &&
-            postWriter.fcmToken != null &&
-            postWriter.fcmToken!.isNotEmpty) {
+        if (postWriter.fcmToken != null && postWriter.fcmToken!.isNotEmpty) {
           callFcmFunction(
             functionName: 'sendFcmMessage',
             type: isReply ? 'replies' : 'comments',
@@ -115,12 +121,12 @@ class PostCommentController extends _$PostCommentController {
     required String parentCommentId,
     required String postId,
     required bool isReply,
-    required String writerId,
+    required String commentWriterId,
     required bool isAdmin,
     String? imageUrl,
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
-    if (user == null || user.uid != writerId && isAdmin == false) {
+    if (user == null || user.uid != commentWriterId && isAdmin == false) {
       state = AsyncError(Exception('no permition'), StackTrace.current);
       return false;
     }
@@ -154,7 +160,9 @@ class PostCommentController extends _$PostCommentController {
   Future<bool> increasePostCommentLike({
     required String commentId,
     required String postId,
-    required String writerId,
+    required String commentWriterId,
+    required String postWriterId,
+    required String parentCommentId,
     AppUser? commentWriter,
     required String commentLikeNotiString,
   }) async {
@@ -173,7 +181,9 @@ class PostCommentController extends _$PostCommentController {
         uid: user.uid,
         postId: postId,
         commentId: commentId,
-        writerId: writerId,
+        commentWriterId: commentWriterId,
+        postWriterId: postWriterId,
+        parentCommentId: parentCommentId,
       ),
     );
 
@@ -189,7 +199,7 @@ class PostCommentController extends _$PostCommentController {
     if (useFcmMessage) {
       try {
         commentWriter ??=
-            await ref.read(appUserFutureProvider(writerId).future);
+            await ref.read(appUserFutureProvider(commentWriterId).future);
 
         if (commentWriter != null &&
             commentWriter.fcmToken != null &&
@@ -210,7 +220,7 @@ class PostCommentController extends _$PostCommentController {
     ref.invalidate(postCommentLikesByUserFutureProvider);
     ref.invalidate(writerFutureProvider);
     ref.read(updatedCommentIdsListProvider.notifier).set(commentId);
-    ref.read(updatedUserIdsListProvider.notifier).set(writerId);
+    ref.read(updatedUserIdsListProvider.notifier).set(commentWriterId);
     // ref.read(commentsListStateProvider.notifier).set(nowToInt());
     ref.read(likesListStateProvider.notifier).set(nowToInt());
 
@@ -220,7 +230,7 @@ class PostCommentController extends _$PostCommentController {
   Future<bool> decreasePostCommentLike({
     required String id,
     required String commentId,
-    required String writerId,
+    required String commentWriterId,
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
@@ -234,7 +244,7 @@ class PostCommentController extends _$PostCommentController {
       () => PostCommentsService(ref).decreasePostCommentLike(
         id: id,
         commentId: commentId,
-        writerId: writerId,
+        commentWriterId: commentWriterId,
       ),
     );
 
@@ -250,7 +260,7 @@ class PostCommentController extends _$PostCommentController {
     ref.invalidate(postCommentLikesByUserFutureProvider);
     ref.invalidate(writerFutureProvider);
     ref.read(updatedCommentIdsListProvider.notifier).set(commentId);
-    ref.read(updatedUserIdsListProvider.notifier).set(writerId);
+    ref.read(updatedUserIdsListProvider.notifier).set(commentWriterId);
     // ref.read(commentsListStateProvider.notifier).set(nowToInt());
     ref.read(likesListStateProvider.notifier).set(nowToInt());
 
@@ -260,7 +270,9 @@ class PostCommentController extends _$PostCommentController {
   Future<bool> increasePostCommentDislike({
     required String commentId,
     required String postId,
-    required String writerId,
+    required String commentWriterId,
+    required String postWriterId,
+    required String parentCommentId,
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
@@ -277,7 +289,9 @@ class PostCommentController extends _$PostCommentController {
         uid: user.uid,
         postId: postId,
         commentId: commentId,
-        writerId: writerId,
+        commentWriterId: commentWriterId,
+        postWriterId: postWriterId,
+        parentCommentId: parentCommentId,
       ),
     );
 
@@ -293,7 +307,7 @@ class PostCommentController extends _$PostCommentController {
     ref.invalidate(postCommentLikesByUserFutureProvider);
     ref.invalidate(writerFutureProvider);
     ref.read(updatedCommentIdsListProvider.notifier).set(commentId);
-    ref.read(updatedUserIdsListProvider.notifier).set(writerId);
+    ref.read(updatedUserIdsListProvider.notifier).set(commentWriterId);
     // ref.read(commentsListStateProvider.notifier).set(nowToInt());
     ref.read(likesListStateProvider.notifier).set(nowToInt());
 
@@ -303,7 +317,7 @@ class PostCommentController extends _$PostCommentController {
   Future<bool> decreasePostCommentDislike({
     required String id,
     required String commentId,
-    required String writerId,
+    required String commentWriterId,
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
@@ -317,7 +331,7 @@ class PostCommentController extends _$PostCommentController {
       () => PostCommentsService(ref).decreasePostCommentDislike(
         id: id,
         commentId: commentId,
-        writerId: writerId,
+        commentWriterId: commentWriterId,
       ),
     );
 
@@ -333,7 +347,7 @@ class PostCommentController extends _$PostCommentController {
     ref.invalidate(postCommentLikesByUserFutureProvider);
     ref.invalidate(writerFutureProvider);
     ref.read(updatedCommentIdsListProvider.notifier).set(commentId);
-    ref.read(updatedUserIdsListProvider.notifier).set(writerId);
+    ref.read(updatedUserIdsListProvider.notifier).set(commentWriterId);
     // ref.read(commentsListStateProvider.notifier).set(nowToInt());
     ref.read(likesListStateProvider.notifier).set(nowToInt());
 

@@ -1,4 +1,3 @@
-import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -62,9 +61,8 @@ class FirebaseStorageRepository {
     return result.ref.getDownloadURL();
   }
 
-  Future<void> deleteAsset(String assetUrl) => _storage
-      .refFromURL(assetUrl.replaceAll(storageShortUrl, preStorageUrl))
-      .delete();
+  Future<void> deleteAsset(String assetUrl) =>
+      _storage.refFromURL(assetUrl).delete();
 }
 
 @riverpod

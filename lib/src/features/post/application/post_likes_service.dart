@@ -21,14 +21,15 @@ class PostLikesService {
     required String id,
     required String uid,
     required String postId,
-    required String writerId,
+    required String postWriterId,
   }) async {
     await postsRepository.increaseLikeCount(postId);
-    await appUserRepository.increaseLikeCount(writerId);
+    await appUserRepository.increaseLikeCount(postWriterId);
     await postLikesRepository.createPostLike(
       id: id,
       uid: uid,
       postId: postId,
+      postWriterId: postWriterId,
       createdAt: DateTime.now(),
     );
   }
@@ -36,10 +37,10 @@ class PostLikesService {
   Future<void> decreasePostLikeCount({
     required String id,
     required String postId,
-    required String writerId,
+    required String postWriterId,
   }) async {
     await postsRepository.decreaseLikeCount(postId);
-    await appUserRepository.decreaseLikeCount(writerId);
+    await appUserRepository.decreaseLikeCount(postWriterId);
     await postLikesRepository.deletePostLike(id);
   }
 
@@ -47,14 +48,15 @@ class PostLikesService {
     required String id,
     required String uid,
     required String postId,
-    required String writerId,
+    required String postWriterId,
   }) async {
     await postsRepository.increaseDislikeCount(postId);
-    await appUserRepository.increaseDislikeCount(writerId);
+    await appUserRepository.increaseDislikeCount(postWriterId);
     await postLikesRepository.createPostLike(
       id: id,
       uid: uid,
       postId: postId,
+      postWriterId: postWriterId,
       isDislike: true,
       createdAt: DateTime.now(),
     );
@@ -63,10 +65,10 @@ class PostLikesService {
   Future<void> decreasePostDislikeCount({
     required String id,
     required String postId,
-    required String writerId,
+    required String postWriterId,
   }) async {
     await postsRepository.decreaseDislikeCount(postId);
-    await appUserRepository.decreaseDislikeCount(writerId);
+    await appUserRepository.decreaseDislikeCount(postWriterId);
     await postLikesRepository.deletePostLike(id);
   }
 }

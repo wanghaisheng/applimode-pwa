@@ -20,6 +20,9 @@ class PostCommentLikesRepository {
     required String uid,
     required String postId,
     required String commentId,
+    required String commentWriterId,
+    required String postWriterId,
+    required String parentCommentId,
     bool isDislike = false,
     required DateTime createdAt,
   }) =>
@@ -28,6 +31,9 @@ class PostCommentLikesRepository {
         'uid': uid,
         'postId': postId,
         'commentId': commentId,
+        'commentWriterId': commentWriterId,
+        'postWriterId': postWriterId,
+        'parentCommentId': parentCommentId,
         'isDislike': isDislike,
         'createdAt': createdAt.millisecondsSinceEpoch,
       });
@@ -94,7 +100,16 @@ class PostCommentLikesRepository {
     return query.docs.map((e) => e.id).toList();
   }
 
-  // 댓글 삭제시 모든 좋아요 싫어요 목록 가져오기
+  // 포스트 삭제시 모든 좋아요 싫어요 목록 가져오기
+  Future<List<String>> getPostParentCommentLikeIdsForComment(
+      String parentCommentId) async {
+    final query = await postCommentLikesRef()
+        .where('parentCommentId', isEqualTo: parentCommentId)
+        .get();
+    return query.docs.map((e) => e.id).toList();
+  }
+
+  // 포스트 삭제시 모든 좋아요 싫어요 목록 가져오기
   Future<List<String>> getPostCommentLikeIdsForPost(String postId) async {
     final query =
         await postCommentLikesRef().where('postId', isEqualTo: postId).get();

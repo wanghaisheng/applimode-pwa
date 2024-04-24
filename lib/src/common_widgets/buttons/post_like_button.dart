@@ -10,7 +10,7 @@ class PostLikeButton extends ConsumerWidget {
   const PostLikeButton({
     super.key,
     required this.postId,
-    required this.writerId,
+    required this.postWriterId,
     this.isHeart = false,
     this.iconColor,
     this.iconSize,
@@ -19,7 +19,7 @@ class PostLikeButton extends ConsumerWidget {
   });
 
   final String postId;
-  final String writerId;
+  final String postWriterId;
   final bool isHeart;
   final Color? iconColor;
   final double? iconSize;
@@ -50,14 +50,14 @@ class PostLikeButton extends ConsumerWidget {
                 : userPostLikes.isEmpty
                     ? () => postLikesController.increasePostLikeCount(
                           postId: postId,
-                          writerId: writerId,
+                          postWriterId: postWriterId,
                           postWriter: postWriter,
                           postLikeNotiString: context.loc.postLikeNoti,
                         )
                     : () => postLikesController.decreasePostLikeCount(
                           id: userPostLikes.first.id,
                           postId: postId,
-                          writerId: writerId,
+                          postWriterId: postWriterId,
                         ),
             icon: Icon(
               userPostLikes == null || userPostLikes.isEmpty
@@ -79,14 +79,14 @@ class PostLikeButton extends ConsumerWidget {
                 : userPostLikes.isEmpty
                     ? () => postLikesController.increasePostLikeCount(
                           postId: postId,
-                          writerId: writerId,
+                          postWriterId: postWriterId,
                           postWriter: postWriter,
                           postLikeNotiString: context.loc.postLikeNoti,
                         )
                     : () => postLikesController.decreasePostLikeCount(
                           id: userPostLikes.first.id,
                           postId: postId,
-                          writerId: writerId,
+                          postWriterId: postWriterId,
                         ),
             child: Icon(
               userPostLikes == null || userPostLikes.isEmpty

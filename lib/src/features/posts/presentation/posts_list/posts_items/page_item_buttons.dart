@@ -38,7 +38,7 @@ class PageItemButtons extends ConsumerWidget {
         if (showLikeCount) ...[
           PostLikeButton(
             postId: post.id,
-            writerId: post.uid,
+            postWriterId: post.uid,
             isHeart: isThumbUpToHeart,
             iconColor: const Color(basicPostsItemButtonColor),
             iconSize: basicPostsItemButtonSize,
@@ -61,7 +61,7 @@ class PageItemButtons extends ConsumerWidget {
         if (showDislikeCount) ...[
           PostDislikeButton(
             postId: post.id,
-            writerId: post.uid,
+            postWriterId: post.uid,
             iconColor: const Color(basicPostsItemButtonColor),
             iconSize: basicPostsItemButtonSize,
             useIconButton: false,

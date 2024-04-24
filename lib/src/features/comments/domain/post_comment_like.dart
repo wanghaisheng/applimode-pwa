@@ -1,3 +1,4 @@
+import 'package:applimode_app/src/constants/constants.dart';
 import 'package:equatable/equatable.dart';
 
 class PostCommentLike extends Equatable {
@@ -6,6 +7,9 @@ class PostCommentLike extends Equatable {
     required this.uid,
     required this.postId,
     required this.commentId,
+    required this.commentWriterId,
+    required this.postWriterId,
+    required this.parentCommentId,
     this.isDislike = false,
     required this.createdAt,
   });
@@ -14,6 +18,9 @@ class PostCommentLike extends Equatable {
   final String uid;
   final String postId;
   final String commentId;
+  final String commentWriterId;
+  final String postWriterId;
+  final String parentCommentId;
   final bool isDislike;
   final DateTime createdAt;
 
@@ -24,6 +31,9 @@ class PostCommentLike extends Equatable {
       uid: map['uid'] as String,
       postId: map['postId'] as String,
       commentId: map['commentId'] as String,
+      commentWriterId: map['commentWriterId'] as String? ?? unknown,
+      postWriterId: map['postWriterId'] as String? ?? unknown,
+      parentCommentId: map['parentCommentId'] as String? ?? unknown,
       isDislike: map['isDislike'] as bool? ?? false,
       createdAt: DateTime.fromMillisecondsSinceEpoch(createdAtInt),
     );
@@ -35,6 +45,9 @@ class PostCommentLike extends Equatable {
       'uid': uid,
       'postId': postId,
       'commentId': commentId,
+      'commentWriterId': commentWriterId,
+      'postWriterId': postWriterId,
+      'parentCommentId': parentCommentId,
       'isDislike': isDislike,
       'createdAt': createdAt.millisecondsSinceEpoch,
     };
@@ -49,6 +62,9 @@ class PostCommentLike extends Equatable {
         uid,
         postId,
         commentId,
+        commentWriterId,
+        postWriterId,
+        parentCommentId,
         isDislike,
         createdAt,
       ];

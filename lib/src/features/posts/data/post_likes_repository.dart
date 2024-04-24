@@ -19,6 +19,7 @@ class PostLikesRepository {
     required String id,
     required String uid,
     required String postId,
+    required String postWriterId,
     bool isDislike = false,
     required DateTime createdAt,
   }) =>
@@ -26,6 +27,7 @@ class PostLikesRepository {
         'id': id,
         'uid': uid,
         'postId': postId,
+        'postWriterId': postWriterId,
         'isDislike': isDislike,
         'createdAt': createdAt.millisecondsSinceEpoch,
       });
@@ -130,6 +132,14 @@ class PostLikesRepository {
   // 회원 탈퇴시 모든 좋아요 싫어요 아이디 가져오기
   Future<List<String>> getPostLikeIdsForUser(String uid) async {
     final query = await postLikesRef(uid: uid).get();
+    return query.docs.map((e) => e.id).toList();
+  }
+
+  // Get all likes and dislikes IDs of deleted posts when remove account
+  // 회원 탈퇴시 삭제될 포스트의 모든 좋아요 싫어요 아이디 가져오기
+  Future<List<String>> getPostLikeIdsForPostWriter(String uid) async {
+    final query =
+        await postLikesRef().where('postWriterId', isEqualTo: uid).get();
     return query.docs.map((e) => e.id).toList();
   }
 }

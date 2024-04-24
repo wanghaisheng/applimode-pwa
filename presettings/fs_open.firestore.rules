@@ -46,5 +46,11 @@ service cloud.firestore {
       allow update: if false;
       allow delete: if request.auth != null;
     }
+    match /appLeavers/{document} {
+    	allow read: if isAdmin();
+      allow create: if request.auth.uid == request.resource.data.id;
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
   }
 }

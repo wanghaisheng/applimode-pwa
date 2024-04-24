@@ -1,3 +1,4 @@
+import 'package:applimode_app/src/constants/constants.dart';
 import 'package:equatable/equatable.dart';
 
 class PostComment extends Equatable {
@@ -6,6 +7,7 @@ class PostComment extends Equatable {
     required this.uid,
     required this.postId,
     required this.parentCommentId,
+    required this.postWriterId,
     this.isReply = false,
     this.content,
     this.imageUrl,
@@ -24,6 +26,7 @@ class PostComment extends Equatable {
   final String uid;
   final String postId;
   final String parentCommentId;
+  final String postWriterId;
   final bool isReply;
   final String? content;
   final String? imageUrl;
@@ -45,6 +48,7 @@ class PostComment extends Equatable {
       uid: map['uid'] as String,
       postId: map['postId'] as String,
       parentCommentId: map['parentCommentId'] as String,
+      postWriterId: map['postWriterId'] as String? ?? unknown,
       isReply: map['isReply'] as bool? ?? false,
       content: map['content'] as String?,
       imageUrl: map['imageUrl'] as String?,
@@ -68,6 +72,7 @@ class PostComment extends Equatable {
       'uid': uid,
       'postId': postId,
       'parentCommentId': parentCommentId,
+      'postWriterId': postWriterId,
       'isReply': isReply,
       'content': content,
       'imageUrl': imageUrl,
@@ -83,25 +88,6 @@ class PostComment extends Equatable {
     };
   }
 
-  factory PostComment.fail({
-    required String id,
-    required String uid,
-    required String postId,
-    required String parentCommentId,
-    required int createdAt,
-  }) {
-    return PostComment(
-      id: id,
-      uid: uid,
-      postId: postId,
-      parentCommentId: parentCommentId,
-      day: 20231106,
-      month: 202311,
-      year: 2023,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
-    );
-  }
-
   @override
   bool? get stringify => true;
 
@@ -111,6 +97,7 @@ class PostComment extends Equatable {
         uid,
         postId,
         parentCommentId,
+        postWriterId,
         isReply,
         content,
         imageUrl,

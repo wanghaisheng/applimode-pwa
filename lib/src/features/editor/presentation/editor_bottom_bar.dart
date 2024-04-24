@@ -16,7 +16,7 @@ class EditorBottomBar extends ConsumerStatefulWidget {
     super.key,
     required this.bottomBarHeight,
     required this.getMedia,
-    required this.content,
+    required this.controller,
     this.postId,
     this.catetory,
     this.hasPostContent,
@@ -29,7 +29,7 @@ class EditorBottomBar extends ConsumerStatefulWidget {
     bool isMedia,
     bool isVideo,
   }) getMedia;
-  final String content;
+  final TextEditingController controller;
   final String? postId;
   final int? catetory;
   final bool? hasPostContent;
@@ -47,6 +47,7 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
   @override
   void initState() {
     category = widget.catetory ?? 0;
+    widget.controller.addListener(_setState);
     super.initState();
   }
 
@@ -56,6 +57,16 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
     if (oldWidget.catetory != widget.catetory) {
       category = widget.catetory ?? 0;
     }
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_setState);
+    super.dispose();
+  }
+
+  void _setState() {
+    setState(() {});
   }
 
   @override
@@ -167,10 +178,10 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
                   ],
                 ),
                 FilledButton(
-                  onPressed: widget.content.trim().isEmpty
+                  onPressed: widget.controller.text.trim().isEmpty
                       ? null
                       : () async {
-                          if (widget.content.trim().isEmpty) {
+                          if (widget.controller.text.trim().isEmpty) {
                             showAdaptiveAlertDialog(
                               context: context,
                               title: context.loc.ooops,
@@ -181,7 +192,7 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
                           final result = await ref
                               .read(editorScreenControllerProvider.notifier)
                               .publish(
-                                content: widget.content,
+                                content: widget.controller.text,
                                 category: category,
                                 hasPostContent: widget.hasPostContent ?? false,
                                 postId: widget.postId,

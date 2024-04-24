@@ -57,14 +57,16 @@ class _PostCommentDislikeButtonState
                       await postCommentController.increasePostCommentDislike(
                         postId: widget.comment.postId,
                         commentId: widget.comment.id,
-                        writerId: widget.comment.uid,
+                        commentWriterId: widget.comment.uid,
+                        postWriterId: widget.comment.postWriterId,
+                        parentCommentId: widget.comment.parentCommentId,
                       );
                     }
                   : () async {
                       await postCommentController.decreasePostCommentDislike(
                         id: userCommentDislikes!.first.id,
                         commentId: widget.comment.id,
-                        writerId: widget.comment.uid,
+                        commentWriterId: widget.comment.uid,
                       );
                     },
           icon: Icon(

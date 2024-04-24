@@ -4,6 +4,7 @@ import 'dart:html';
 import 'dart:math' as math;
 
 import 'package:applimode_app/src/utils/web_video_thumbnail/wvt_stub.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -74,6 +75,8 @@ class WvtWeb implements WvtStub {
 
     video.onLoadedMetadata.listen((event) {
       video.currentTime = timeSec;
+      video.muted = true;
+      video.setAttribute('playsinline', '');
 
       if (fetchVideo) {
         Url.revokeObjectUrl(video.src);
@@ -81,53 +84,111 @@ class WvtWeb implements WvtStub {
     });
 
     video.onSeeked.listen((Event e) async {
-      await Future.delayed(const Duration(milliseconds: 100));
-      if (!completer.isCompleted) {
-        final canvas = document.createElement('canvas') as CanvasElement;
-        final ctx = canvas.getContext('2d')! as CanvasRenderingContext2D;
+      if (kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+        // await Future.delayed(const Duration(milliseconds: 100));
+        video.play();
+        video.onTimeUpdate.listen((event) async {
+          if (video.currentTime > 0.5) {
+            video.pause();
+            if (!completer.isCompleted) {
+              final canvas = document.createElement('canvas') as CanvasElement;
+              final ctx = canvas.getContext('2d')! as CanvasRenderingContext2D;
 
-        if (maxWidth == 0 && maxHeight == 0) {
-          canvas
-            ..width = video.videoWidth
-            ..height = video.videoHeight;
-          ctx.drawImage(video, 0, 0);
-        } else {
-          final aspectRatio = video.videoWidth / video.videoHeight;
-          if (maxWidth == 0) {
-            maxWidth = (maxHeight * aspectRatio).round();
-          } else if (maxHeight == 0) {
-            maxHeight = (maxWidth / aspectRatio).round();
+              if (maxWidth == 0 && maxHeight == 0) {
+                canvas
+                  ..width = video.videoWidth
+                  ..height = video.videoHeight;
+                ctx.drawImage(video, 0, 0);
+              } else {
+                final aspectRatio = video.videoWidth / video.videoHeight;
+                if (maxWidth == 0) {
+                  maxWidth = (maxHeight * aspectRatio).round();
+                } else if (maxHeight == 0) {
+                  maxHeight = (maxWidth / aspectRatio).round();
+                }
+
+                final inputAspectRatio = maxWidth / maxHeight;
+                if (aspectRatio > inputAspectRatio) {
+                  maxHeight = (maxWidth / aspectRatio).round();
+                } else {
+                  maxWidth = (maxHeight * aspectRatio).round();
+                }
+
+                canvas
+                  ..width = maxWidth
+                  ..height = maxHeight;
+                ctx.drawImageScaled(video, 0, 0, maxWidth, maxHeight);
+              }
+
+              try {
+                final blob = canvas.toBlob(
+                  'image/jpeg',
+                  quality / 100,
+                );
+
+                completer.complete(blob);
+              } catch (e, s) {
+                completer.completeError(
+                  PlatformException(
+                    code: 'CANVAS_EXPORT_ERROR',
+                    details: e,
+                    stacktrace: s.toString(),
+                  ),
+                  s,
+                );
+              }
+            }
           }
+        });
+      } else {
+        await Future.delayed(const Duration(milliseconds: 100));
+        if (!completer.isCompleted) {
+          final canvas = document.createElement('canvas') as CanvasElement;
+          final ctx = canvas.getContext('2d')! as CanvasRenderingContext2D;
 
-          final inputAspectRatio = maxWidth / maxHeight;
-          if (aspectRatio > inputAspectRatio) {
-            maxHeight = (maxWidth / aspectRatio).round();
+          if (maxWidth == 0 && maxHeight == 0) {
+            canvas
+              ..width = video.videoWidth
+              ..height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
           } else {
-            maxWidth = (maxHeight * aspectRatio).round();
+            final aspectRatio = video.videoWidth / video.videoHeight;
+            if (maxWidth == 0) {
+              maxWidth = (maxHeight * aspectRatio).round();
+            } else if (maxHeight == 0) {
+              maxHeight = (maxWidth / aspectRatio).round();
+            }
+
+            final inputAspectRatio = maxWidth / maxHeight;
+            if (aspectRatio > inputAspectRatio) {
+              maxHeight = (maxWidth / aspectRatio).round();
+            } else {
+              maxWidth = (maxHeight * aspectRatio).round();
+            }
+
+            canvas
+              ..width = maxWidth
+              ..height = maxHeight;
+            ctx.drawImageScaled(video, 0, 0, maxWidth, maxHeight);
           }
 
-          canvas
-            ..width = maxWidth
-            ..height = maxHeight;
-          ctx.drawImageScaled(video, 0, 0, maxWidth, maxHeight);
-        }
+          try {
+            final blob = canvas.toBlob(
+              'image/jpeg',
+              quality / 100,
+            );
 
-        try {
-          final blob = canvas.toBlob(
-            'image/jpeg',
-            quality / 100,
-          );
-
-          completer.complete(blob);
-        } catch (e, s) {
-          completer.completeError(
-            PlatformException(
-              code: 'CANVAS_EXPORT_ERROR',
-              details: e,
-              stacktrace: s.toString(),
-            ),
-            s,
-          );
+            completer.complete(blob);
+          } catch (e, s) {
+            completer.completeError(
+              PlatformException(
+                code: 'CANVAS_EXPORT_ERROR',
+                details: e,
+                stacktrace: s.toString(),
+              ),
+              s,
+            );
+          }
         }
       }
     });

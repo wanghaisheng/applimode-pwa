@@ -5,14 +5,12 @@ class EditorField extends StatelessWidget {
     super.key,
     required this.controller,
     required this.focusNode,
-    required this.onChanged,
-    required this.bottomBarHeight,
+    this.onChanged,
   });
 
   final TextEditingController controller;
   final FocusNode focusNode;
   final void Function(String)? onChanged;
-  final double bottomBarHeight;
 
   @override
   Widget build(BuildContext context) {

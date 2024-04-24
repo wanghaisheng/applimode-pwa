@@ -6,26 +6,26 @@
   "mainCategory": [
     {
       "index": 0,
-      "path": "/common",
-      "title": "일반",
+      "path": "/categoryA",
+      "title": "Category A",
       "color": "FCB126"
     },
     {
       "index": 1,
-      "path": "/notice",
-      "title": "공지",
+      "path": "/categoryB",
+      "title": "Category B",
       "color": "F37D76"
     },
     {
       "index": 2,
-      "path": "/story",
-      "title": "스토리",
+      "path": "/categoryC",
+      "title": "Category C",
       "color": "76D17F"
     },
     {
       "index": 3,
-      "path": "/news",
-      "title": "뉴스",
+      "path": "/categoryD",
+      "title": "Category D",
       "color": "967ADC"
     }
   ]

@@ -1,3 +1,4 @@
+import 'package:applimode_app/src/constants/constants.dart';
 import 'package:equatable/equatable.dart';
 
 class PostLike extends Equatable {
@@ -5,6 +6,7 @@ class PostLike extends Equatable {
     required this.id,
     required this.uid,
     required this.postId,
+    required this.postWriterId,
     this.isDislike = false,
     required this.createdAt,
   });
@@ -12,6 +14,7 @@ class PostLike extends Equatable {
   final String id;
   final String uid;
   final String postId;
+  final String postWriterId;
   final bool isDislike;
   final DateTime createdAt;
 
@@ -21,6 +24,7 @@ class PostLike extends Equatable {
       id: map['id'] as String,
       uid: map['uid'] as String,
       postId: map['postId'] as String,
+      postWriterId: map['postWriterId'] as String? ?? unknown,
       isDislike: map['isDislike'] as bool? ?? false,
       createdAt: DateTime.fromMillisecondsSinceEpoch(createdAtInt),
     );
@@ -31,6 +35,7 @@ class PostLike extends Equatable {
       'id': id,
       'uid': uid,
       'postId': postId,
+      'postWriterId': postWriterId,
       'isDislike': isDislike,
       'createdAt': createdAt.millisecondsSinceEpoch,
     };
@@ -44,6 +49,7 @@ class PostLike extends Equatable {
         id,
         uid,
         postId,
+        postWriterId,
         isDislike,
         createdAt,
       ];

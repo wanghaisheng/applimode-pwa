@@ -50,7 +50,7 @@ class _PostCommentDeleteButtonState
                         parentCommentId: widget.comment.parentCommentId,
                         postId: widget.comment.postId,
                         isReply: widget.parentCommentId != null,
-                        writerId: widget.comment.uid,
+                        commentWriterId: widget.comment.uid,
                         isAdmin: appUser.isAdmin,
                         imageUrl: widget.comment.imageUrl,
                       );

@@ -58,8 +58,8 @@ const String contentTextHtml = 'text/html';
 const String contentJson = 'application/json';
 
 const String deleted = 'deleted';
+const String unknown = 'unknown';
 
-const String storageShortUrl = r'${psu}';
 const String firebaseStorageUrlHead = 'https://firebasestorage.googleapis.com';
 const String gcpStorageUrlHead = 'https://storage.googleapis.com/';
 

@@ -8,14 +8,14 @@ class PostDislikeButton extends ConsumerWidget {
   const PostDislikeButton({
     super.key,
     required this.postId,
-    required this.writerId,
+    required this.postWriterId,
     this.iconColor,
     this.iconSize,
     this.useIconButton = true,
   });
 
   final String postId;
-  final String writerId;
+  final String postWriterId;
   final Color? iconColor;
   final double? iconSize;
   final bool useIconButton;
@@ -45,12 +45,12 @@ class PostDislikeButton extends ConsumerWidget {
                 : userPostDislikes.isEmpty
                     ? () => postLikesController.increasePostDislikeCount(
                           postId: postId,
-                          writerId: writerId,
+                          postWriterId: postWriterId,
                         )
                     : () => postLikesController.decreasePostDislikeCount(
                           id: userPostDislikes.first.id,
                           postId: postId,
-                          writerId: writerId,
+                          postWriterId: postWriterId,
                         ),
             icon: Icon(
               userPostDislikes == null || userPostDislikes.isEmpty
@@ -68,12 +68,12 @@ class PostDislikeButton extends ConsumerWidget {
                 : userPostDislikes.isEmpty
                     ? () => postLikesController.increasePostDislikeCount(
                           postId: postId,
-                          writerId: writerId,
+                          postWriterId: postWriterId,
                         )
                     : () => postLikesController.decreasePostDislikeCount(
                           id: userPostDislikes.first.id,
                           postId: postId,
-                          writerId: writerId,
+                          postWriterId: postWriterId,
                         ),
             child: Icon(
               userPostDislikes == null || userPostDislikes.isEmpty

@@ -161,18 +161,14 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
             if (screenWidth < widthBreak)
               Expanded(
                 child: TabBarView(
+                  physics: const NeverScrollableScrollPhysics(),
                   children: [
                     EditorField(
                       controller: _controller,
                       focusNode: _focusNode,
-                      onChanged: (value) {
-                        setState(() {});
-                      },
-                      bottomBarHeight: bottomBarHeight,
                     ),
                     MarkdownField(
-                      data: _controller.text,
-                      bottomBarHeight: bottomBarHeight,
+                      controller: _controller,
                     ),
                   ],
                 ),
@@ -190,10 +186,6 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                             child: EditorField(
                               controller: _controller,
                               focusNode: _focusNode,
-                              onChanged: (value) {
-                                setState(() {});
-                              },
-                              bottomBarHeight: bottomBarHeight,
                             ),
                           ),
                         ],
@@ -203,8 +195,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                     Expanded(
                       flex: 1,
                       child: MarkdownField(
-                        data: _controller.text,
-                        bottomBarHeight: bottomBarHeight,
+                        controller: _controller,
                       ),
                     ),
                   ],
@@ -214,7 +205,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
             EditorBottomBar(
               bottomBarHeight: bottomBarHeight,
               getMedia: _getMedia,
-              content: _controller.text,
+              controller: _controller,
               postId: widget.postId,
               catetory: currentCategory,
               hasPostContent: hasPostContent,

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/cached_padding_image.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/file_padding_image.dart';
 import 'package:applimode_app/src/common_widgets/string_html.dart';
@@ -8,6 +7,7 @@ import 'package:applimode_app/src/common_widgets/string_markdown.dart';
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/video_player/post_video_player.dart';
 import 'package:applimode_app/src/utils/regex.dart';
+import 'package:applimode_app/src/utils/url_converter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -36,7 +36,13 @@ class StringConverter {
   }
 
   static String buildYtThumbnail(String videoId) {
-    return 'https://img.youtube.com/vi/$videoId/0.jpg';
+    // maxresdefault (1280), sddefault (640), hqdefault (480), mqdefault (320), default (120)
+    return 'https://img.youtube.com/vi/$videoId/maxresdefault.jpg';
+  }
+
+  static String buildYtProxyThumbnail(String videoId) {
+    // maxresdefault (1280), sddefault (640), hqdefault (480), mqdefault (320), default (120)
+    return 'https://yt-thumbnail-worker.jongsukoh80.workers.dev/?q=https://img.youtube.com/vi/$videoId/maxresdefault.jpg';
   }
 
   static String buildYtUrl(String videoId) {
@@ -94,7 +100,8 @@ class StringConverter {
         elements.add(Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: PostVideoPlayer(
-            videoUrl: Regex.localVideoRegex.firstMatch(split)![2]!,
+            videoUrl:
+                getIosWebVideoUrl(Regex.localVideoRegex.firstMatch(split)![2]!),
             isIosLocal: kIsWeb ? false : Platform.isIOS,
           ),
         ));
@@ -132,7 +139,8 @@ class StringConverter {
         elements.add(Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: PostVideoPlayer(
-            videoUrl: Regex.webVideoRegex.firstMatch(split)![2]!,
+            videoUrl:
+                getIosWebVideoUrl(Regex.webVideoRegex.firstMatch(split)![2]!),
             videoImageUrl: Regex.webVideoRegex.firstMatch(split)![1],
           ),
         ));
@@ -158,7 +166,6 @@ class StringConverter {
     String? postId,
   }) {
     final splits = content
-        .replaceAll(storageShortUrl, preStorageUrl)
         // youtube url and iframe
         .replaceAllMapped(Regex.ytRegexB, (match) => buildYtIf(match[1]!))
         // local image

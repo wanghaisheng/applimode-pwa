@@ -7,6 +7,7 @@ import 'package:applimode_app/src/features/firebase_storage/firebase_storage_rep
 import 'package:applimode_app/src/features/posts/data/post_contents_repository.dart';
 import 'package:applimode_app/src/features/posts/data/post_likes_repository.dart';
 import 'package:applimode_app/src/features/posts/data/posts_repository.dart';
+import 'package:applimode_app/src/features/profile/data/app_leavers_repository.dart';
 import 'package:applimode_app/src/features/r_two_storage/r_two_storage_repository.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -106,6 +107,12 @@ class DeleteAccountService {
       }
       await _ref.read(appUserRepositoryProvider).deleteAppUser(uid);
     }
+
+    // create appLeaver
+    await _ref.read(appLeaversRepositoryProvider).createAppLeaver(
+          id: uid,
+          closedAt: DateTime.now(),
+        );
 
     // delete auth user
     await _ref.read(authRepositoryProvider).currentUser!.delete();

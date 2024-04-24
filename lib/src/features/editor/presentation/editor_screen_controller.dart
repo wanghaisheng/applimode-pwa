@@ -29,6 +29,7 @@ import 'package:applimode_app/src/utils/web_video_thumbnail/wvt_stub.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:http/http.dart' as http;
 
 part 'editor_screen_controller.g.dart';
 
@@ -68,6 +69,15 @@ class EditorScreenController extends _$EditorScreenController {
       state = AsyncError(Exception(needLogin), StackTrace.current);
       return false;
     }
+
+    if (postId != null && writer == null) {
+      WakelockPlus.disable();
+      state = AsyncError(Exception(needPermission), StackTrace.current);
+      return false;
+    }
+
+    state = const AsyncLoading();
+
     final appUser = await ref.read(appUserFutureProvider(user.uid).future);
     // If only the administrator can write, check permissions
     // 관리자만 글쓰기가 가능할 경우, 권한 체크
@@ -85,12 +95,6 @@ class EditorScreenController extends _$EditorScreenController {
       return false;
     }
 
-    if (postId != null && writer == null) {
-      WakelockPlus.disable();
-      state = AsyncError(Exception(needPermission), StackTrace.current);
-      return false;
-    }
-
     if (postId != null &&
         writer != null &&
         user.uid != writer.uid &&
@@ -102,8 +106,6 @@ class EditorScreenController extends _$EditorScreenController {
       state = AsyncError(Exception(needPermission), StackTrace.current);
       return false;
     }
-
-    state = const AsyncLoading();
 
     final id = postId ?? nanoid();
     String newContent = content;
@@ -128,8 +130,7 @@ class EditorScreenController extends _$EditorScreenController {
         final newRemoteMedia = buildRemoteMedia(content);
         final deletedMedia = compareLists(oldRemoteMedia, newRemoteMedia);
         for (final mediaUrl in deletedMedia) {
-          final isFbStorage = mediaUrl.startsWith(storageShortUrl) ||
-              mediaUrl.startsWith(firebaseStorageUrlHead) ||
+          final isFbStorage = mediaUrl.startsWith(firebaseStorageUrlHead) ||
               mediaUrl.startsWith(gcpStorageUrlHead);
           try {
             if (isFbStorage) {
@@ -414,7 +415,33 @@ class EditorScreenController extends _$EditorScreenController {
       } else if (firstWebImage != null) {
         mainImageUrl = firstWebImage[1];
       } else if (firstYtImage != null) {
-        mainImageUrl = StringConverter.buildYtThumbnail(firstYtImage[1]!);
+        try {
+          final ytThumbUrl =
+              StringConverter.buildYtProxyThumbnail(firstYtImage[1]!);
+          final response = await http.get(Uri.parse(ytThumbUrl));
+          final bytes = response.bodyBytes;
+          const ytThumbName = 'yt-thumbnail.jpeg';
+          if (useRTwoStorage) {
+            final url = await rTwoRepository.uploadBytes(
+              bytes: bytes,
+              storagePathname: '${user.uid}/$postsPath/$id',
+              filename: ytThumbName,
+              showPercentage: false,
+            );
+            mainImageUrl = url;
+          } else {
+            final url = await storageRepository.uploadBytes(
+              bytes: bytes,
+              storagePathname: '${user.uid}/$postsPath/$id',
+              filename: ytThumbName,
+            );
+            mainImageUrl = url;
+          }
+        } catch (e) {
+          mainImageUrl = StringConverter.buildYtThumbnail(firstYtImage[1]!);
+        }
+
+        // mainImageUrl = StringConverter.buildYtThumbnail(firstYtImage[1]!);
       }
 
       // mainVideoUrl
@@ -427,7 +454,6 @@ class EditorScreenController extends _$EditorScreenController {
       }
 
       // to shorten cloud storage object url
-      newContent = newContent.replaceAll(preStorageUrl, storageShortUrl);
       final postContent = newContent;
 
       final modifiedNewContent = StringConverter.toTitle(newContent);

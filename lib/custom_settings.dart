@@ -28,7 +28,7 @@ const androidBundleId = 'applimode.my_applimode';
 const appleBundleId = 'applimode.myApplimode';
 const firebaseProjectName = 'my-applimode';
 const appCreator = 'JongsukOh';
-const appVersion = '1.0.0';
+const appVersion = '0.0.2+1';
 
 // Main screen list view style
 // 메인 화면 리스트 뷰 스타일
@@ -74,12 +74,6 @@ const bool useFcmMessage = false;
 // and configure the settings for APNS
 // 설정을 해주는 것이 필요
 const bool useApns = false;
-
-// Used to shorten the length of the url of the storage object.
-// Change 'my-applimode' to your Firebase project name.
-// 스토리지 객체의 url의 길이를 줄이기 위해 사용. my-applimode를 파이어베이스 프로젝트명으로 변경
-const preStorageUrl =
-    'https://firebasestorage.googleapis.com/v0/b/my-applimode.appspot.com/o/';
 
 // Mute home screen video sound
 // 홈화면 영상 소리 뮤트

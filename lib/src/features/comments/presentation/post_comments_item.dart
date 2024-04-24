@@ -150,7 +150,7 @@ class PostCommentsItem extends ConsumerWidget {
                                 comment.content!,
                                 style: textTheme.bodyLarge,
                               ),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: 4),
                             Row(
                               children: [
                                 if (showLikeCount) ...[

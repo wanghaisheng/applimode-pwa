@@ -46,6 +46,8 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
       return;
     }
 
+    state = const AsyncLoading();
+
     // If only the administrator can write, check permissions
     // 관리자만 글쓰기가 가능할 경우, 권한 체크
     if (adminOnlyWrite) {
@@ -58,7 +60,6 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
       }
     }
 
-    state = const AsyncLoading();
     final key = this.key;
 
     final id = nanoid();
