@@ -28,7 +28,7 @@ const androidBundleId = 'applimode.my_applimode';
 const appleBundleId = 'applimode.myApplimode';
 const firebaseProjectName = 'my-applimode';
 const appCreator = 'JongsukOh';
-const appVersion = '0.0.2+1';
+const appVersion = '0.0.3+1';
 
 // Main screen list view style
 // 메인 화면 리스트 뷰 스타일
@@ -142,6 +142,50 @@ const int videoMaxDuration = 60;
 // Maximum video file size. Default 50.0 in megabytes
 // 비디오 영상 최대 파일 크기. 메가바이트 단위 기본 50.0
 const double mediaMaxMBSize = 50.0;
+
+// Profile image max width
+// 프로필 이미지 최대 너비
+const double profileMaxWidth = 160.0;
+
+// Profile image max height
+// 프로필 이미지 최대 높이
+const double profileMaxHeight = 160.0;
+
+// Story image max width
+// 스토리 이미지 최대 너비
+const double storyMaxWidth = 1080.0;
+
+// Story image max height
+// 스토리 이미지 최대 높이
+const double storyMaxHeight = 1920.0;
+
+// Post image max width
+// 포스트 이미지 최대 너비
+const double postImageMaxWidth = 1080.0;
+
+// Post image max height
+// 포스트 이미지 최대 높이
+const double postImageMaxHeight = 1920.0;
+
+// Post image quality
+// 포스트 이미지 품질
+const int postImageQuality = 90;
+
+// Video thumbnail max width
+// 비디오 썸네일 최대 너비
+const int videoThumbnailMaxWidth = 1080;
+
+// Video thumbnail height
+// 비디오 썸네일 최대 높이
+const int videoThumbnailMaxHeight = 0;
+
+// Video thumbnail quality
+// 비디오 썸네일 품질
+const int videoThumbnailQuality = 90;
+
+// When get a maximum size YouTube thumbnail
+// 유튜브 썸네일 최대 사이즈로 가져올 경우
+const bool isMaxResYoutubeThumbnail = false;
 
 // Frequency of remote config calls.
 // A minimum of 12 hours of use in production mode is recommended.

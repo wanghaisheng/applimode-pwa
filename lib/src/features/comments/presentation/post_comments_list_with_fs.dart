@@ -3,7 +3,7 @@ import 'package:applimode_app/src/features/comments/presentation/post_comments_i
 import 'package:applimode_app/src/features/comments/presentation/post_comments_list_state.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PostCommentsListWithFS extends ConsumerWidget {
@@ -38,7 +38,7 @@ class PostCommentsListWithFS extends ConsumerWidget {
         child: Text(error.toString()),
       ),
       loadingBuilder: (context) =>
-          const Center(child: CircularProgressIndicator.adaptive()),
+          const Center(child: CupertinoActivityIndicator()),
       itemBuilder: (context, doc) {
         final comment = doc.data();
         return PostCommentsItem(

@@ -1,5 +1,5 @@
+import 'package:applimode_app/src/utils/custom_headers.dart';
 import 'package:go_router/go_router.dart';
-import 'package:applimode_app/env/env.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/error_image.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -48,11 +48,7 @@ class CachedPaddingImage extends StatelessWidget {
             : null,
         child: CachedNetworkImage(
           imageUrl: imageUrl,
-          httpHeaders: useRTwoSecureGet
-              ? {
-                  "X-Custom-Auth-Key": Env.workerKey,
-                }
-              : null,
+          httpHeaders: useRTwoSecureGet ? rTwoSecureHeader : null,
           width: width,
           height: height,
           errorWidget: (context, url, error) => ErrorImage(

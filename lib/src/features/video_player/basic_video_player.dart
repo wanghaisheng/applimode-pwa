@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:applimode_app/src/utils/custom_headers.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:applimode_app/env/env.dart';
 import 'package:applimode_app/src/common_widgets/animated_color_box.dart';
-import 'package:applimode_app/src/common_widgets/sized_circular_progress_indicator.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/format.dart';
 import 'package:applimode_app/custom_settings.dart';
@@ -48,11 +48,7 @@ class _BasicVideoPlayerState extends State<BasicVideoPlayer> {
     if (widget.videoController == null) {
       _controller = VideoPlayerController.networkUrl(
         Uri.parse(widget.videoUrl),
-        httpHeaders: useRTwoSecureGet
-            ? {
-                "X-Custom-Auth-Key": Env.workerKey,
-              }
-            : const {},
+        httpHeaders: useRTwoSecureGet ? rTwoSecureHeader : const {},
       );
     } else {
       _controller = widget.videoController!;
@@ -137,8 +133,8 @@ class _BasicVideoPlayerState extends State<BasicVideoPlayer> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedCircularProgressIndicator(
-                    backgroundColor: Colors.white,
+                  const CupertinoActivityIndicator(
+                    color: Colors.white,
                   ),
                   const SizedBox(height: 8),
                   Text(

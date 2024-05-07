@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:applimode_app/src/utils/custom_headers.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:applimode_app/env/env.dart';
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:flutter/foundation.dart';
@@ -41,7 +41,7 @@ class RTwoStorageRepository {
       url.toString(),
       data: bytes,
       options: Options(headers: {
-        'X-Custom-Auth-Key': Env.workerKey,
+        ...rTwoSecureHeader,
         'Content-Type': contentType,
       }),
       onSendProgress: (count, total) {
@@ -58,7 +58,7 @@ class RTwoStorageRepository {
       url,
       body: bytes,
       headers: {
-        'X-Custom-Auth-Key': rTwoAuthKey,
+        ...rTwoSecureHeader,
         'Content-Type': contentType,
       },
     );
@@ -71,10 +71,8 @@ class RTwoStorageRepository {
   }
 
   Future<void> deleteAsset(String url) => http.delete(
-        Uri.parse(url),
-        headers: {
-          "X-Custom-Auth-Key": Env.workerKey,
-        },
+        Uri.parse(url.replaceAll(domainUrl, baseUrl).replaceAll('%2F', '/')),
+        headers: rTwoSecureHeader,
       );
 
   Future<void> deleteAssetsList(String prefix) async {
@@ -82,9 +80,7 @@ class RTwoStorageRepository {
 
     final response = await http.get(
       url,
-      headers: {
-        "X-Custom-Auth-Key": Env.workerKey,
-      },
+      headers: rTwoSecureHeader,
     );
     final data = (jsonDecode(response.body)['objects'] as List<dynamic>)
         .map((e) => e['key'] as String)
@@ -94,9 +90,7 @@ class RTwoStorageRepository {
         final url = Uri.https(baseUrl, '/$item');
         http.delete(
           url,
-          headers: {
-            "X-Custom-Auth-Key": Env.workerKey,
-          },
+          headers: rTwoSecureHeader,
         );
       }
     }

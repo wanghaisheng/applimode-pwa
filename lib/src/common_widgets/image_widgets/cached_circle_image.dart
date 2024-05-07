@@ -1,5 +1,5 @@
-import 'package:applimode_app/env/env.dart';
 import 'package:applimode_app/custom_settings.dart';
+import 'package:applimode_app/src/utils/custom_headers.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -17,11 +17,7 @@ class CachedCircleImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return CachedNetworkImage(
       imageUrl: imageUrl,
-      httpHeaders: useRTwoSecureGet
-          ? {
-              "X-Custom-Auth-Key": Env.workerKey,
-            }
-          : null,
+      httpHeaders: useRTwoSecureGet ? rTwoSecureHeader : null,
       width: size ?? profileSizeMedium,
       height: size ?? profileSizeMedium,
       imageBuilder: (context, imageProvider) => Container(

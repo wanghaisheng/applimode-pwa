@@ -1,4 +1,3 @@
-import 'package:applimode_app/env/env.dart';
 import 'package:applimode_app/src/app_settings/app_settings_controller.dart';
 import 'package:applimode_app/src/common_widgets/animated_color_box.dart';
 import 'package:applimode_app/src/common_widgets/main_label.dart';
@@ -9,6 +8,7 @@ import 'package:applimode_app/src/features/posts/domain/post_and_writer.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/basic_block_item.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/page_item_buttons.dart';
 import 'package:applimode_app/src/features/video_player/main_video_player.dart';
+import 'package:applimode_app/src/utils/custom_headers.dart';
 import 'package:applimode_app/src/utils/url_converter.dart';
 import 'package:applimode_app/src/utils/get_max_width.dart';
 import 'package:applimode_app/src/utils/posts_item_playing_state.dart';
@@ -45,6 +45,7 @@ class BasicPostsItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // debugInvertOversizedImages = true;
     debugPrint('BasicPostsItem build');
     final writerAsync = ref.watch(writerFutureProvider(post.uid));
     final appSettings = ref.watch(appSettingsControllerProvider);
@@ -97,22 +98,6 @@ class BasicPostsItem extends ConsumerWidget {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    /*
-                    if (!isContent)
-                      AnimatedColorBox(
-                        index: index,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 64),
-                          child: SafeArea(
-                            child: TitleTextWidget(
-                              title: context.loc.deletedPost,
-                              textStyle: postTitleStyle,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ),
-                    */
                     if (isContent && isVideo)
                       MainVideoPlayer(
                         // when delete video post, resolve old video remain
@@ -128,22 +113,13 @@ class BasicPostsItem extends ConsumerWidget {
                       ),
                     if (isContent && !isVideo)
                       mainImageUrl != null
-                          ? Container(
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: CachedNetworkImageProvider(
-                                    mainImageUrl,
-                                    headers: useRTwoSecureGet
-                                        ? {
-                                            "X-Custom-Auth-Key": Env.workerKey,
-                                          }
-                                        : null,
-                                  ),
-                                ),
-                              ),
-                            )
+                          ? Positioned.fill(
+                              child: CachedNetworkImage(
+                              imageUrl: mainImageUrl,
+                              fit: BoxFit.cover,
+                              httpHeaders:
+                                  useRTwoSecureGet ? rTwoSecureHeader : null,
+                            ))
                           : AnimatedColorBox(
                               index: index,
                               child: Padding(
@@ -162,19 +138,6 @@ class BasicPostsItem extends ConsumerWidget {
                                 ),
                               ),
                             ),
-                    /*
-                      Padding(
-                        padding: const EdgeInsets.all(64.0),
-                        child: SafeArea(
-                          child: TitleTextWidget(
-                            title: post.title,
-                            textStyle: postTitleStyle,
-                            maxLines: basicPostsItemTitleMaxLines,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                      */
                     if (isContent) ...[
                       Positioned(
                         left: 16,

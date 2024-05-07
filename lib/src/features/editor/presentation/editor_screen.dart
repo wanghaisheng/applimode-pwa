@@ -246,6 +246,8 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     final XFile? pickedFile = await showImagePicker(
       isMedia: isThumbnail ? false : isMedia,
       isVideo: isThumbnail ? false : isVideo,
+      maxWidth: postImageMaxWidth,
+      imageQuality: postImageQuality,
     ).catchError((error) {
       showAdaptiveAlertDialog(
           context: context,

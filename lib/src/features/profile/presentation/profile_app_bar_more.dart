@@ -80,7 +80,10 @@ class ProfileAppBarMore extends ConsumerWidget {
                     secondTitle: context.loc.chooseFromGallery,
                     secondTap: () async {
                       context.pop();
-                      final xFile = await showImagePicker();
+                      final xFile = await showImagePicker(
+                        maxWidth: profileMaxWidth,
+                        maxHeight: profileMaxHeight,
+                      );
                       if (xFile != null) {
                         await ref
                             .read(profileAppBarMoreControllerProvider.notifier)
@@ -106,7 +109,10 @@ class ProfileAppBarMore extends ConsumerWidget {
                       secondTitle: context.loc.chooseFromGallery,
                       secondTap: () async {
                         context.pop();
-                        final xFile = await showImagePicker();
+                        final xFile = await showImagePicker(
+                          maxWidth: storyMaxWidth,
+                          maxHeight: storyMaxHeight,
+                        );
                         if (xFile != null) {
                           await ref
                               .read(

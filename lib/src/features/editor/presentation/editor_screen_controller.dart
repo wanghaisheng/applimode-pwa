@@ -21,7 +21,7 @@ import 'package:applimode_app/src/utils/regex.dart';
 import 'package:applimode_app/src/utils/string_converter.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:applimode_app/src/utils/updated_post_ids_list.dart';
 import 'package:applimode_app/src/utils/upload_progress_state.dart';
@@ -109,12 +109,11 @@ class EditorScreenController extends _$EditorScreenController {
 
     final id = postId ?? nanoid();
     String newContent = content;
+    final postWriterId = writer?.uid ?? user.uid;
 
     String? mainImageUrl;
     String? mainVideoUrl;
     final List<String> hashtags = [];
-
-    bool needUpdate = false;
 
     final storageRepository = ref.read(firebaseStorageRepositoryProvider);
     final rTwoRepository = ref.read(rTwoStorageRepositoryProvider);
@@ -180,17 +179,10 @@ class EditorScreenController extends _$EditorScreenController {
           }
           final ext = Format.mimeTypeToExt(mediaType);
 
-          final needCompress =
-              mediaType == contentTypeJpeg || mediaType == contentTypePng;
-
           // 태그에 따라 bytes로 변경
           final bytes = isVideo
               ? await storageRepository.getBytes(XFile(match[2]!))
-              : needCompress && !kIsWeb
-                  ? await FlutterImageCompress.compressWithFile(match[1]!,
-                          quality: 80) ??
-                      await storageRepository.getBytes(XFile(match[1]!))
-                  : await storageRepository.getBytes(XFile(match[1]!));
+              : await storageRepository.getBytes(XFile(match[1]!));
 
           // generate video thumbnail
           if (isVideo) {
@@ -202,7 +194,7 @@ class EditorScreenController extends _$EditorScreenController {
                 if (useRTwoStorage) {
                   final url = await rTwoRepository.uploadBytes(
                     bytes: videoThumbnail,
-                    storagePathname: '${user.uid}/$postsPath/$id',
+                    storagePathname: '$postWriterId/$postsPath/$id',
                     filename: thumbnailFilename,
                     showPercentage: false,
                   );
@@ -210,7 +202,7 @@ class EditorScreenController extends _$EditorScreenController {
                 } else {
                   final url = await storageRepository.uploadBytes(
                     bytes: videoThumbnail,
-                    storagePathname: '${user.uid}/$postsPath/$id',
+                    storagePathname: '$postWriterId/$postsPath/$id',
                     filename: thumbnailFilename,
                   );
                   videoThumbnailUrl = url;
@@ -220,22 +212,18 @@ class EditorScreenController extends _$EditorScreenController {
               }
             } else {
               if (kIsWeb) {
-                if (defaultTargetPlatform == TargetPlatform.iOS) {
-                  needUpdate = true;
-                  thumbnailFilename = '$filename-thumbnail-needupdate.jpeg';
-                }
                 final videoThumbnail = await WvtStub().getThumbnailData(
                   video: match[2]!,
-                  maxWidth: 0,
-                  maxHeight: 0,
-                  quality: 100,
+                  maxWidth: videoThumbnailMaxWidth,
+                  maxHeight: videoThumbnailMaxHeight,
+                  quality: videoThumbnailQuality,
                 );
                 // ignore: unnecessary_null_comparison
                 if (videoThumbnail != null) {
                   if (useRTwoStorage) {
                     final url = await rTwoRepository.uploadBytes(
                       bytes: videoThumbnail,
-                      storagePathname: '${user.uid}/$postsPath/$id',
+                      storagePathname: '$postWriterId/$postsPath/$id',
                       filename: thumbnailFilename,
                       showPercentage: false,
                     );
@@ -243,7 +231,7 @@ class EditorScreenController extends _$EditorScreenController {
                   } else {
                     final url = await storageRepository.uploadBytes(
                       bytes: videoThumbnail,
-                      storagePathname: '${user.uid}/$postsPath/$id',
+                      storagePathname: '$postWriterId/$postsPath/$id',
                       filename: thumbnailFilename,
                     );
                     videoThumbnailUrl = url;
@@ -253,14 +241,15 @@ class EditorScreenController extends _$EditorScreenController {
                 final videoThumbnail = await VideoThumbnail.thumbnailData(
                   video: match[2]!,
                   imageFormat: ImageFormat.JPEG,
-                  maxWidth: 1080,
-                  quality: 100,
+                  maxWidth: videoThumbnailMaxWidth,
+                  maxHeight: videoThumbnailMaxHeight,
+                  quality: videoThumbnailQuality,
                 );
                 if (videoThumbnail != null) {
                   if (useRTwoStorage) {
                     final url = await rTwoRepository.uploadBytes(
                       bytes: videoThumbnail,
-                      storagePathname: '${user.uid}/$postsPath/$id',
+                      storagePathname: '$postWriterId/$postsPath/$id',
                       filename: thumbnailFilename,
                       showPercentage: false,
                     );
@@ -268,7 +257,7 @@ class EditorScreenController extends _$EditorScreenController {
                   } else {
                     final url = await storageRepository.uploadBytes(
                       bytes: videoThumbnail,
-                      storagePathname: '${user.uid}/$postsPath/$id',
+                      storagePathname: '$postWriterId/$postsPath/$id',
                       filename: thumbnailFilename,
                     );
                     videoThumbnailUrl = url;
@@ -283,7 +272,7 @@ class EditorScreenController extends _$EditorScreenController {
           if (!useRTwoStorage) {
             final uploadTask = storageRepository.uploadTask(
               bytes: bytes,
-              storagePathname: '${user.uid}/$postsPath/$id',
+              storagePathname: '$postWriterId/$postsPath/$id',
               filename: isVideo ? '$filename.mp4' : '$filename$ext',
               contentType: mediaType,
             );
@@ -315,7 +304,7 @@ class EditorScreenController extends _$EditorScreenController {
           final remoteMediaUrl = useRTwoStorage
               ? await rTwoRepository.uploadBytes(
                   bytes: bytes,
-                  storagePathname: '${user.uid}/$postsPath/$id',
+                  storagePathname: '$postWriterId/$postsPath/$id',
                   filename: isVideo ? '$filename.mp4' : '$filename$ext',
                   contentType: mediaType,
                   index: i,
@@ -352,14 +341,14 @@ class EditorScreenController extends _$EditorScreenController {
                 if (useRTwoStorage) {
                   newUrl = await rTwoRepository.uploadBytes(
                     bytes: videoThumbnail,
-                    storagePathname: '${user.uid}/$postsPath/$id',
+                    storagePathname: '$postWriterId/$postsPath/$id',
                     filename: thumbnailFilename,
                     showPercentage: false,
                   );
                 } else {
                   newUrl = await storageRepository.uploadBytes(
                     bytes: videoThumbnail,
-                    storagePathname: '${user.uid}/$postsPath/$id',
+                    storagePathname: '$postWriterId/$postsPath/$id',
                     filename: thumbnailFilename,
                   );
                 }
@@ -424,7 +413,7 @@ class EditorScreenController extends _$EditorScreenController {
           if (useRTwoStorage) {
             final url = await rTwoRepository.uploadBytes(
               bytes: bytes,
-              storagePathname: '${user.uid}/$postsPath/$id',
+              storagePathname: '$postWriterId/$postsPath/$id',
               filename: ytThumbName,
               showPercentage: false,
             );
@@ -432,7 +421,7 @@ class EditorScreenController extends _$EditorScreenController {
           } else {
             final url = await storageRepository.uploadBytes(
               bytes: bytes,
-              storagePathname: '${user.uid}/$postsPath/$id',
+              storagePathname: '$postWriterId/$postsPath/$id',
               filename: ytThumbName,
             );
             mainImageUrl = url;
@@ -472,10 +461,9 @@ class EditorScreenController extends _$EditorScreenController {
         // new post
         await ref.read(postsRepositoryProvider).createPost(
               id: id,
-              uid: user.uid,
+              uid: postWriterId,
               content: newContent,
               title: contentTitle,
-              needUpdate: needUpdate,
               isLongContent: isLongContent,
               category: category,
               mainImageUrl: mainImageUrl,
@@ -488,10 +476,9 @@ class EditorScreenController extends _$EditorScreenController {
         // update post
         await ref.read(postsRepositoryProvider).updatePost(
               id: id,
-              // uid: user.uid,
+              // uid: postWriterId,
               content: newContent,
               title: contentTitle,
-              needUpdate: needUpdate,
               isLongContent: isLongContent,
               category: category,
               mainImageUrl: mainImageUrl,
@@ -505,7 +492,7 @@ class EditorScreenController extends _$EditorScreenController {
       if (isLongContent) {
         await ref.read(postContentsRepositoryProvider).createPostContent(
               id: id,
-              uid: user.uid,
+              uid: postWriterId,
               content: postContent,
               category: category,
             );

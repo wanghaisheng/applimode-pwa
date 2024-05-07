@@ -158,7 +158,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
             children: [
               Expanded(
                 child: SafeArea(
-                  child: ListView(
+                  child: ListView.builder(
                     // shrinkWrap: true,
                     padding: kIsWeb
                         ? EdgeInsets.only(
@@ -168,13 +168,11 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                             right: 16,
                             bottom: 16,
                           ),
-                    /*
                     itemCount: itemsList.length,
                     itemBuilder: (context, index) {
                       return itemsList[index];
                     },
-                    */
-                    children: itemsList,
+                    // children: itemsList,
                   ),
                 ),
               ),

@@ -25,6 +25,8 @@ class DirectUploadButton extends ConsumerWidget {
       onPressed: () async {
         final XFile? pickedFile = await showImagePicker(
           isMedia: true,
+          maxWidth: postImageMaxWidth,
+          imageQuality: postImageQuality,
         ).catchError((error) {
           showAdaptiveAlertDialog(
               context: context,

@@ -1,5 +1,5 @@
 import 'package:applimode_app/src/common_widgets/image_widgets/error_image.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 class StringHtml extends StatelessWidget {
@@ -13,7 +13,7 @@ class StringHtml extends StatelessWidget {
       data,
       onErrorBuilder: (context, element, error) => const ErrorImage(),
       onLoadingBuilder: (context, element, loadingProgress) =>
-          const CircularProgressIndicator(),
+          const CupertinoActivityIndicator(),
     );
   }
 }

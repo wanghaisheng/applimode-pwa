@@ -1,3 +1,4 @@
+import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/platform_image.dart';
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
@@ -117,7 +118,10 @@ class _PostCommentsScreenBottomBarState
                   if (_pickedFile == null)
                     IconButton(
                       onPressed: () async {
-                        _pickedFile = await showImagePicker();
+                        _pickedFile = await showImagePicker(
+                          maxWidth: postImageMaxWidth,
+                          imageQuality: postImageQuality,
+                        );
                         setState(() {});
                       },
                       icon: const Icon(Icons.image_outlined),

@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:applimode_app/env/env.dart';
 import 'package:applimode_app/src/constants/color_palettes.dart';
 import 'package:applimode_app/custom_settings.dart';
+import 'package:applimode_app/src/utils/custom_headers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -80,11 +80,7 @@ class _AnimatedColorContainerState extends State<AnimatedColorContainer>
                   : DecorationImage(
                       image: CachedNetworkImageProvider(
                         widget.storyImageUrl!,
-                        headers: useRTwoSecureGet
-                            ? {
-                                "X-Custom-Auth-Key": Env.workerKey,
-                              }
-                            : null,
+                        headers: useRTwoSecureGet ? rTwoSecureHeader : null,
                       ),
                       fit: BoxFit.cover,
                       onError: (exception, stackTrace) =>

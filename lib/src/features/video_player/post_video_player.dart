@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:applimode_app/env/env.dart';
-import 'package:applimode_app/src/common_widgets/sized_circular_progress_indicator.dart';
 import 'package:applimode_app/src/features/video_player/video_player_components/video_gesture_detector.dart';
 import 'package:applimode_app/src/features/video_player/video_player_components/video_player_center_icon.dart';
 import 'package:applimode_app/src/features/video_player/video_player_components/video_progress_bar.dart';
 import 'package:applimode_app/src/features/video_player/video_player_components/video_volume_button.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/custom_settings.dart';
+import 'package:applimode_app/src/utils/custom_headers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -45,11 +45,7 @@ class _PostVideoPlayerState extends State<PostVideoPlayer> {
     } else {
       _controller = VideoPlayerController.networkUrl(
         Uri.parse(widget.videoUrl),
-        httpHeaders: useRTwoSecureGet
-            ? {
-                "X-Custom-Auth-Key": Env.workerKey,
-              }
-            : const {},
+        httpHeaders: useRTwoSecureGet ? rTwoSecureHeader : const {},
       );
     }
     _controller.addListener(_setState);
@@ -101,11 +97,7 @@ class _PostVideoPlayerState extends State<PostVideoPlayer> {
         children: [
           CachedNetworkImage(
             imageUrl: widget.videoImageUrl!,
-            httpHeaders: useRTwoSecureGet
-                ? {
-                    "X-Custom-Auth-Key": Env.workerKey,
-                  }
-                : null,
+            httpHeaders: useRTwoSecureGet ? rTwoSecureHeader : null,
             fit: BoxFit.cover,
             errorWidget: (context, url, error) {
               return AspectRatio(
@@ -129,10 +121,8 @@ class _PostVideoPlayerState extends State<PostVideoPlayer> {
               color: Colors.white70,
             ),
           if (isLoading)
-            const SizedCircularProgressIndicator(
-              size: 48,
-              backgroundColor: Colors.white,
-              strokeWidth: 4,
+            const CupertinoActivityIndicator(
+              color: Colors.white,
             ),
         ],
       );
@@ -168,10 +158,8 @@ class _PostVideoPlayerState extends State<PostVideoPlayer> {
                 _controller.value.isBuffering && !_controller.value.isCompleted)
               const Align(
                 alignment: Alignment.center,
-                child: SizedCircularProgressIndicator(
-                  size: 48,
-                  backgroundColor: Colors.white,
-                  strokeWidth: 4,
+                child: CupertinoActivityIndicator(
+                  color: Colors.white,
                 ),
               ),
             if (!_controller.value.isPlaying) const VideoPlayerCenterIcon(),

@@ -8,17 +8,29 @@ Future<XFile?> showImagePicker({
   bool isMedia = false,
   bool isVideo = false,
   int maxSeconds = videoMaxDuration,
+  double? maxWidth,
+  double? maxHeight,
+  int? imageQuality,
 }) async {
   final ImagePicker picker = ImagePicker();
   try {
     final XFile? pickedFile = isMedia
-        ? await picker.pickMedia()
+        ? await picker.pickMedia(
+            maxWidth: maxWidth,
+            maxHeight: maxHeight,
+            imageQuality: imageQuality,
+          )
         : isVideo
             ? await picker.pickVideo(
                 source: imageSource,
                 maxDuration: Duration(seconds: maxSeconds),
               )
-            : await picker.pickImage(source: imageSource);
+            : await picker.pickImage(
+                source: imageSource,
+                maxWidth: maxWidth,
+                maxHeight: maxHeight,
+                imageQuality: imageQuality,
+              );
     // check file size
     if (pickedFile != null && mediaMaxMBSize != 0.0) {
       final length = await pickedFile.length();

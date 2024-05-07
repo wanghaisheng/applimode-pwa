@@ -7,7 +7,7 @@ part of 'direct_upload_button_controller.dart';
 // **************************************************************************
 
 String _$directUploadButtonControllerHash() =>
-    r'a3d76ad6a910df90f1e48747aa5ff9c85d2f0948';
+    r'a3b3f44c3ef079d783d04cb1efe8a1c804ea20d1';
 
 /// See also [DirectUploadButtonController].
 @ProviderFor(DirectUploadButtonController)

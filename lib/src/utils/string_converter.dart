@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/cached_padding_image.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/file_padding_image.dart';
 import 'package:applimode_app/src/common_widgets/string_html.dart';
@@ -42,7 +43,8 @@ class StringConverter {
 
   static String buildYtProxyThumbnail(String videoId) {
     // maxresdefault (1280), sddefault (640), hqdefault (480), mqdefault (320), default (120)
-    return 'https://yt-thumbnail-worker.jongsukoh80.workers.dev/?q=https://img.youtube.com/vi/$videoId/maxresdefault.jpg';
+    const ytRes = isMaxResYoutubeThumbnail ? 'maxresdefault' : 'sddefault';
+    return 'https://yt-thumbnail-worker.jongsukoh80.workers.dev/?q=https://img.youtube.com/vi/$videoId/$ytRes.jpg';
   }
 
   static String buildYtUrl(String videoId) {

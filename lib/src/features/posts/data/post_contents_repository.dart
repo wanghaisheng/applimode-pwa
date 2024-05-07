@@ -62,15 +62,5 @@ PostContentsRepository postContentsRepository(PostContentsRepositoryRef ref) {
 
 @riverpod
 FutureOr<PostContent?> postContentFuture(PostContentFutureRef ref, String id) {
-  return ref
-      .watch(postContentsRepositoryProvider)
-      .fetchPostContent(id)
-      .timeout(const Duration(seconds: 2), onTimeout: () async {
-    await FirebaseFirestore.instance.disableNetwork();
-    await FirebaseFirestore.instance.enableNetwork();
-    return ref
-        .watch(postContentsRepositoryProvider)
-        .fetchPostContent(id)
-        .timeout(const Duration(seconds: 2));
-  });
+  return ref.watch(postContentsRepositoryProvider).fetchPostContent(id);
 }

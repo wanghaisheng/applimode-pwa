@@ -13,7 +13,7 @@ import 'package:applimode_app/src/utils/nanoid.dart';
 import 'package:applimode_app/src/utils/now_to_int.dart';
 import 'package:applimode_app/src/utils/regex.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:applimode_app/src/utils/upload_progress_state.dart';
 import 'package:applimode_app/src/utils/web_video_thumbnail/wvt_stub.dart';
@@ -64,8 +64,6 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
 
     final id = nanoid();
 
-    bool needUpdate = false;
-
     final storageRepository = ref.read(firebaseStorageRepositoryProvider);
     final rTwoRepository = ref.read(rTwoStorageRepositoryProvider);
 
@@ -87,31 +85,20 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
     }
     final ext = Format.mimeTypeToExt(mediaType);
 
-    final needCompress =
-        mediaType == contentTypeJpeg || mediaType == contentTypePng;
-
     try {
       final bytes = isVideo
           ? await storageRepository.getBytes(XFile(match[2]!))
-          : needCompress && !kIsWeb
-              ? await FlutterImageCompress.compressWithFile(match[1]!,
-                      quality: 80) ??
-                  await storageRepository.getBytes(XFile(match[1]!))
-              : await storageRepository.getBytes(XFile(match[1]!));
+          : await storageRepository.getBytes(XFile(match[1]!));
 
       // video thumbnail for mobile
       if (isVideo) {
         String thumbnailFilename = '$filename-thumbnail.jpeg';
         if (kIsWeb) {
-          if (defaultTargetPlatform == TargetPlatform.iOS) {
-            needUpdate = true;
-            thumbnailFilename = '$filename-thumbnail-needupdate.jpeg';
-          }
           final videoThumbnail = await WvtStub().getThumbnailData(
             video: match[2]!,
-            maxWidth: 0,
-            maxHeight: 0,
-            quality: 100,
+            maxWidth: videoThumbnailMaxWidth,
+            maxHeight: videoThumbnailMaxHeight,
+            quality: videoThumbnailQuality,
           );
           // ignore: unnecessary_null_comparison
           if (videoThumbnail != null) {
@@ -136,8 +123,9 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
           final videoThumbnail = await VideoThumbnail.thumbnailData(
             video: match[2]!,
             imageFormat: ImageFormat.JPEG,
-            maxWidth: 1080,
-            quality: 100,
+            maxWidth: videoThumbnailMaxWidth,
+            maxHeight: videoThumbnailMaxHeight,
+            quality: videoThumbnailQuality,
           );
           if (videoThumbnail != null) {
             if (useRTwoStorage) {
@@ -237,7 +225,6 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
             uid: user.uid,
             content: newContent,
             title: '',
-            needUpdate: needUpdate,
             mainImageUrl: mainImageUrl,
             mainVideoUrl: mainVideoUrl,
             mainVideoImageUrl: mainVideoImageUrl,

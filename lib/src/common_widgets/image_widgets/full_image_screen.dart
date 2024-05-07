@@ -1,5 +1,5 @@
+import 'package:applimode_app/src/utils/custom_headers.dart';
 import 'package:flutter/foundation.dart';
-import 'package:applimode_app/env/env.dart';
 import 'package:applimode_app/src/common_widgets/buttons/icon_back_button.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -85,11 +85,7 @@ class FullImageStack extends StatelessWidget {
           child: InteractiveViewer(
             child: CachedNetworkImage(
               imageUrl: url,
-              httpHeaders: useRTwoSecureGet
-                  ? {
-                      "X-Custom-Auth-Key": Env.workerKey,
-                    }
-                  : null,
+              httpHeaders: useRTwoSecureGet ? rTwoSecureHeader : null,
             ),
           ),
         ),

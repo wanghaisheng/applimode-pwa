@@ -1,5 +1,4 @@
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html';
+import 'package:web/web.dart';
 
 import 'package:applimode_app/src/utils/web_back/web_back_stub.dart';
 

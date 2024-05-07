@@ -498,7 +498,7 @@ class _SearchPageListViewState<Document>
         return widget.loadingBuilder!.call(context);
       }
 
-      return const Center(child: SizedCircularProgressIndicator());
+      return const Center(child: CupertinoActivityIndicator());
     }
 
     // when doc is empty

@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:applimode_app/custom_settings.dart';
-import 'package:applimode_app/env/env.dart';
 import 'package:applimode_app/src/constants/constants.dart';
+import 'package:applimode_app/src/utils/custom_headers.dart';
 import 'package:applimode_app/src/utils/string_converter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:http/http.dart' as http;
@@ -29,7 +29,7 @@ class DOneRepository {
     final response = await http.get(
       url,
       headers: {
-        "X-Custom-Auth-Key": Env.workerKey,
+        ...rTwoSecureHeader,
         "Content-Type": contentJson,
       },
     );
@@ -51,7 +51,7 @@ class DOneRepository {
     final response = await http.get(
       url,
       headers: {
-        "X-Custom-Auth-Key": Env.workerKey,
+        ...rTwoSecureHeader,
         "Content-Type": contentJson,
       },
     );
@@ -66,7 +66,7 @@ class DOneRepository {
     http.post(
       url,
       headers: {
-        "X-Custom-Auth-Key": Env.workerKey,
+        ...rTwoSecureHeader,
         "Content-Type": "text/plain",
       },
       body: search,
@@ -78,7 +78,7 @@ class DOneRepository {
     http.put(
       url,
       headers: {
-        "X-Custom-Auth-Key": Env.workerKey,
+        ...rTwoSecureHeader,
         "Content-Type": "text/plain",
       },
       body: search,
@@ -89,9 +89,7 @@ class DOneRepository {
     final url = Uri.https(baseUrl, '$postsBasePath/$postId');
     http.delete(
       url,
-      headers: {
-        "X-Custom-Auth-Key": Env.workerKey,
-      },
+      headers: rTwoSecureHeader,
     );
   }
 }
