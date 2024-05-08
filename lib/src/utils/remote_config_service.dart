@@ -51,7 +51,9 @@ class RemoteConfigService {
     try {
       await _setConfigSettings();
       await _setDefaults();
-      await _remoteConfig.fetchAndActivate();
+      await _remoteConfig.activate();
+      _remoteConfig.fetch();
+      // await _remoteConfig.fetchAndActivate();
     } catch (e) {
       debugPrint(e.toString());
     }

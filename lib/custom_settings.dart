@@ -28,7 +28,7 @@ const androidBundleId = 'applimode.my_applimode';
 const appleBundleId = 'applimode.myApplimode';
 const firebaseProjectName = 'my-applimode';
 const appCreator = 'JongsukOh';
-const appVersion = '0.0.3+1';
+const appVersion = '0.0.4+1';
 
 // Main screen list view style
 // 메인 화면 리스트 뷰 스타일

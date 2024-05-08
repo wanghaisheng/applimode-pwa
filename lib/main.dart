@@ -1,6 +1,8 @@
+import 'package:applimode_app/src/common_widgets/error_widgets/error_scaffold.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -23,13 +25,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  usePathUrlStrategy();
+  registerErrorHandlers();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await RemoteConfigService(FirebaseRemoteConfig.instance).initialize();
   final sharedPreferences = await SharedPreferences.getInstance();
-  usePathUrlStrategy();
   GoRouter.optionURLReflectsImperativeAPIs = true;
   runApp(
     ProviderScope(
@@ -40,4 +43,23 @@ Future<void> main() async {
     ),
   );
   FlutterNativeSplash.remove();
+}
+
+void registerErrorHandlers() {
+  // Show some error UI if any uncaught exception happens
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    debugPrint(details.toString());
+  };
+  // Handle errors from the underlying platform/OS
+  PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
+    debugPrint(error.toString());
+    return true;
+  };
+  // Show some error UI when any widget in the app fails to build
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return ErrorScaffold(
+      errorMessage: details.toString(),
+    );
+  };
 }

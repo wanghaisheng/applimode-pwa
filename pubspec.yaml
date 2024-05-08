@@ -1,5 +1,5 @@
 name: applimode_app
-description: Create your application.
+description: My Applimode Application.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 0.0.3+1
+version: 0.0.4+1
 
 environment:
   sdk: '>=3.1.5 <4.0.0'
@@ -57,9 +57,9 @@ dependencies:
 
   image_picker: ^1.0.4
   cached_network_image: ^3.3.0
-  flutter_markdown: ^0.6.18+2
+  flutter_markdown: ^0.7.1
   markdown: ^7.1.1
-  flutter_widget_from_html: ^0.14.6
+  flutter_widget_from_html: ^0.15.0
 
   uuid: ^4.2.1
   shared_preferences: ^2.2.2
@@ -87,9 +87,9 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^3.0.1
   build_runner: ^2.4.6
-  riverpod_lint: ^2.3.3
-  custom_lint: ^0.5.6
-  riverpod_generator: ^2.3.5
+  riverpod_lint: ^2.3.10
+  custom_lint: ^0.6.4
+  riverpod_generator: ^2.4.0
   flutter_launcher_icons: ^0.13.1
   envied_generator: ^0.5.3
 
