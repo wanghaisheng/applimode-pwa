@@ -1,5 +1,6 @@
 import 'package:applimode_app/src/common_widgets/responsive_widget.dart';
 import 'package:applimode_app/src/constants/constants.dart';
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/small_block_item.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/small_posts_item_contents.dart';
 import 'package:applimode_app/custom_settings.dart';
@@ -12,7 +13,6 @@ import 'package:applimode_app/src/features/authentication/data/app_user_reposito
 import 'package:applimode_app/src/features/posts/domain/post.dart';
 import 'package:applimode_app/src/features/posts/domain/post_and_writer.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
-import 'package:applimode_app/src/utils/remote_config_service.dart';
 
 class SmallPostsItem extends ConsumerWidget {
   const SmallPostsItem({
@@ -41,10 +41,10 @@ class SmallPostsItem extends ConsumerWidget {
         child: SmallBlockItem(),
       );
     }
-    debugPrint('SmallPostsItem build');
+
     final writerAsync = ref.watch(writerFutureProvider(post.uid));
     final mainMediaUrl = post.mainImageUrl ?? post.mainVideoImageUrl;
-    final mainCategory = ref.watch(remoteConfigServiceProvider).mainCategory;
+    final mainCategory = ref.watch(adminSettingsProvider).mainCategory;
 
     return ResponsiveCenter(
       maxContentWidth: pcWidthBreakpoint,
@@ -52,6 +52,7 @@ class SmallPostsItem extends ConsumerWidget {
       child: AsyncValueWidget(
         value: writerAsync,
         data: (writer) {
+          // debugPrint('SmallPostsItem build $index');
           if (writer == null) {
             return const SmallBlockItem();
           }

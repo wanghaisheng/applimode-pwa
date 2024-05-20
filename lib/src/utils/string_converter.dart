@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/cached_padding_image.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/file_padding_image.dart';
-import 'package:applimode_app/src/common_widgets/string_html.dart';
 import 'package:applimode_app/src/common_widgets/string_markdown.dart';
+import 'package:applimode_app/src/common_widgets/youtube_link_shot.dart';
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/video_player/post_video_player.dart';
 import 'package:applimode_app/src/utils/regex.dart';
@@ -44,11 +44,15 @@ class StringConverter {
   static String buildYtProxyThumbnail(String videoId) {
     // maxresdefault (1280), sddefault (640), hqdefault (480), mqdefault (320), default (120)
     const ytRes = isMaxResYoutubeThumbnail ? 'maxresdefault' : 'sddefault';
-    return 'https://yt-thumbnail-worker.jongsukoh80.workers.dev/?q=https://img.youtube.com/vi/$videoId/$ytRes.jpg';
+    return '$youtubeImageProxyUrl/?q=https://img.youtube.com/vi/$videoId/$ytRes.jpg';
   }
 
   static String buildYtUrl(String videoId) {
     return 'https://www.youtube.com/watch?v=$videoId';
+  }
+
+  static String buildYtFullEmbedUrl(String youtubeId) {
+    return 'https://www.youtube.com/embed/$youtubeId?autoplay=1;';
   }
 
   static String buildInstaIf(String instaUrl) {
@@ -76,11 +80,11 @@ class StringConverter {
     }
 
     for (String split in splits) {
-      if (split.contains(Regex.ytIframeRegex)) {
+      if (split.contains(Regex.ytRegexB)) {
         // youtube
         elements.add(Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          child: StringHtml(data: split),
+          child: YoutubeLinkShot(Regex.ytRegexB.firstMatch(split)![1]!),
         ));
       } else if (split.contains(Regex.localImageRegex)) {
         if (kIsWeb) {
@@ -146,12 +150,6 @@ class StringConverter {
             videoImageUrl: Regex.webVideoRegex.firstMatch(split)![1],
           ),
         ));
-      } else if (split.contains(Regex.instaIframeRegex)) {
-        // insta
-        elements.add(Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: StringHtml(data: split),
-        ));
       } else {
         // markdown
         elements.add(StringMarkdown(
@@ -168,8 +166,12 @@ class StringConverter {
     String? postId,
   }) {
     final splits = content
+        // markdown uses too many memroy. so split it for listview.builder
+        .replaceAllMapped(RegExp('\n#+ '), (match) => '$splitTag${match[0]}')
         // youtube url and iframe
-        .replaceAllMapped(Regex.ytRegexB, (match) => buildYtIf(match[1]!))
+        .replaceAllMapped(
+            Regex.ytRegexB, (match) => '$splitTag${match[0]}$splitTag')
+        //.replaceAllMapped(Regex.ytRegexB, (match) => buildYtIf(match[1]!))
         // local image
         .replaceAllMapped(
             Regex.localImageRegex, (match) => '$splitTag${match[0]}$splitTag')
@@ -188,8 +190,6 @@ class StringConverter {
         // web video
         .replaceAllMapped(
             Regex.webVideoRegex, (match) => '$splitTag${match[0]}$splitTag')
-        // instagram
-        .replaceAllMapped(Regex.instaRegex, (match) => buildInstaIf(match[0]!))
         // get split list
         .split(splitTag);
     return _splitsToElements(splits: splits, postId: postId);

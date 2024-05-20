@@ -1,7 +1,6 @@
 import 'package:applimode_app/src/common_widgets/error_widgets/error_scaffold.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,7 +11,6 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'package:applimode_app/firebase_options.dart';
-import 'package:applimode_app/src/utils/remote_config_service.dart';
 import 'package:applimode_app/src/app.dart';
 import 'package:applimode_app/src/utils/shared_preferences.dart';
 
@@ -31,7 +29,7 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  await RemoteConfigService(FirebaseRemoteConfig.instance).initialize();
+  // await RemoteConfigService(FirebaseRemoteConfig.instance).initialize();
   final sharedPreferences = await SharedPreferences.getInstance();
   GoRouter.optionURLReflectsImperativeAPIs = true;
   runApp(

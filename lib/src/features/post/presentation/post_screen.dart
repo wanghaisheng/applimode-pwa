@@ -21,7 +21,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:applimode_app/src/utils/updated_post_ids_list.dart';
 
 class PostScreen extends ConsumerStatefulWidget {
-  const PostScreen({super.key, required this.postId, this.postAndWriter});
+  const PostScreen({
+    super.key,
+    required this.postId,
+    this.postAndWriter,
+  });
 
   final String postId;
   final PostAndWriter? postAndWriter;
@@ -120,8 +124,10 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                           loadingWidget: const Center(
                             child: CupertinoActivityIndicator(),
                           ),
-                          child: ListView(
+                          child: ListView.builder(
                             // shrinkWrap: true,
+                            addAutomaticKeepAlives: false,
+                            addRepaintBoundaries: false,
                             padding: kIsWeb
                                 ? EdgeInsets.only(
                                     left: sidePadding,
@@ -132,7 +138,11 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                                     right: 16,
                                     bottom: 16,
                                   ),
-                            children: itemsList,
+                            itemCount: itemsList.length,
+                            itemBuilder: (context, index) {
+                              return itemsList[index];
+                            },
+                            //children: itemsList,
                           ),
                         ),
                       ),
@@ -160,6 +170,8 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                 child: SafeArea(
                   child: ListView.builder(
                     // shrinkWrap: true,
+                    addAutomaticKeepAlives: false,
+                    addRepaintBoundaries: false,
                     padding: kIsWeb
                         ? EdgeInsets.only(
                             left: sidePadding, right: sidePadding, bottom: 16)

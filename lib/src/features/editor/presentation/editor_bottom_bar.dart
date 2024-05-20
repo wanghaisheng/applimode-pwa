@@ -1,9 +1,9 @@
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/editor/presentation/editor_screen_controller.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/check_category.dart';
-import 'package:applimode_app/src/utils/remote_config_service.dart';
 import 'package:applimode_app/src/utils/show_adaptive_alert_dialog.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:flutter/foundation.dart';
@@ -71,7 +71,7 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
 
   @override
   Widget build(BuildContext context) {
-    final categoryList = ref.watch(remoteConfigServiceProvider).mainCategory;
+    final categoryList = ref.watch(adminSettingsProvider).mainCategory;
     final state = ref.watch(editorScreenControllerProvider);
     final goRouter = ref.watch(goRouterProvider);
     // final progressState = ref.watch(uploadProgressStateProvider);

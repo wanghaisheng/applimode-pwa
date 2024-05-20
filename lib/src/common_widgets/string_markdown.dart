@@ -50,8 +50,8 @@ class StringMarkdown extends StatelessWidget {
           right: 48,
         ),
         h2Padding: const EdgeInsets.only(top: 24),
-        h3Padding: const EdgeInsets.only(top: 12),
-        h4Padding: const EdgeInsets.only(top: 12),
+        h3Padding: const EdgeInsets.only(top: 24),
+        h4Padding: const EdgeInsets.only(top: 24),
         h5Padding: const EdgeInsets.only(top: 12, bottom: 12),
         h6Padding:
             const EdgeInsets.only(top: 24, bottom: 24, left: 48, right: 48),
@@ -59,7 +59,7 @@ class StringMarkdown extends StatelessWidget {
           top: 8,
           bottom: 8,
         ),
-        blockquotePadding: const EdgeInsets.all(12),
+        blockquotePadding: const EdgeInsets.all(16),
         blockquoteDecoration: BoxDecoration(
           color: colorScheme.onInverseSurface,
           // borderRadius: BorderRadius.circular(12),
@@ -71,9 +71,9 @@ class StringMarkdown extends StatelessWidget {
           ),
         ),
         // codeblockPadding: const EdgeInsets.all(12),
-        codeblockDecoration: BoxDecoration(
-          color: const Color(0xFF2B2930),
-          borderRadius: BorderRadius.circular(4),
+        codeblockDecoration: const BoxDecoration(
+          color: Color(0xFF2B2930),
+          // borderRadius: BorderRadius.circular(4),
         ),
         horizontalRuleDecoration: const BoxDecoration(
           border: Border(
@@ -100,6 +100,7 @@ class StringMarkdown extends StatelessWidget {
   }
 }
 
+/*
 class CenterHeaderRowBuilder extends MarkdownElementBuilder {
   @override
   Widget visitText(md.Text text, TextStyle? preferredStyle) {
@@ -111,6 +112,7 @@ class CenterHeaderRowBuilder extends MarkdownElementBuilder {
     );
   }
 }
+*/
 
 class CenterHeaderBuilder extends MarkdownElementBuilder {
   @override
@@ -141,27 +143,29 @@ class BottomLineBuilder extends MarkdownElementBuilder {
   }
 }
 
+/*
 class MiddlePaddingBuilder extends MarkdownPaddingBuilder {
   @override
   EdgeInsets getPadding() => const EdgeInsets.only(bottom: 24);
 }
+*/
 
 class CodeMarkdownElementBuilder extends MarkdownElementBuilder {
   ScrollController horizontalController = ScrollController();
   @override
   Widget visitText(md.Text text, TextStyle? preferredStyle) {
-    final preFontSize = preferredStyle?.fontSize;
+    // final preFontSize = preferredStyle?.fontSize;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       controller: horizontalController,
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(16.0),
         child: SelectableText(
           text.text,
-          style: TextStyle(
-            color: const Color(0xFFD4D4D4),
-            fontFamily: 'monospace',
-            fontSize: (preFontSize != null ? preFontSize - 2 : 14) * 0.85,
+          style: const TextStyle(
+            color: Color(0xFFD4D4D4),
+            // fontFamily: 'monospace',
+            // fontSize: (preFontSize != null ? preFontSize - 2 : 14) * 0.85,
           ),
         ),
       ),

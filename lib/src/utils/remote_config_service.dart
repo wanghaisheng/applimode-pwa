@@ -1,6 +1,8 @@
+/*
 import 'dart:convert';
 
 import 'package:applimode_app/src/constants/constants.dart';
+import 'package:applimode_app/src/features/admin_settings/domain/app_main_category.dart';
 import 'package:applimode_app/src/utils/format.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -38,12 +40,12 @@ class RemoteConfigService {
     await _remoteConfig.setDefaults(const {
       /*
       RemoteConfigKeys.mainCategory:
-          '{"mainCategory":[{"index":0,"path":"/404","title":"Unsorted","color":"FCB126"},]}',
+          '{"mainCategory":[{"index":0,"path":"/cat001","title":"cat001","color":"FF930F"},]}',
       RemoteConfigKeys.mainColor: 'FCB126',
       RemoteConfigKeys.homeBarTitle: mainAppBarTitle,
       */
       RemoteConfigKeys.mainSettings:
-          '{"homeBarTitle":"$spareHomeBarTitle","homeBarImageUrl":"$spareHomeBarImageUrl","homeBarStyle":$spareHomeBarStyle,"mainColor":"$spareMainColor","mainCategory":[{"index":0,"path":"/404","title":"Unsorted","color":"FCB126"}]}'
+          '{"homeBarTitle":"$spareHomeBarTitle","homeBarImageUrl":"$spareHomeBarImageUrl","homeBarStyle":$spareHomeBarStyle,"mainColor":"$spareMainColor","mainCategory":[{"index":0,"path":"/cat001","title":"cat001","color":"FF930F"}]}'
     });
   }
 
@@ -72,7 +74,7 @@ class RemoteConfigService {
 
   List<MainCategory> get mainCategory {
     final catetory = [
-      {"index": 0, "path": "/404", "title": "Unsorted", "color": "FCB126"}
+      {"index": 0, "path": "/cat001", "title": "cat001", "color": "FF930F"}
     ];
     return (mainSettings[RemoteConfigKeys.mainCategory] as List<dynamic>? ??
             catetory)
@@ -109,31 +111,8 @@ class RemoteConfigService {
   */
 }
 
-class MainCategory {
-  const MainCategory({
-    required this.index,
-    required this.path,
-    required this.title,
-    required this.color,
-  });
-
-  final int index;
-  final String path;
-  final String title;
-  final Color color;
-
-  factory MainCategory.fromJson(Map<String, dynamic> json) {
-    return MainCategory(
-      index: json['index'] as int? ?? 0,
-      path: json['path'] as String? ?? '/404',
-      title: json['title'] as String? ?? 'Unsorted',
-      color:
-          Format.hexStringToColorForCat(json['color'] as String? ?? 'FCB126'),
-    );
-  }
-}
-
 @Riverpod(keepAlive: true)
 RemoteConfigService remoteConfigService(RemoteConfigServiceRef ref) {
   return RemoteConfigService(FirebaseRemoteConfig.instance);
 }
+*/

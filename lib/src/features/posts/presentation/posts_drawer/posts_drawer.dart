@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:applimode_app/src/common_widgets/color_circle.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/cached_circle_image.dart';
 import 'package:applimode_app/src/constants/constants.dart';
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/authentication/application/sign_out_service.dart';
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
@@ -13,7 +14,6 @@ import 'package:applimode_app/src/features/posts/presentation/posts_drawer/like_
 import 'package:applimode_app/src/features/posts/presentation/posts_drawer/new_post_noti_button.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
-import 'package:applimode_app/src/utils/remote_config_service.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +29,7 @@ class PostsDrawer extends ConsumerWidget {
     final user = ref.watch(authStateChangesProvider).value;
     final appUser =
         user != null ? ref.watch(appUserFutureProvider(user.uid)).value : null;
-    final categories = ref.watch(remoteConfigServiceProvider).mainCategory;
+    final categories = ref.watch(adminSettingsProvider).mainCategory;
     return Drawer(
       child: SafeArea(
         child: ListView(
@@ -134,6 +134,17 @@ class PostsDrawer extends ConsumerWidget {
               if (user != null) const LikeCommentNotiButton(),
             ],
             divider24,
+            if (appUser != null && appUser.isAdmin)
+              ListTile(
+                leading: const Icon(Icons.admin_panel_settings_outlined),
+                title: Text(context.loc.adminSettings),
+                onTap: () {
+                  if (context.canPop()) {
+                    context.pop();
+                  }
+                  context.push(ScreenPaths.adminSettings);
+                },
+              ),
             ListTile(
               leading: const Icon(Icons.info_outline),
               title: Text(context.loc.appInfo),

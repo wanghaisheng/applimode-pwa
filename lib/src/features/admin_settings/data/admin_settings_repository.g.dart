@@ -1,26 +1,28 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'remote_config_service.dart';
+part of 'admin_settings_repository.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$remoteConfigServiceHash() =>
-    r'769176a9bdccd6f2734de3248a3fd16d8b0f43cb';
+String _$adminSettingsRepositoryHash() =>
+    r'ea8ebdb22b9e27942c767254a5db75dcc87d4545';
 
-/// See also [remoteConfigService].
-@ProviderFor(remoteConfigService)
-final remoteConfigServiceProvider = Provider<RemoteConfigService>.internal(
-  remoteConfigService,
-  name: r'remoteConfigServiceProvider',
+/// See also [adminSettingsRepository].
+@ProviderFor(adminSettingsRepository)
+final adminSettingsRepositoryProvider =
+    AutoDisposeProvider<AdminSettingsRepository>.internal(
+  adminSettingsRepository,
+  name: r'adminSettingsRepositoryProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$remoteConfigServiceHash,
+      : _$adminSettingsRepositoryHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef RemoteConfigServiceRef = ProviderRef<RemoteConfigService>;
+typedef AdminSettingsRepositoryRef
+    = AutoDisposeProviderRef<AdminSettingsRepository>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -1,9 +1,9 @@
 import 'package:applimode_app/src/common_widgets/writer_label.dart';
+import 'package:applimode_app/src/features/admin_settings/domain/app_main_category.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/posts/domain/post.dart';
 import 'package:applimode_app/src/utils/check_category.dart';
 import 'package:applimode_app/src/utils/format.dart';
-import 'package:applimode_app/src/utils/remote_config_service.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:flutter/material.dart';
 

@@ -1,10 +1,10 @@
 import 'package:applimode_app/src/common_widgets/color_circle.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/cached_circle_image.dart';
 import 'package:applimode_app/src/common_widgets/writer_label.dart';
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/posts/domain/post.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/post_sub_info_one_line.dart';
-import 'package:applimode_app/src/utils/remote_config_service.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -67,7 +67,7 @@ class WriterItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mainCategory = ref.watch(remoteConfigServiceProvider).mainCategory;
+    final mainCategory = ref.watch(adminSettingsProvider).mainCategory;
 
     return InkWell(
       onTap: onTap,

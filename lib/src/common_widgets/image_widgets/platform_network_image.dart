@@ -8,7 +8,8 @@ class PlatformNetworkImage extends StatelessWidget {
     required this.imageUrl,
     this.scale = 1.0,
     this.frameBuilder,
-    this.loadingWidget,
+    this.loadingBuilder,
+    this.progressIndicatorBuilder,
     this.errorWidget,
     this.semanticLabel,
     this.excludeFromSemantics = false,
@@ -45,7 +46,9 @@ class PlatformNetworkImage extends StatelessWidget {
   final String imageUrl;
   final double scale;
   final Widget Function(BuildContext, Widget, int?, bool)? frameBuilder;
-  final Widget? loadingWidget;
+  final Widget Function(BuildContext, Widget, ImageChunkEvent?)? loadingBuilder;
+  final Widget Function(BuildContext, String, DownloadProgress)?
+      progressIndicatorBuilder;
   final Widget? errorWidget;
   final String? semanticLabel;
   final bool excludeFromSemantics;
@@ -86,9 +89,7 @@ class PlatformNetworkImage extends StatelessWidget {
         imageUrl,
         scale: scale,
         frameBuilder: frameBuilder,
-        loadingBuilder: loadingWidget == null
-            ? null
-            : (context, child, loadingProgress) => loadingWidget!,
+        loadingBuilder: loadingBuilder,
         errorBuilder: errorWidget == null
             ? null
             : (context, error, stackTrace) => errorWidget!,
@@ -117,9 +118,7 @@ class PlatformNetworkImage extends StatelessWidget {
       httpHeaders: headers,
       imageBuilder: imageBuilder,
       placeholder: placeholder,
-      progressIndicatorBuilder: loadingWidget == null
-          ? null
-          : (context, url, progress) => loadingWidget!,
+      progressIndicatorBuilder: progressIndicatorBuilder,
       errorWidget:
           errorWidget == null ? null : (context, url, error) => errorWidget!,
       fadeOutDuration: fadeOutDuration,

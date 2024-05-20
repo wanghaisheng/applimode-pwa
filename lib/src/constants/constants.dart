@@ -34,6 +34,7 @@ const String commentsPath = 'comments';
 const String postPath = 'post';
 const String profilePath = 'profile';
 const String storyPath = 'story';
+const String appBarTitlePath = 'title';
 
 // stroage file content type
 // 절대 만지지 말 것. 변경 시 직접 코드 수정 필요
@@ -65,8 +66,34 @@ const String gcpStorageUrlHead = 'https://storage.googleapis.com/';
 
 const String spareHomeBarImageUrl = 'assets/images/app-bar-logo.png';
 
+const String youtubeThumbnailName = 'yt-thumbnail.jpeg';
+
 // 랭킹에서 현재 년도 분석 실패시 사용.
 const int rankingCurrentYear = 2024;
+
+// admin settings keys
+const String homeBarTitleKey = 'homeBarTitle';
+const String homeBarImageUrlKey = 'homeBarImageUrl';
+const String homeBarStyleKey = 'homeBarStyle';
+const String mainColorKey = 'mainColor';
+const String mainCategoryKey = 'mainCategory';
+const String adminSettingsModifiedTimeKey = 'adminSettingsModifiedTime';
+
+const List<Color> colorPickerColors = [
+  Color.fromARGB(255, 255, 0, 0),
+  Color.fromARGB(255, 255, 128, 0),
+  Color.fromARGB(255, 255, 255, 0),
+  Color.fromARGB(255, 128, 255, 0),
+  Color.fromARGB(255, 0, 255, 0),
+  Color.fromARGB(255, 0, 255, 128),
+  Color.fromARGB(255, 0, 255, 255),
+  Color.fromARGB(255, 0, 128, 255),
+  Color.fromARGB(255, 0, 0, 255),
+  Color.fromARGB(255, 127, 0, 255),
+  Color.fromARGB(255, 255, 0, 255),
+  Color.fromARGB(255, 255, 0, 127),
+  Color.fromARGB(255, 128, 128, 128),
+];
 
 const divider16 = Divider(
   indent: 16,

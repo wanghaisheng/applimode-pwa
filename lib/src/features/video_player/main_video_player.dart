@@ -1,4 +1,5 @@
 import 'package:applimode_app/src/app_settings/app_settings_controller.dart';
+import 'package:applimode_app/src/common_widgets/image_widgets/platform_network_image.dart';
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/posts/domain/post.dart';
@@ -11,7 +12,6 @@ import 'package:applimode_app/src/utils/custom_headers.dart';
 import 'package:applimode_app/src/utils/posts_item_mute_state.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/utils/posts_item_playing_state.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -115,12 +115,23 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
         children: [
           if (widget.videoImageUrl != null &&
               !_controller.value.isInitialized) ...[
+            /*
             Positioned.fill(
               child: Container(
                 color: Colors.black,
               ),
             ),
+            */
             Positioned.fill(
+              child: PlatformNetworkImage(
+                imageUrl: widget.videoImageUrl!,
+                headers: useRTwoSecureGet ? rTwoSecureHeader : null,
+                fit: BoxFit.cover,
+                errorWidget: Container(
+                  color: Colors.black,
+                ),
+              ),
+              /*
               child: CachedNetworkImage(
                 imageUrl: widget.videoImageUrl!,
                 httpHeaders: useRTwoSecureGet ? rTwoSecureHeader : null,
@@ -131,12 +142,15 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
                   );
                 },
               ),
+              */
             ),
+            /*
             Positioned.fill(
               child: Container(
                 color: Colors.black12,
               ),
             ),
+            */
             if (!isLoading)
               IconButton(
                 onPressed: _initializeVideo,
@@ -165,11 +179,13 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
             ),
           if (_controller.value.isInitialized &&
               !_controller.value.hasError) ...[
+            /*
             Positioned.fill(
               child: Container(
                 color: Colors.black,
               ),
             ),
+            */
             AspectRatio(
               aspectRatio: widget.aspectRatio ?? 1.0,
               child: FittedBox(
@@ -182,12 +198,14 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
                 ),
               ),
             ),
+            /*
             if (!_controller.value.isPlaying)
               Positioned.fill(
                 child: Container(
                   color: Colors.black26,
                 ),
               ),
+              */
             if (isLoading ||
                 _controller.value.isBuffering && !_controller.value.isCompleted)
               const Align(

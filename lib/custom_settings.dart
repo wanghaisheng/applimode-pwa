@@ -16,6 +16,11 @@ const spareHomeBarStyle = 0;
 // Main color used as default when remote configuration is not set. Default FCB126
 const spareMainColor = 'FCB126';
 
+// 리모트 컨피그 설정을 안 했을 경우 기본으로 사용되는 메인 카테고리
+// Main category used as default when remote configuration is not set
+const spareMainCategory =
+    '[{"index":0,"path":"/cat001","title":"cat001","color":"FF930F"}]';
+
 // Data used for app information
 // 앱정보에 사용되는 데이터
 // Refer to pubspec.yaml for version
@@ -122,6 +127,11 @@ const dOneBaseUrl = 'yourD1WorkerUrl';
 // D1에서 검색을 위한 정규표현식. 각 언어에 맞게 설정할 것
 const searchRegExp = '[^A-Za-z0-9ㄱ-ㅎㅏ-ㅣ가-힣\n ]';
 
+// proxy for youtube image
+// 유튜브 이미지를 위한 프록시 주소
+const youtubeImageProxyUrl =
+    'https://yt-thumbnail-worker.jongsukoh80.workers.dev';
+
 // Number of items loaded at once in the main screen list view. default 10
 // 메인 화면 리스트 뷰에서 한번에 불러오는 아이템 숫자. 기본 10
 // As the number increases, the number of reads in the database increases.
@@ -142,6 +152,10 @@ const int videoMaxDuration = 60;
 // Maximum video file size. Default 50.0 in megabytes
 // 비디오 영상 최대 파일 크기. 메가바이트 단위 기본 50.0
 const double mediaMaxMBSize = 50.0;
+
+// Video frame aspect ratio in post
+// 포스트에서 비디오 영상 프레임 비율
+const double postVideoAspectRatio = 1.0;
 
 // Profile image max width
 // 프로필 이미지 최대 너비
@@ -466,4 +480,19 @@ const boxCustomGradientColorPalettes = [
   [Color(0xFFb79c05), Color(0xFF161616)],
   [Color(0xFF42047e), Color(0xFF07f49e)],
   [Color(0xFF40c9ff), Color(0xFFe81cff)],
+];
+
+// basic colors for color picker.
+// 컬러 선택기 기본 색상
+const colorPickerBasicPalettes = [
+  Color(0xFFEB5757),
+  Color(0xFFF37D76),
+  Color(0xFFF2994A),
+  Color(0xFFFCB126),
+  Color(0xFF219653),
+  Color(0xFF6FCF97),
+  Color(0xFF00ACA5),
+  Color(0xFF00AFFE),
+  Color(0xFF967ADC),
+  Color(0xFFb79c05),
 ];

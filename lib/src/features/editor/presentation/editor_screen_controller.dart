@@ -409,7 +409,7 @@ class EditorScreenController extends _$EditorScreenController {
               StringConverter.buildYtProxyThumbnail(firstYtImage[1]!);
           final response = await http.get(Uri.parse(ytThumbUrl));
           final bytes = response.bodyBytes;
-          const ytThumbName = 'yt-thumbnail.jpeg';
+          const ytThumbName = youtubeThumbnailName;
           if (useRTwoStorage) {
             final url = await rTwoRepository.uploadBytes(
               bytes: bytes,

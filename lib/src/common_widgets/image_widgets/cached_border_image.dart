@@ -1,10 +1,9 @@
 import 'dart:math';
 
+import 'package:applimode_app/src/common_widgets/image_widgets/platform_network_image.dart';
 import 'package:applimode_app/src/constants/color_palettes.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/utils/custom_headers.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class CachedBorderImage extends StatelessWidget {
@@ -38,6 +37,21 @@ class CachedBorderImage extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.all(
             Radius.circular(borderRedius ?? cachedBorderImageRedius)),
+        child: PlatformNetworkImage(
+          imageUrl: imgUrl,
+          fit: BoxFit.cover,
+          width: width ?? cachedBorderImageSize,
+          height: height ?? cachedBorderImageSize,
+          cacheWidth: ((width ?? cachedBorderImageSize) * deviceRatio).round(),
+          headers: useRTwoSecureGet ? rTwoSecureHeader : null,
+          errorWidget: CachedBorderWidgetErrorImage(
+            width: width,
+            height: height,
+            borderRedius: borderRedius,
+            index: index,
+          ),
+        ),
+        /*
         child: kIsWeb
             ? Image.network(
                 imgUrl,
@@ -61,11 +75,14 @@ class CachedBorderImage extends StatelessWidget {
                 errorWidget: (context, url, error) => _buildErrorWidget()
                 // fit: BoxFit.cover,
                 ),
+                */
       ),
     );
   }
-
+  /*
   Widget _buildErrorWidget() => Container(
+        width: width ?? cachedBorderImageSize,
+        height: height ?? cachedBorderImageSize,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.all(
                 Radius.circular(borderRedius ?? cachedBorderImageRedius)),
@@ -74,4 +91,35 @@ class CachedBorderImage extends StatelessWidget {
                 : pastelColorPalettes[
                     Random().nextInt(pastelColorPalettes.length)]),
       );
+      */
+}
+
+class CachedBorderWidgetErrorImage extends StatelessWidget {
+  const CachedBorderWidgetErrorImage({
+    super.key,
+    this.width,
+    this.height,
+    this.borderRedius,
+    this.index,
+  });
+
+  final double? width;
+  final double? height;
+  final double? borderRedius;
+  final int? index;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width ?? cachedBorderImageSize,
+      height: height ?? cachedBorderImageSize,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(
+              Radius.circular(borderRedius ?? cachedBorderImageRedius)),
+          color: index != null
+              ? pastelColorPalettes[index! % (pastelColorPalettes.length)]
+              : pastelColorPalettes[
+                  Random().nextInt(pastelColorPalettes.length)]),
+    );
+  }
 }

@@ -1,8 +1,8 @@
+import 'package:applimode_app/src/common_widgets/image_widgets/platform_network_image.dart';
 import 'package:applimode_app/src/utils/custom_headers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:applimode_app/src/common_widgets/buttons/icon_back_button.dart';
 import 'package:applimode_app/custom_settings.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:applimode_app/src/common_widgets/web_back_button.dart';
 
@@ -83,10 +83,16 @@ class FullImageStack extends StatelessWidget {
       children: [
         Positioned.fill(
           child: InteractiveViewer(
+            child: PlatformNetworkImage(
+              imageUrl: url,
+              headers: useRTwoSecureGet ? rTwoSecureHeader : null,
+            ),
+            /*
             child: CachedNetworkImage(
               imageUrl: url,
               httpHeaders: useRTwoSecureGet ? rTwoSecureHeader : null,
             ),
+            */
           ),
         ),
         // if (showOverlay && !kIsWeb)

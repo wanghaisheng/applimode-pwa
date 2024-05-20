@@ -47,6 +47,8 @@ class Regex {
 
   static RegExp searchRegex = RegExp(searchRegExp);
 
+  static RegExp urlPathStringRegex = RegExp('[^a-z0-9-]');
+
   static RegExp blackVideoImageFileName =
       RegExp(r'''posts\%2F(.*)-needupdate''');
   static RegExp firebaseObjectPath = RegExp(r'''\/o\/(.*)\?''');

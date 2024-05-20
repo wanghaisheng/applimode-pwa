@@ -69,6 +69,10 @@ class Format {
     return hexInt == null ? const Color(0xFFFCB126) : Color(hexInt);
   }
 
+  static String colorToHexString(Color color) {
+    return color.value.toRadixString(16).substring(2, 8);
+  }
+
   static String durationToString(Duration duration) {
     return duration.toString().split('.').first.padLeft(8, '0');
   }

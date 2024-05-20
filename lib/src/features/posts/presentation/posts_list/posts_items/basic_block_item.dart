@@ -1,4 +1,4 @@
-import 'package:applimode_app/src/common_widgets/animated_color_box.dart';
+import 'package:applimode_app/src/common_widgets/gradient_color_box.dart';
 import 'package:applimode_app/src/common_widgets/title_text_widget.dart';
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
@@ -51,7 +51,7 @@ class BasicBlockItem extends ConsumerWidget {
         children: [
           AspectRatio(
             aspectRatio: aspectRatio ?? 1.0,
-            child: AnimatedColorBox(
+            child: GradientColorBox(
               index: index,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 64),

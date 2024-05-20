@@ -1,13 +1,9 @@
-// ignore: unused_import
-import 'dart:convert';
-
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:applimode_app/src/common_widgets/image_widgets/platform_network_image.dart';
 import 'package:applimode_app/custom_settings.dart';
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
-import 'package:applimode_app/src/utils/remote_config_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// ignore: unused_import
 import 'package:go_router/go_router.dart';
 
 class PostsAppBar extends ConsumerWidget implements PreferredSizeWidget {
@@ -29,10 +25,10 @@ class PostsAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final homeBarStyle = ref.watch(remoteConfigServiceProvider).homeBarStyle;
-    final homeBarTitle = ref.watch(remoteConfigServiceProvider).homeBarTitle;
-    final homeBarImageUrl =
-        ref.watch(remoteConfigServiceProvider).homeBarImageUrl;
+    final adminSettings = ref.watch(adminSettingsProvider);
+    final homeBarStyle = adminSettings.homeBarStyle;
+    final homeBarTitle = adminSettings.homeBarTitle;
+    final homeBarImageUrl = adminSettings.homeBarImageUrl;
     return AppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -46,7 +42,15 @@ class PostsAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 height: mainScreenAppBarHeight - 2 * mainScreenAppBarPadding,
                 child: homeBarImageUrl.startsWith('assets')
                     ? Image.asset(homeBarImageUrl)
-                    : CachedNetworkImage(imageUrl: homeBarImageUrl),
+                    : PlatformNetworkImage(
+                        imageUrl: homeBarImageUrl,
+                        /*
+                        cacheHeight: (mainScreenAppBarHeight -
+                                2 * mainScreenAppBarPadding)
+                            .round(),
+                        */
+                        errorWidget: const SizedBox.shrink(),
+                      ),
               ),
             ),
           if (homeBarStyle == 2) const SizedBox(width: 8),

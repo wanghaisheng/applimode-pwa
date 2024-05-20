@@ -4,6 +4,7 @@ import 'package:applimode_app/src/constants/color_palettes.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/utils/custom_headers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AnimatedColorContainer extends StatefulWidget {
@@ -78,10 +79,17 @@ class _AnimatedColorContainerState extends State<AnimatedColorContainer>
               image: widget.storyImageUrl == null
                   ? null
                   : DecorationImage(
-                      image: CachedNetworkImageProvider(
-                        widget.storyImageUrl!,
-                        headers: useRTwoSecureGet ? rTwoSecureHeader : null,
-                      ),
+                      image: kIsWeb
+                          ? NetworkImage(
+                              widget.storyImageUrl!,
+                              headers:
+                                  useRTwoSecureGet ? rTwoSecureHeader : null,
+                            )
+                          : CachedNetworkImageProvider(
+                              widget.storyImageUrl!,
+                              headers:
+                                  useRTwoSecureGet ? rTwoSecureHeader : null,
+                            ) as ImageProvider,
                       fit: BoxFit.cover,
                       onError: (exception, stackTrace) =>
                           debugPrint(exception.toString()),

@@ -1,8 +1,8 @@
+import 'package:applimode_app/src/common_widgets/image_widgets/platform_network_image.dart';
 import 'package:applimode_app/src/utils/custom_headers.dart';
 import 'package:go_router/go_router.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/error_image.dart';
 import 'package:applimode_app/custom_settings.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/multi_images.dart';
@@ -33,6 +33,7 @@ class CachedPaddingImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // final screenWidth = MediaQuery.sizeOf(context).width;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: hPadding, vertical: vPadding),
       child: InkWell(
@@ -46,6 +47,23 @@ class CachedPaddingImage extends StatelessWidget {
                   ),
                 )
             : null,
+        child: PlatformNetworkImage(
+          imageUrl: imageUrl,
+          width: width,
+          height: height,
+          headers: useRTwoSecureGet ? rTwoSecureHeader : null,
+          /*
+          cacheWidth: screenWidth > pcWidthBreakpoint
+              ? (pcWidthBreakpoint - (2 * hPadding)).round()
+              : (screenWidth - (2 * hPadding)).round(),
+          */
+          errorWidget: ErrorImage(
+            hPadding: hPadding,
+            vPadding: vPadding,
+            height: errorHeight,
+          ),
+        ),
+        /*
         child: CachedNetworkImage(
           imageUrl: imageUrl,
           httpHeaders: useRTwoSecureGet ? rTwoSecureHeader : null,
@@ -57,6 +75,7 @@ class CachedPaddingImage extends StatelessWidget {
             height: errorHeight,
           ),
         ),
+        */
       ),
     );
   }

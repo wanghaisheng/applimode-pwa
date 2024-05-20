@@ -1,10 +1,11 @@
 import 'dart:io';
 
 import 'package:applimode_app/src/constants/constants.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:applimode_app/src/app_settings/app_settings_controller.dart';
 import 'package:applimode_app/src/common_widgets/error_widgets/error_scaffold.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/full_image_screen.dart';
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
+import 'package:applimode_app/src/features/admin_settings/presentation/admin_settings_screen.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/authentication/presentation/firebase_phone_screen.dart';
 import 'package:applimode_app/src/features/like_users/like_users_screen.dart';
@@ -29,7 +30,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:applimode_app/src/utils/multi_images.dart';
-import 'package:applimode_app/src/utils/remote_config_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
 import 'package:applimode_app/src/features/authentication/presentation/app_user_check_screen.dart';
@@ -51,6 +51,7 @@ class ScreenPaths {
   static String appUserCheck = '/appUserCheck';
   static String write = '/write';
   static String search = '/search';
+  static String adminSettings = '/adminSettings';
   static String recommendedPosts = '/recommendedPosts';
   static String ranking = '/ranking';
   static String post(String postId) => '/post/$postId';
@@ -82,15 +83,12 @@ class ScreenPaths {
 @riverpod
 GoRouter goRouter(GoRouterRef ref) {
   final authRepository = ref.watch(authRepositoryProvider);
-  final categories = ref.watch(remoteConfigServiceProvider).mainCategory;
+  final categories = ref.watch(adminSettingsProvider).mainCategory;
   final appSettings = ref.watch(appSettingsControllerProvider);
   final postsRepository = ref.watch(postsRepositoryProvider);
 
   return GoRouter(
     initialLocation: '/',
-    observers: useAnalytics
-        ? [FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance)]
-        : null,
     refreshListenable: GoRouterRefreshStream(authRepository.authStateChanges()),
     redirect: (context, state) async {
       final user = authRepository.currentUser;
@@ -213,6 +211,24 @@ GoRouter goRouter(GoRouterRef ref) {
             }
             return const CupertinoPage(
               child: SearchScreen(),
+            );
+          }),
+      GoRoute(
+          path: ScreenPaths.adminSettings,
+          pageBuilder: (context, state) {
+            if (kIsWeb) {
+              return const NoTransitionPage(
+                child: AdminSettingsScreen(),
+              );
+            }
+            if (Platform.isAndroid) {
+              return const CustomTransitionPage(
+                transitionsBuilder: buildHorizontalSlideTransitiron,
+                child: AdminSettingsScreen(),
+              );
+            }
+            return const CupertinoPage(
+              child: AdminSettingsScreen(),
             );
           }),
       GoRoute(

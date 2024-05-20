@@ -1,20 +1,22 @@
 import 'package:applimode_app/src/app_settings/app_settings_controller.dart';
-import 'package:applimode_app/src/common_widgets/animated_color_box.dart';
+import 'package:applimode_app/src/common_widgets/gradient_color_box.dart';
+import 'package:applimode_app/src/common_widgets/image_widgets/platform_network_image.dart';
 import 'package:applimode_app/src/common_widgets/main_label.dart';
 import 'package:applimode_app/src/common_widgets/title_text_widget.dart';
 import 'package:applimode_app/src/common_widgets/user_items/writer_item.dart';
+import 'package:applimode_app/src/common_widgets/youtube_link_shot.dart';
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/posts/domain/post_and_writer.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/basic_block_item.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/page_item_buttons.dart';
 import 'package:applimode_app/src/features/video_player/main_video_player.dart';
 import 'package:applimode_app/src/utils/custom_headers.dart';
+import 'package:applimode_app/src/utils/string_converter.dart';
 import 'package:applimode_app/src/utils/url_converter.dart';
 import 'package:applimode_app/src/utils/get_max_width.dart';
 import 'package:applimode_app/src/utils/posts_item_playing_state.dart';
 import 'package:applimode_app/src/utils/regex.dart';
 import 'package:applimode_app/custom_settings.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -22,6 +24,7 @@ import 'package:applimode_app/src/common_widgets/async_value_widgets/async_value
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/posts/domain/post.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BasicPostsItem extends ConsumerWidget {
   const BasicPostsItem({
@@ -46,7 +49,7 @@ class BasicPostsItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // debugInvertOversizedImages = true;
-    debugPrint('BasicPostsItem build');
+
     final writerAsync = ref.watch(writerFutureProvider(post.uid));
     final appSettings = ref.watch(appSettingsControllerProvider);
     final mainImageUrl = post.mainImageUrl;
@@ -67,6 +70,7 @@ class BasicPostsItem extends ConsumerWidget {
     return AsyncValueWidget(
       value: writerAsync,
       data: (writer) {
+        // debugPrint('BasicPostsItem build: $index');
         final isContent = writer != null && !writer.isBlock && !post.isBlock;
         if (writer == null) {
           return BasicBlockItem(
@@ -114,13 +118,13 @@ class BasicPostsItem extends ConsumerWidget {
                     if (isContent && !isVideo)
                       mainImageUrl != null
                           ? Positioned.fill(
-                              child: CachedNetworkImage(
+                              child: PlatformNetworkImage(
                               imageUrl: mainImageUrl,
                               fit: BoxFit.cover,
-                              httpHeaders:
+                              headers:
                                   useRTwoSecureGet ? rTwoSecureHeader : null,
                             ))
-                          : AnimatedColorBox(
+                          : GradientColorBox(
                               index: index,
                               child: Padding(
                                 padding: const EdgeInsets.all(64.0),
@@ -138,6 +142,22 @@ class BasicPostsItem extends ConsumerWidget {
                                 ),
                               ),
                             ),
+                    if (mainImageUrl != null &&
+                        mainImageUrl.contains(youtubeThumbnailName))
+                      InkWell(
+                        onTap: () {
+                          final youtubeId =
+                              Regex.ytRegexB.firstMatch(post.content)?[1];
+                          if (youtubeId != null) {
+                            final uri = Uri.tryParse(
+                                StringConverter.buildYtFullEmbedUrl(youtubeId));
+                            if (uri != null) {
+                              launchUrl(uri);
+                            }
+                          }
+                        },
+                        child: const YoutubePlayIcon(),
+                      ),
                     if (isContent) ...[
                       Positioned(
                         left: 16,

@@ -1,10 +1,10 @@
 import 'package:applimode_app/src/common_widgets/title_text_widget.dart';
 import 'package:applimode_app/custom_settings.dart';
+import 'package:applimode_app/src/features/admin_settings/domain/app_main_category.dart';
 import 'package:flutter/material.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/posts/domain/post.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/post_sub_info_one_line.dart';
-import 'package:applimode_app/src/utils/remote_config_service.dart';
 
 class SmallPostsItemContents extends StatelessWidget {
   const SmallPostsItemContents({

@@ -1,4 +1,4 @@
-import 'package:applimode_app/src/utils/remote_config_service.dart';
+import 'package:applimode_app/src/features/admin_settings/domain/app_main_category.dart';
 
 MainCategory checkCategory(List<MainCategory> categoryList, int category) {
   return category > categoryList.length - 1
