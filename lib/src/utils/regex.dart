@@ -27,6 +27,8 @@ class Regex {
       r'''(?:https?://|//)?(?:www\.|m\.|.+\.)?(?:youtu\.be/|youtube\.com/(?:embed/|v/|shorts/|feeds/api/videos/|watch\?v=|watch\?.+&v=))([\w-]{11})(?![\w-])''');
   static RegExp ytRegexB = RegExp(
       r'''(?:https?:\/\/|\/\/)?(?:www\.|m\.|.+\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|shorts\/|live\/|feeds\/api\/videos\/|watch\?v=|watch\?.+&v=))([\w-]{11})(?![\w-])(?:.*)''');
+  static RegExp ytImageRegex = RegExp(
+      r'''(?:https?:\/\/|\/\/)?img\.youtube\.com\/vi\/([\w-]{11})\/(?:maxresdefault|sddefault|hqdefault|mqdefault|default)\.jpg''');
 
   static RegExp iframeRegex =
       RegExp(r'''<iframe[^>]*src=[\"|']([^'\"]+)[\"|'][^>]*>''');

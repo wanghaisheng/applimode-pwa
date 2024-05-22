@@ -36,8 +36,8 @@ class PostCommentsScreenAppBar extends ConsumerWidget
       actions: [
         MenuAnchor(
           style: const MenuStyle(
-              padding: MaterialStatePropertyAll(
-                  EdgeInsets.symmetric(horizontal: 24))),
+              padding:
+                  WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 24))),
           builder: (context, controller, child) => TextButton(
             onPressed: () {
               if (controller.isOpen) {

@@ -93,7 +93,7 @@ class _EditUsernameScreenState extends ConsumerState<EditUsernameScreen> {
                   ? const SizedCircularProgressIndicator()
                   : FilledButton(
                       style: const ButtonStyle(
-                        shape: MaterialStatePropertyAll(CircleBorder()),
+                        shape: WidgetStatePropertyAll(CircleBorder()),
                       ),
                       onPressed: _submit,
                       child: const Icon(Icons.done),

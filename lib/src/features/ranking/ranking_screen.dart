@@ -497,20 +497,20 @@ class RankingMenuAnchorButton extends StatelessWidget {
               }
             },
       style: ButtonStyle(
-          padding: const MaterialStatePropertyAll(
+          padding: const WidgetStatePropertyAll(
             EdgeInsets.symmetric(
               horizontal: 12,
               vertical: 0,
             ),
           ),
-          backgroundColor: MaterialStateProperty.resolveWith((states) {
-            if (states.contains(MaterialState.disabled)) {
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
               return Theme.of(context).colorScheme.onSurface.withOpacity(0.12);
             } else {
               return buttonBackgroundColor;
             }
           }),
-          foregroundColor: const MaterialStatePropertyAll(Colors.white)),
+          foregroundColor: const WidgetStatePropertyAll(Colors.white)),
       child: Text(
         label,
         overflow: TextOverflow.ellipsis,

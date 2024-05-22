@@ -147,17 +147,17 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
                               }
                             },
                             style: ButtonStyle(
-                                padding: const MaterialStatePropertyAll(
+                                padding: const WidgetStatePropertyAll(
                                   EdgeInsets.symmetric(
                                     horizontal: 24,
                                     // vertical: 12,
                                   ),
                                 ),
-                                backgroundColor: MaterialStatePropertyAll(
+                                backgroundColor: WidgetStatePropertyAll(
                                     checkCategory(categoryList, category)
                                         .color),
-                                foregroundColor: const MaterialStatePropertyAll(
-                                    Colors.white)),
+                                foregroundColor:
+                                    const WidgetStatePropertyAll(Colors.white)),
                             child: Text(
                               checkCategory(categoryList, category).title,
                             ),
@@ -217,7 +217,7 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
                           }
                         },
                   style: const ButtonStyle(
-                    padding: MaterialStatePropertyAll(
+                    padding: WidgetStatePropertyAll(
                       EdgeInsets.symmetric(
                         horizontal: 32,
                         vertical: 12,

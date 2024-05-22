@@ -26,7 +26,7 @@ class YoutubeLinkShot extends StatelessWidget {
           children: [
             Positioned.fill(
               child: PlatformNetworkImage(
-                imageUrl: StringConverter.buildYtProxyThumbnail(youtubeId),
+                imageUrl: StringConverter.buildYtThumbnail(youtubeId),
                 fit: BoxFit.cover,
                 frameBuilder: (context, child, frame, sync) {
                   if (frame == null) {
@@ -36,7 +36,19 @@ class YoutubeLinkShot extends StatelessWidget {
                 },
                 progressIndicatorBuilder: (p0, p1, p2) =>
                     const CupertinoActivityIndicator(),
-                errorWidget: Container(color: Colors.black),
+                errorWidget: PlatformNetworkImage(
+                  imageUrl: StringConverter.buildYtProxyThumbnail(youtubeId),
+                  fit: BoxFit.cover,
+                  frameBuilder: (context, child, frame, sync) {
+                    if (frame == null) {
+                      return const CupertinoActivityIndicator();
+                    }
+                    return child;
+                  },
+                  progressIndicatorBuilder: (p0, p1, p2) =>
+                      const CupertinoActivityIndicator(),
+                  errorWidget: Container(color: Colors.black),
+                ),
               ),
             ),
             const YoutubePlayIcon(),

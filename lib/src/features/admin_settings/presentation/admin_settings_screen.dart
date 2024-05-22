@@ -202,7 +202,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                           builder: (context, controller, child) {
                             return FilledButton.tonal(
                               style: const ButtonStyle(
-                                  padding: MaterialStatePropertyAll(
+                                  padding: WidgetStatePropertyAll(
                                       EdgeInsets.symmetric(
                                 horizontal: 16,
                                 vertical: 16,
@@ -255,7 +255,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                         child: FilledButton.tonal(
                           style: const ButtonStyle(
                               padding:
-                                  MaterialStatePropertyAll(EdgeInsets.symmetric(
+                                  WidgetStatePropertyAll(EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 16,
                           ))),
@@ -318,8 +318,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                         child: FilledButton(
                           style: ButtonStyle(
                               backgroundColor:
-                                  MaterialStatePropertyAll(_mainColor),
-                              padding: const MaterialStatePropertyAll(
+                                  WidgetStatePropertyAll(_mainColor),
+                              padding: const WidgetStatePropertyAll(
                                   EdgeInsets.symmetric(
                                 horizontal: 16,
                                 vertical: 16,
@@ -442,7 +442,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                         child: FilledButton.tonalIcon(
                           style: const ButtonStyle(
                               padding:
-                                  MaterialStatePropertyAll(EdgeInsets.symmetric(
+                                  WidgetStatePropertyAll(EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 16,
                           ))),
@@ -478,7 +478,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                         child: FilledButton.tonalIcon(
                           style: const ButtonStyle(
                               padding:
-                                  MaterialStatePropertyAll(EdgeInsets.symmetric(
+                                  WidgetStatePropertyAll(EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 16,
                           ))),

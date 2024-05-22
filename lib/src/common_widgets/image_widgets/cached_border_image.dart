@@ -4,6 +4,8 @@ import 'package:applimode_app/src/common_widgets/image_widgets/platform_network_
 import 'package:applimode_app/src/constants/color_palettes.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/utils/custom_headers.dart';
+import 'package:applimode_app/src/utils/regex.dart';
+import 'package:applimode_app/src/utils/string_converter.dart';
 import 'package:flutter/material.dart';
 
 class CachedBorderImage extends StatelessWidget {
@@ -44,12 +46,30 @@ class CachedBorderImage extends StatelessWidget {
           height: height ?? cachedBorderImageSize,
           cacheWidth: ((width ?? cachedBorderImageSize) * deviceRatio).round(),
           headers: useRTwoSecureGet ? rTwoSecureHeader : null,
-          errorWidget: CachedBorderWidgetErrorImage(
-            width: width,
-            height: height,
-            borderRedius: borderRedius,
-            index: index,
-          ),
+          errorWidget: Regex.ytImageRegex.hasMatch(imgUrl)
+              ? PlatformNetworkImage(
+                  imageUrl: StringConverter.buildYtProxyThumbnail(
+                    Regex.ytImageRegex.firstMatch(imgUrl)![1]!,
+                  ),
+                  fit: BoxFit.cover,
+                  width: width ?? cachedBorderImageSize,
+                  height: height ?? cachedBorderImageSize,
+                  cacheWidth:
+                      ((width ?? cachedBorderImageSize) * deviceRatio).round(),
+                  headers: useRTwoSecureGet ? rTwoSecureHeader : null,
+                  errorWidget: CachedBorderWidgetErrorImage(
+                    width: width,
+                    height: height,
+                    borderRedius: borderRedius,
+                    index: index,
+                  ),
+                )
+              : CachedBorderWidgetErrorImage(
+                  width: width,
+                  height: height,
+                  borderRedius: borderRedius,
+                  index: index,
+                ),
         ),
         /*
         child: kIsWeb

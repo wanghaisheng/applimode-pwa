@@ -19,19 +19,19 @@ class AppThemeData {
           ),
       elevatedButtonTheme: const ElevatedButtonThemeData(
           style: ButtonStyle(
-        padding: MaterialStatePropertyAll(EdgeInsets.all(24)),
+        padding: WidgetStatePropertyAll(EdgeInsets.all(24)),
       )),
       filledButtonTheme: const FilledButtonThemeData(
           style: ButtonStyle(
-        padding: MaterialStatePropertyAll(EdgeInsets.all(24)),
+        padding: WidgetStatePropertyAll(EdgeInsets.all(24)),
       )),
       textButtonTheme: const TextButtonThemeData(
           style: ButtonStyle(
-        padding: MaterialStatePropertyAll(EdgeInsets.all(24)),
+        padding: WidgetStatePropertyAll(EdgeInsets.all(24)),
       )),
       outlinedButtonTheme: const OutlinedButtonThemeData(
           style: ButtonStyle(
-        padding: MaterialStatePropertyAll(EdgeInsets.all(24)),
+        padding: WidgetStatePropertyAll(EdgeInsets.all(24)),
       )),
     );
   }

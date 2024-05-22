@@ -52,6 +52,22 @@ class AdminSettingsService {
   }
 
   Future<void> initialize() async {
+    // debugPrint('adminSettings init starts : ${DateTime.now()}');
+    final lastModified =
+        sharedPreferences.getInt(adminSettingsModifiedTimeKey) ?? 0;
+    final durationInSeconds = Duration(
+            milliseconds: DateTime.now().millisecondsSinceEpoch - lastModified)
+        .inSeconds;
+    debugPrint('duration: $durationInSeconds');
+    if (durationInSeconds > adminSettingsInterval.inSeconds) {
+      fetch();
+    } else {
+      debugPrint('adminSettings timelimit');
+    }
+    // debugPrint('adminSettings init ends : ${DateTime.now()}');
+  }
+
+  Future<void> fetch() async {
     try {
       // debugPrint('adminSettings fetch starts : ${DateTime.now()}');
       final adminSettings = await adminSettingsRepository.fetchAdminSettings();
@@ -73,8 +89,12 @@ class AdminSettingsService {
               mainCategoryKey,
               json.encode(
                   adminSettings.mainCategory.map((e) => e.toMap()).toList()));
+          sharedPreferences.setInt(adminSettingsModifiedTimeKey,
+              DateTime.now().millisecondsSinceEpoch);
         } else {
           debugPrint('admin setting same');
+          sharedPreferences.setInt(adminSettingsModifiedTimeKey,
+              DateTime.now().millisecondsSinceEpoch);
         }
       }
       // debugPrint('adminSettings update ends : ${DateTime.now()}');

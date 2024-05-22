@@ -60,7 +60,7 @@ class AdminSettingsScreenController extends _$AdminSettingsScreenController {
     }
 
     try {
-      await ref.read(adminSettingsServiceProvider).initialize();
+      await ref.read(adminSettingsServiceProvider).fetch();
     } catch (e) {
       debugPrint('adminSettings init error: ${e.toString()}');
     }

@@ -201,10 +201,9 @@ const int videoThumbnailQuality = 90;
 // 유튜브 썸네일 최대 사이즈로 가져올 경우
 const bool isMaxResYoutubeThumbnail = false;
 
-// Frequency of remote config calls.
-// A minimum of 12 hours of use in production mode is recommended.
-// 리모트 컨피그 호출 빈도. 프로덕션 모드에서 최소 12시간 사용 권장.
-const Duration remoteConfigInterval = Duration(minutes: 10);
+// Frequency of admin Settings calls. default 600 seconds
+// 어드민 세팅 호출 빈도. 기본 값 600초.
+const Duration adminSettingsInterval = Duration(seconds: 60 * 10);
 
 // Changing this will change the maximum width of the content on the web.
 // Only pcWidthBreakpoint was used.

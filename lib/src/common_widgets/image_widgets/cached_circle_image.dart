@@ -21,6 +21,7 @@ class CachedCircleImage extends StatelessWidget {
       width: size ?? profileSizeMedium,
       height: size ?? profileSizeMedium,
       decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer,
         image: DecorationImage(
           image: kIsWeb
               ? NetworkImage(

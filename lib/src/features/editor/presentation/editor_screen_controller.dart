@@ -29,7 +29,7 @@ import 'package:applimode_app/src/utils/web_video_thumbnail/wvt_stub.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 
 part 'editor_screen_controller.g.dart';
 
@@ -404,6 +404,7 @@ class EditorScreenController extends _$EditorScreenController {
       } else if (firstWebImage != null) {
         mainImageUrl = firstWebImage[1];
       } else if (firstYtImage != null) {
+        /*
         try {
           final ytThumbUrl =
               StringConverter.buildYtProxyThumbnail(firstYtImage[1]!);
@@ -429,8 +430,9 @@ class EditorScreenController extends _$EditorScreenController {
         } catch (e) {
           mainImageUrl = StringConverter.buildYtThumbnail(firstYtImage[1]!);
         }
+        */
 
-        // mainImageUrl = StringConverter.buildYtThumbnail(firstYtImage[1]!);
+        mainImageUrl = StringConverter.buildYtThumbnail(firstYtImage[1]!);
       }
 
       // mainVideoUrl

@@ -123,6 +123,24 @@ class BasicPostsItem extends ConsumerWidget {
                               fit: BoxFit.cover,
                               headers:
                                   useRTwoSecureGet ? rTwoSecureHeader : null,
+                              errorWidget: Regex.ytImageRegex
+                                      .hasMatch(mainImageUrl)
+                                  ? PlatformNetworkImage(
+                                      imageUrl:
+                                          StringConverter.buildYtProxyThumbnail(
+                                              Regex.ytImageRegex.firstMatch(
+                                                  mainImageUrl)![1]!),
+                                      fit: BoxFit.cover,
+                                      headers: useRTwoSecureGet
+                                          ? rTwoSecureHeader
+                                          : null,
+                                      errorWidget: Container(
+                                        color: Colors.black,
+                                      ),
+                                    )
+                                  : Container(
+                                      color: Colors.black,
+                                    ),
                             ))
                           : GradientColorBox(
                               index: index,
@@ -143,11 +161,11 @@ class BasicPostsItem extends ConsumerWidget {
                               ),
                             ),
                     if (mainImageUrl != null &&
-                        mainImageUrl.contains(youtubeThumbnailName))
+                        Regex.ytImageRegex.hasMatch(mainImageUrl))
                       InkWell(
                         onTap: () {
                           final youtubeId =
-                              Regex.ytRegexB.firstMatch(post.content)?[1];
+                              Regex.ytImageRegex.firstMatch(mainImageUrl)?[1];
                           if (youtubeId != null) {
                             final uri = Uri.tryParse(
                                 StringConverter.buildYtFullEmbedUrl(youtubeId));

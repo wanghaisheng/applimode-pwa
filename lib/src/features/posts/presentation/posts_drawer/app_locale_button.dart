@@ -15,7 +15,7 @@ class AppLocaleButton extends ConsumerWidget {
     return MenuAnchor(
       style: const MenuStyle(
           padding:
-              MaterialStatePropertyAll(EdgeInsets.symmetric(horizontal: 24))),
+              WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 24))),
       builder: (context, controller, child) => ListTile(
         onTap: () {
           if (controller.isOpen) {

@@ -16,7 +16,7 @@ class ProfileTextButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      style: ButtonStyle(padding: MaterialStatePropertyAll(padding)),
+      style: ButtonStyle(padding: WidgetStatePropertyAll(padding)),
       onPressed: onPressed,
       child: Text(
         label,

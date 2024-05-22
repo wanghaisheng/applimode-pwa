@@ -38,7 +38,8 @@ class StringConverter {
 
   static String buildYtThumbnail(String videoId) {
     // maxresdefault (1280), sddefault (640), hqdefault (480), mqdefault (320), default (120)
-    return 'https://img.youtube.com/vi/$videoId/maxresdefault.jpg';
+    const ytRes = isMaxResYoutubeThumbnail ? 'maxresdefault' : 'sddefault';
+    return 'https://img.youtube.com/vi/$videoId/$ytRes.jpg';
   }
 
   static String buildYtProxyThumbnail(String videoId) {
@@ -52,7 +53,9 @@ class StringConverter {
   }
 
   static String buildYtFullEmbedUrl(String youtubeId) {
-    return 'https://www.youtube.com/embed/$youtubeId?autoplay=1;';
+    // https://www.youtube-nocookie.com/embed/$youtubeId?rel=0
+    // https://www.youtube.com/embed/$youtubeId?autoplay=1;
+    return 'https://www.youtube-nocookie.com/embed/$youtubeId?rel=0';
   }
 
   static String buildInstaIf(String instaUrl) {
@@ -106,8 +109,7 @@ class StringConverter {
         elements.add(Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: PostVideoPlayer(
-            videoUrl:
-                getIosWebVideoUrl(Regex.localVideoRegex.firstMatch(split)![2]!),
+            videoUrl: Regex.localVideoRegex.firstMatch(split)![2]!,
             isIosLocal: kIsWeb ? false : Platform.isIOS,
           ),
         ));

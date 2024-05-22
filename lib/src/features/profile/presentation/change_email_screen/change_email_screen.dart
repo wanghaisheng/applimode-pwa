@@ -111,7 +111,7 @@ class _ChangeEmailScreenState extends ConsumerState<ChangeEmailScreen> {
                       ? const SizedCircularProgressIndicator()
                       : FilledButton(
                           style: const ButtonStyle(
-                            shape: MaterialStatePropertyAll(CircleBorder()),
+                            shape: WidgetStatePropertyAll(CircleBorder()),
                           ),
                           onPressed: _submit,
                           child: const Icon(Icons.done),

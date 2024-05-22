@@ -86,6 +86,7 @@ class FullImageStack extends StatelessWidget {
             child: PlatformNetworkImage(
               imageUrl: url,
               headers: useRTwoSecureGet ? rTwoSecureHeader : null,
+              errorWidget: Container(color: Colors.black),
             ),
             /*
             child: CachedNetworkImage(

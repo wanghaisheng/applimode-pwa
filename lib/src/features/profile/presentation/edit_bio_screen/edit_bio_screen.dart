@@ -84,7 +84,7 @@ class _EditBioScreenState extends ConsumerState<EditBioScreen> {
                   ? const SizedCircularProgressIndicator()
                   : FilledButton(
                       style: const ButtonStyle(
-                        shape: MaterialStatePropertyAll(CircleBorder()),
+                        shape: WidgetStatePropertyAll(CircleBorder()),
                       ),
                       onPressed: _submit,
                       child: const Icon(Icons.done),
