@@ -1,12 +1,14 @@
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:applimode_app/src/common_widgets/title_text_widget.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/features/admin_settings/domain/app_main_category.dart';
-import 'package:flutter/material.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/posts/domain/post.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/post_sub_info_one_line.dart';
 
-class SmallPostsItemContents extends StatelessWidget {
+class SmallPostsItemContents extends ConsumerWidget {
   const SmallPostsItemContents({
     super.key,
     required this.post,
@@ -29,7 +31,8 @@ class SmallPostsItemContents extends StatelessWidget {
   final int? index;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final adminSettings = ref.watch(adminSettingsProvider);
     final titleTextStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
           fontSize: smallPostsItemTitleSize,
         );
@@ -68,35 +71,35 @@ class SmallPostsItemContents extends StatelessWidget {
         PostSubInfoOneLine(
           post: post,
           mainCategory: mainCategory,
-          showMainCategory: useCategory,
+          showMainCategory: adminSettings.useCategory,
           writer: writer,
           showCommentPlusLikeCount:
               isLikeRanking || isDislikeRanking || isSumRanking
                   ? false
-                  : showCommentPlusLikeCount,
+                  : adminSettings.showCommentPlusLikeCount,
           showLikeCount: isLikeRanking
               ? true
               : isDislikeRanking || isSumRanking
                   ? false
-                  : showLikeCount,
+                  : adminSettings.showLikeCount,
           showDislikeCount: isDislikeRanking
               ? true
               : isLikeRanking || isSumRanking
                   ? false
-                  : showDislikeCount,
+                  : adminSettings.showDislikeCount,
           showSumCount: isSumRanking
               ? true
               : isLikeRanking || isDislikeRanking
                   ? false
-                  : showSumCount,
-          showCommentCount: showCommentCount,
+                  : adminSettings.showSumCount,
+          showCommentCount: adminSettings.showCommentCount,
           fontSize: smallPostsItemSubInfoSize,
           iconSize: smallPostsItemSubInfoSize + 2,
-          showUserAdminLabel: showUserAdminLabel,
-          showUserLikeLabel: showUserLikeCount,
-          showUserDislikeLabel: showUserDislikeCount,
-          showUserSumLabel: showUserSumCount,
-          isThumbUpToHeart: isThumbUpToHeart,
+          showUserAdminLabel: adminSettings.showUserAdminLabel,
+          showUserLikeLabel: adminSettings.showUserLikeCount,
+          showUserDislikeLabel: adminSettings.showUserDislikeCount,
+          showUserSumLabel: adminSettings.showUserSumCount,
+          isThumbUpToHeart: adminSettings.isThumbUpToHeart,
         ),
       ],
     );

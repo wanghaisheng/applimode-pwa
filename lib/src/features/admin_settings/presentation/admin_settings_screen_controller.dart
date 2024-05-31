@@ -1,3 +1,4 @@
+import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/admin_settings/domain/app_main_category.dart';
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
@@ -24,6 +25,24 @@ class AdminSettingsScreenController extends _$AdminSettingsScreenController {
     required Color mainColor,
     required List<MainCategory> mainCategory,
     XFile? xFile,
+    required bool showAppStyleOption,
+    required PostsListType postsListType,
+    required BoxColorType boxColorType,
+    required double mediaMaxMBSize,
+    required bool useRecommendation,
+    required bool useRanking,
+    required bool useCategory,
+    required bool showLogoutOnDrawer,
+    required bool showLikeCount,
+    required bool showDislikeCount,
+    required bool showCommentCount,
+    required bool showSumCount,
+    required bool showCommentPlusLikeCount,
+    required bool isThumbUpToHeart,
+    required bool showUserAdminLabel,
+    required bool showUserLikeCount,
+    required bool showUserDislikeCount,
+    required bool showUserSumCount,
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
@@ -47,6 +66,24 @@ class AdminSettingsScreenController extends _$AdminSettingsScreenController {
             mainColor: mainColor,
             mainCategory: mainCategory,
             xFile: xFile,
+            showAppStyleOption: showAppStyleOption,
+            postsListType: postsListType,
+            boxColorType: boxColorType,
+            mediaMaxMBSize: mediaMaxMBSize,
+            useRecommendation: useRecommendation,
+            useRanking: useRanking,
+            useCategory: useCategory,
+            showLogoutOnDrawer: showLogoutOnDrawer,
+            showLikeCount: showLikeCount,
+            showDislikeCount: showDislikeCount,
+            showCommentCount: showCommentCount,
+            showSumCount: showSumCount,
+            showCommentPlusLikeCount: showCommentPlusLikeCount,
+            isThumbUpToHeart: isThumbUpToHeart,
+            showUserAdminLabel: showUserAdminLabel,
+            showUserLikeCount: showUserLikeCount,
+            showUserDislikeCount: showUserDislikeCount,
+            showUserSumCount: showUserSumCount,
           ),
     );
 

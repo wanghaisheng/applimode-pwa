@@ -29,7 +29,7 @@ class PostsDrawer extends ConsumerWidget {
     final user = ref.watch(authStateChangesProvider).value;
     final appUser =
         user != null ? ref.watch(appUserFutureProvider(user.uid)).value : null;
-    final categories = ref.watch(adminSettingsProvider).mainCategory;
+    final adminSettings = ref.watch(adminSettingsProvider);
     return Drawer(
       child: SafeArea(
         child: ListView(
@@ -81,7 +81,7 @@ class PostsDrawer extends ConsumerWidget {
               },
             ),
             */
-            if (useRecommendation)
+            if (adminSettings.useRecommendation)
               ListTile(
                 leading: const Icon(Icons.recommend_outlined),
                 title: Text(context.loc.recommendedPosts),
@@ -92,7 +92,7 @@ class PostsDrawer extends ConsumerWidget {
                   context.push(ScreenPaths.recommendedPosts);
                 },
               ),
-            if (useRanking)
+            if (adminSettings.useRanking)
               ListTile(
                 leading: const Icon(Icons.military_tech_outlined),
                 title: Text(context.loc.ranking),
@@ -103,8 +103,9 @@ class PostsDrawer extends ConsumerWidget {
                   context.push(ScreenPaths.ranking);
                 },
               ),
-            if (categories.length > 1 && useCategory)
-              ...categories.map(
+            if (adminSettings.mainCategory.length > 1 &&
+                adminSettings.useCategory)
+              ...adminSettings.mainCategory.map(
                 (e) => ListTile(
                   leading: Icon(
                     Icons.label_outline,
@@ -119,12 +120,12 @@ class PostsDrawer extends ConsumerWidget {
                   },
                 ),
               ),
-            if (useRecommendation ||
-                useRanking ||
-                useCategory ||
-                showAppStyleOption)
+            if (adminSettings.useRecommendation ||
+                adminSettings.useRanking ||
+                adminSettings.useCategory ||
+                adminSettings.showAppStyleOption)
               divider24,
-            if (showAppStyleOption) const AppStyleButton(),
+            if (adminSettings.showAppStyleOption) const AppStyleButton(),
             const AppThemeButton(),
             const AppLocaleButton(),
             if (!kIsWeb &&
@@ -156,7 +157,7 @@ class PostsDrawer extends ConsumerWidget {
               },
             ),
             divider24,
-            if (user != null && showLogoutOnDrawer)
+            if (user != null && adminSettings.showLogoutOnDrawer)
               ListTile(
                 leading: const Icon(Icons.logout),
                 title: Text(context.loc.logOut),

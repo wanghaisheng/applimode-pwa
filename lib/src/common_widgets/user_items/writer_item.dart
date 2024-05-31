@@ -67,7 +67,8 @@ class WriterItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mainCategory = ref.watch(adminSettingsProvider).mainCategory;
+    final adminSettings = ref.watch(adminSettingsProvider);
+    final mainCategory = adminSettings.mainCategory;
 
     return InkWell(
       onTap: onTap,
@@ -92,7 +93,7 @@ class WriterItem extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      if (showUserAdminLabel && writer.isAdmin)
+                      if (adminSettings.showUserAdminLabel && writer.isAdmin)
                         const Icon(
                           Icons.verified_user,
                           color: Color(userAdminColor),
@@ -105,7 +106,7 @@ class WriterItem extends ConsumerWidget {
                           size: basicPostsItemNameSize,
                         ),
                       if (writer.verified ||
-                          (showUserAdminLabel && writer.isAdmin))
+                          (adminSettings.showUserAdminLabel && writer.isAdmin))
                         const SizedBox(width: 4),
                       Flexible(
                         child: Text(
@@ -119,7 +120,7 @@ class WriterItem extends ConsumerWidget {
                                   ),
                         ),
                       ),
-                      if (showUserLikeCount) ...[
+                      if (adminSettings.showUserLikeCount) ...[
                         const SizedBox(width: 4),
                         WriterLabel(
                           //label: context.loc.likesCount,
@@ -129,7 +130,7 @@ class WriterItem extends ConsumerWidget {
                           labelSize: writerLabelFontSize,
                         ),
                       ],
-                      if (showUserDislikeCount) ...[
+                      if (adminSettings.showUserDislikeCount) ...[
                         const SizedBox(width: 4),
                         WriterLabel(
                           // label: context.loc.dislikesCount,
@@ -139,7 +140,7 @@ class WriterItem extends ConsumerWidget {
                           labelSize: writerLabelFontSize,
                         ),
                       ],
-                      if (showUserSumCount) ...[
+                      if (adminSettings.showUserSumCount) ...[
                         const SizedBox(width: 4),
                         WriterLabel(
                           // label: context.loc.sumCount,

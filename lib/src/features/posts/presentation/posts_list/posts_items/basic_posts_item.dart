@@ -6,6 +6,7 @@ import 'package:applimode_app/src/common_widgets/title_text_widget.dart';
 import 'package:applimode_app/src/common_widgets/user_items/writer_item.dart';
 import 'package:applimode_app/src/common_widgets/youtube_link_shot.dart';
 import 'package:applimode_app/src/constants/constants.dart';
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/posts/domain/post_and_writer.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/basic_block_item.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/page_item_buttons.dart';
@@ -52,6 +53,7 @@ class BasicPostsItem extends ConsumerWidget {
 
     final writerAsync = ref.watch(writerFutureProvider(post.uid));
     final appSettings = ref.watch(appSettingsControllerProvider);
+    final adminSettings = ref.watch(adminSettingsProvider);
     final mainImageUrl = post.mainImageUrl;
     final mainVideoUrl = post.mainVideoUrl;
     final mainVideoImageUrl = post.mainVideoImageUrl;
@@ -144,21 +146,26 @@ class BasicPostsItem extends ConsumerWidget {
                             ))
                           : GradientColorBox(
                               index: index,
-                              child: Padding(
-                                padding: const EdgeInsets.all(64.0),
-                                child: SafeArea(
-                                  child: TitleTextWidget(
-                                    title: post.title,
-                                    textStyle: postTitleStyle,
-                                    maxLines: basicPostsItemMiddleTitleMaxLines,
-                                    textAlign: switch (titleTextAlign) {
-                                      TitleTextAlign.start => TextAlign.start,
-                                      TitleTextAlign.center => TextAlign.center,
-                                      TitleTextAlign.end => TextAlign.end,
-                                    },
-                                  ),
-                                ),
-                              ),
+                              child: post.isNoTitle
+                                  ? null
+                                  : Padding(
+                                      padding: const EdgeInsets.all(64.0),
+                                      child: SafeArea(
+                                        child: TitleTextWidget(
+                                          title: post.title,
+                                          textStyle: postTitleStyle,
+                                          maxLines:
+                                              basicPostsItemMiddleTitleMaxLines,
+                                          textAlign: switch (titleTextAlign) {
+                                            TitleTextAlign.start =>
+                                              TextAlign.start,
+                                            TitleTextAlign.center =>
+                                              TextAlign.center,
+                                            TitleTextAlign.end => TextAlign.end,
+                                          },
+                                        ),
+                                      ),
+                                    ),
                             ),
                     if (mainImageUrl != null &&
                         Regex.ytImageRegex.hasMatch(mainImageUrl))
@@ -197,39 +204,58 @@ class BasicPostsItem extends ConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                WriterItem(
-                                  writer: writer,
-                                  post: post,
-                                  width: getMaxWidth(context),
-                                  profileImagesize: basicPostsItemProfileSize,
-                                  nameColor: Colors.white,
-                                  showSubtitle: true,
-                                  showMainCategory: useCategory,
-                                  showLikeCount: isPage ? false : showLikeCount,
-                                  showDislikeCount:
-                                      isPage ? false : showDislikeCount,
-                                  showCommentCount:
-                                      isPage ? false : showCommentCount,
-                                  showCommentPlusLikeCount:
-                                      isPage ? false : showCommentPlusLikeCount,
-                                  showSumCount: isPage ? false : showSumCount,
-                                  isThumbUpToHeart: isThumbUpToHeart,
-                                  captionColor: Colors.white,
-                                  countColor: Colors.white,
-                                  index: index,
-                                  categoryColor: Colors.white,
-                                  nameSize: basicPostsItemNameSize,
-                                  subInfoFontSize: basicPostsItemSubInfoSize,
-                                  subInfoIconSize:
-                                      basicPostsItemSubInfoSize + 2,
-                                  writerLabelFontSize:
-                                      basicPostsItemNameSize - 6,
-                                ),
+                                if (!post.isNoWriter)
+                                  WriterItem(
+                                    writer: writer,
+                                    post: post,
+                                    width: getMaxWidth(
+                                      context,
+                                      postsListType:
+                                          adminSettings.postsListType,
+                                    ),
+                                    profileImagesize: basicPostsItemProfileSize,
+                                    nameColor: Colors.white,
+                                    showSubtitle: true,
+                                    showMainCategory: adminSettings.useCategory,
+                                    showLikeCount: isPage
+                                        ? false
+                                        : adminSettings.showLikeCount,
+                                    showDislikeCount: isPage
+                                        ? false
+                                        : adminSettings.showDislikeCount,
+                                    showCommentCount: isPage
+                                        ? false
+                                        : adminSettings.showCommentCount,
+                                    showCommentPlusLikeCount: isPage
+                                        ? false
+                                        : adminSettings
+                                            .showCommentPlusLikeCount,
+                                    showSumCount: isPage
+                                        ? false
+                                        : adminSettings.showSumCount,
+                                    isThumbUpToHeart:
+                                        adminSettings.isThumbUpToHeart,
+                                    captionColor: Colors.white,
+                                    countColor: Colors.white,
+                                    index: index,
+                                    categoryColor: Colors.white,
+                                    nameSize: basicPostsItemNameSize,
+                                    subInfoFontSize: basicPostsItemSubInfoSize,
+                                    subInfoIconSize:
+                                        basicPostsItemSubInfoSize + 2,
+                                    writerLabelFontSize:
+                                        basicPostsItemNameSize - 6,
+                                  ),
                                 if ((mainImageUrl != null || isVideo) &&
-                                    hasTitle) ...[
+                                    hasTitle &&
+                                    !post.isNoTitle) ...[
                                   const SizedBox(height: 12),
                                   SizedBox(
-                                    width: getMaxWidth(context),
+                                    width: getMaxWidth(
+                                      context,
+                                      postsListType:
+                                          adminSettings.postsListType,
+                                    ),
                                     child: TitleTextWidget(
                                       title: post.title,
                                       textStyle: postTitleStyle,
@@ -246,9 +272,10 @@ class BasicPostsItem extends ConsumerWidget {
                       ),
                     ],
                     if (isContent &&
-                        (showAppStyleOption
+                        (adminSettings.showAppStyleOption
                             ? appSettings.appStyle == 2
-                            : postsListType == PostsListType.page))
+                            : adminSettings.postsListType ==
+                                PostsListType.page))
                       Positioned(
                         right: 16,
                         bottom: MediaQuery.of(context).orientation ==

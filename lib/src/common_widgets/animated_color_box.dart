@@ -1,3 +1,4 @@
+/*
 import 'dart:math';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/constants/constants.dart';
@@ -6,12 +7,14 @@ import 'package:flutter/material.dart';
 class AnimatedColorBox extends StatefulWidget {
   const AnimatedColorBox({
     super.key,
+    required this.boxColorType,
     this.index,
     this.child,
     this.millisecondes = colorAnimationDuration,
     this.isRepeat = true,
   });
 
+  final BoxColorType boxColorType;
   final int? index;
   final Widget? child;
   final int millisecondes;
@@ -44,7 +47,7 @@ class _AnimatedColorBoxState extends State<AnimatedColorBox>
     firstColor = boxGradientColors[gradientColorCount][0];
     secondColor = boxGradientColors[gradientColorCount][1];
 
-    if (boxColorType == BoxColorType.animation) {
+    if (widget.boxColorType == BoxColorType.animation) {
       _controller = AnimationController(
         duration: Duration(milliseconds: widget.millisecondes),
         vsync: this,
@@ -63,7 +66,7 @@ class _AnimatedColorBoxState extends State<AnimatedColorBox>
 
   @override
   void dispose() {
-    if (boxColorType == BoxColorType.animation) {
+    if (widget.boxColorType == BoxColorType.animation) {
       _controller.dispose();
     }
     super.dispose();
@@ -71,7 +74,7 @@ class _AnimatedColorBoxState extends State<AnimatedColorBox>
 
   @override
   Widget build(BuildContext context) {
-    if (boxColorType == BoxColorType.animation) {
+    if (widget.boxColorType == BoxColorType.animation) {
       return AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
@@ -93,7 +96,7 @@ class _AnimatedColorBoxState extends State<AnimatedColorBox>
     return Container(
       decoration: BoxDecoration(
         color: singleColor,
-        gradient: boxColorType == BoxColorType.gradient
+        gradient: widget.boxColorType == BoxColorType.gradient
             ? LinearGradient(
                 // stops: const [0.2, 0.6],
                 begin: Alignment.topLeft,
@@ -106,3 +109,4 @@ class _AnimatedColorBoxState extends State<AnimatedColorBox>
     );
   }
 }
+*/

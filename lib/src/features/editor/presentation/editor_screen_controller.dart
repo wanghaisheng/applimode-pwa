@@ -362,7 +362,7 @@ class EditorScreenController extends _$EditorScreenController {
       }
 
       // hashtags
-      final hashtagMatches = Regex.hashtagRegex.allMatches(newContent);
+      final hashtagMatches = Regex.hashtagLinkRegex.allMatches(newContent);
       if (hashtagMatches.isNotEmpty) {
         for (final tag in hashtagMatches) {
           if (tag[1] != null && tag[1]!.trim().isNotEmpty) {
@@ -467,6 +467,8 @@ class EditorScreenController extends _$EditorScreenController {
               content: newContent,
               title: contentTitle,
               isLongContent: isLongContent,
+              isNoTitle: newContent.contains(noTitleTag),
+              isNoWriter: newContent.contains(noWriterTag),
               category: category,
               mainImageUrl: mainImageUrl,
               mainVideoUrl: mainVideoUrl,
@@ -482,6 +484,8 @@ class EditorScreenController extends _$EditorScreenController {
               content: newContent,
               title: contentTitle,
               isLongContent: isLongContent,
+              isNoTitle: newContent.contains(noTitleTag),
+              isNoWriter: newContent.contains(noWriterTag),
               category: category,
               mainImageUrl: mainImageUrl,
               mainVideoUrl: mainVideoUrl,

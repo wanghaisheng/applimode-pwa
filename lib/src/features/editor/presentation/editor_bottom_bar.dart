@@ -5,7 +5,6 @@ import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/check_category.dart';
 import 'package:applimode_app/src/utils/show_adaptive_alert_dialog.dart';
-import 'package:applimode_app/custom_settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,6 +25,7 @@ class EditorBottomBar extends ConsumerStatefulWidget {
 
   final double bottomBarHeight;
   final Future<void> Function({
+    required double mediaMaxMBSize,
     bool isMedia,
     bool isVideo,
   }) getMedia;
@@ -71,10 +71,13 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
 
   @override
   Widget build(BuildContext context) {
-    final categoryList = ref.watch(adminSettingsProvider).mainCategory;
+    final adminSettings = ref.watch(adminSettingsProvider);
+    final useCategory = adminSettings.useCategory;
+    final categoryList = adminSettings.mainCategory;
     final state = ref.watch(editorScreenControllerProvider);
     final goRouter = ref.watch(goRouterProvider);
     // final progressState = ref.watch(uploadProgressStateProvider);
+    final mediaMaxMBSize = ref.watch(adminSettingsProvider).mediaMaxMBSize;
 
     return SafeArea(
       child: GestureDetector(
@@ -110,7 +113,8 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
                     // media
                     if (!kIsWeb)
                       IconButton(
-                        onPressed: () => widget.getMedia(isMedia: true),
+                        onPressed: () => widget.getMedia(
+                            isMedia: true, mediaMaxMBSize: mediaMaxMBSize),
                         icon: const Icon(Icons.image_outlined),
                         iconSize: iconSizeForBottomBar,
                       ),
@@ -118,7 +122,9 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
                       // image
                       ...[
                       IconButton(
-                        onPressed: () => widget.getMedia(),
+                        onPressed: () => widget.getMedia(
+                          mediaMaxMBSize: mediaMaxMBSize,
+                        ),
                         icon: const Icon(Icons.image_outlined),
                         iconSize: iconSizeForBottomBar,
                       ),
@@ -126,6 +132,7 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
                       IconButton(
                         onPressed: () => widget.getMedia(
                           isVideo: true,
+                          mediaMaxMBSize: mediaMaxMBSize,
                         ),
                         icon: const Icon(Icons.slideshow_outlined),
                         iconSize: iconSizeForBottomBar,

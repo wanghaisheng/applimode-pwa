@@ -1,9 +1,11 @@
 import 'dart:math';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/constants/constants.dart';
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GradientColorBox extends StatelessWidget {
+class GradientColorBox extends ConsumerWidget {
   const GradientColorBox({
     super.key,
     this.index,
@@ -14,7 +16,8 @@ class GradientColorBox extends StatelessWidget {
   final Widget? child;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final boxColorType = ref.watch(adminSettingsProvider).boxColorType;
     final hasIndex = index != null;
     final singleColorCount = hasIndex
         ? index! % boxSingleColors.length
@@ -29,8 +32,7 @@ class GradientColorBox extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: singleColor,
-        gradient: boxColorType == BoxColorType.gradient ||
-                boxColorType == BoxColorType.animation
+        gradient: boxColorType == BoxColorType.gradient
             ? LinearGradient(
                 // stops: const [0.2, 0.6],
                 begin: Alignment.topLeft,

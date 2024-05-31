@@ -40,6 +40,8 @@ class Regex {
   static RegExp hexColorRegex = RegExp(r'''([A-Fa-f0-9]{6})''');
   static RegExp hashtagRegex =
       RegExp(r'''(?:#)([^\s!@#$%^&*()=+.\/,\[{\]};:'"?><]+)''');
+  static RegExp hashtagLinkRegex =
+      RegExp(r'''\B(?:#)([^\s!@#$%^&*()=+.\/,\[{\]};:'"?><]+)''');
   static RegExp emailRegex = RegExp(r'^[\w\-\.]+@([\w\-]+\.)+[\w-]{2,6}$');
 
   static RegExp urlWithHttp = RegExp(

@@ -1,6 +1,7 @@
 import 'package:applimode_app/src/common_widgets/buttons/post_comment_button.dart';
 import 'package:applimode_app/src/common_widgets/buttons/post_dislike_button.dart';
 import 'package:applimode_app/src/common_widgets/buttons/post_like_button.dart';
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/post/presentation/post_likes_controller.dart';
 import 'package:applimode_app/src/features/posts/domain/post.dart';
@@ -33,13 +34,15 @@ class PageItemButtons extends ConsumerWidget {
         ref.read(postsListStateProvider.notifier).set(nowToInt());
       }
     });
+
+    final adminSettings = ref.watch(adminSettingsProvider);
     return Column(
       children: [
-        if (showLikeCount) ...[
+        if (adminSettings.showLikeCount) ...[
           PostLikeButton(
             postId: post.id,
             postWriterId: post.uid,
-            isHeart: isThumbUpToHeart,
+            isHeart: adminSettings.isThumbUpToHeart,
             iconColor: const Color(basicPostsItemButtonColor),
             iconSize: basicPostsItemButtonSize,
             useIconButton: false,
@@ -58,7 +61,7 @@ class PageItemButtons extends ConsumerWidget {
           ),
           const SizedBox(height: 24),
         ],
-        if (showDislikeCount) ...[
+        if (adminSettings.showDislikeCount) ...[
           PostDislikeButton(
             postId: post.id,
             postWriterId: post.uid,
@@ -79,7 +82,7 @@ class PageItemButtons extends ConsumerWidget {
           ),
           const SizedBox(height: 24),
         ],
-        if (showCommentCount) ...[
+        if (adminSettings.showCommentCount) ...[
           PostCommentButton(
             postId: post.id,
             iconColor: const Color(basicPostsItemButtonColor),

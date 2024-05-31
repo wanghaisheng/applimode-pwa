@@ -1,26 +1,6 @@
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:flutter/widgets.dart';
 
-// Main screen app bar title.
-// Used when remote configuration is not set.
-// 메인 화면 앱바 타이틀. 리모트 컨피그 설정을 안 했을 경우 사용됨.
-const spareHomeBarTitle = 'My Applimode';
-
-// Main screen app style. 0 is only text, 1 is only image, 2 is image and text
-// Used when remote configuration is not set. Default 0
-// 메인 화면 앱바 스타일. 0은 글자만, 1은 이미지, 2는 글자 와 이미지
-// 리모트 컨피그 설정을 안 했을 경우 사용됨. 기본 0
-const spareHomeBarStyle = 0;
-
-// 리모트 컨피그 설정을 안 했을 경우 기본으로 사용되는 메인 컬러. 기본 FCB126
-// Main color used as default when remote configuration is not set. Default FCB126
-const spareMainColor = 'FCB126';
-
-// 리모트 컨피그 설정을 안 했을 경우 기본으로 사용되는 메인 카테고리
-// Main category used as default when remote configuration is not set
-const spareMainCategory =
-    '[{"index":0,"path":"/cat001","title":"cat001","color":"FF930F"}]';
-
 // Data used for app information
 // 앱정보에 사용되는 데이터
 // Refer to pubspec.yaml for version
@@ -33,21 +13,7 @@ const androidBundleId = 'applimode.my_applimode';
 const appleBundleId = 'applimode.myApplimode';
 const firebaseProjectName = 'my-applimode';
 const appCreator = 'JongsukOh';
-const appVersion = '0.0.4+1';
-
-// Main screen list view style
-// 메인 화면 리스트 뷰 스타일
-// Select among small, square, page (small, square, page)
-// small, square, page 중 선택 (small, square, page)
-const postsListType = PostsListType.square;
-
-// Provides an option to select the main screen list view style
-// 메인화면 리스트 뷰 스타일을 선택할 수 있는 옵션 제공
-// If true, postsListType is not used
-// 트루일 경우 postsListType 을 사용하지 않음
-// Used for demo version. Not recommended to use
-// 데모버전을 위해 사용되었음. 사용하는 것을 추천하지 않음
-const bool showAppStyleOption = true;
+const appVersion = '0.0.5+1';
 
 // Change the start screen to the login screen
 // 시작 화면을 로그인 화면으로 변경
@@ -90,7 +56,7 @@ const useDirectUploadButton = false;
 
 // Color type of basic post box. single, gradient, animation. basic gradient
 // 베이직 포스트 박스의 컬러 타입. single, gradient, animattion. 기본 gradient
-const boxColorType = BoxColorType.gradient;
+// const boxColorType = BoxColorType.gradient;
 // Used when specified as single. Colors can be set directly using boxCustomColorPalettes
 // single로 지정했을 경우 사용. boxCustomColorPalettes 를 이용해 직접 컬러 설정 가능
 const boxSingleColors = boxSingleColorPalettes;
@@ -148,10 +114,6 @@ const int mainPostsRefreshTimer = 10;
 // Maximum length of video in seconds. default 60
 // 비디오 영상 최대 길이 초 단위. 기본 60
 const int videoMaxDuration = 60;
-
-// Maximum video file size. Default 50.0 in megabytes
-// 비디오 영상 최대 파일 크기. 메가바이트 단위 기본 50.0
-const double mediaMaxMBSize = 50.0;
 
 // Video frame aspect ratio in post
 // 포스트에서 비디오 영상 프레임 비율
@@ -219,59 +181,9 @@ const double pcWidthBreakpoint = 720.0;
 // 서브 인포에서 이름 최대 길이. 기본 18
 const int usernameMaxLength = 18;
 
-// List to show in main screen drawer
-// 메인화면 서랍에서 보여줄 리스트
-// Recommendations
-// 추천글
-const bool useRecommendation = true;
-// Ranking
-// 순위
-const bool useRanking = true;
-// Category
-// 카테고리
-const bool useCategory = true;
-// logout button. default true
-// 로그아웃 버튼. 기본 true
-const bool showLogoutOnDrawer = true;
-
 // Show search button on app bar
 // 검색 버튼 보이기
 const bool showSearchButton = true;
-
-// show like count
-// 포스트에서 좋아요 수 보여주기
-const bool showLikeCount = true;
-// show dislike count
-// 포스트에서 싫어요 수 보여주기
-const bool showDislikeCount = true;
-// show total count of like and dislike
-// 포스트에서 좋아요 싫어요 합계 수 보여주기
-const bool showSumCount = false;
-// show post comment count
-// 포스트에서 댓글 수 보여주기
-const bool showCommentCount = true;
-// show total count of like and comment
-// 포스트에서 좋아요와 댓글 합계 수 보여주기
-const bool showCommentPlusLikeCount = false;
-// Show the like icon as a heart
-// 좋아요 아이콘을 하트로 보여주기
-const bool isThumbUpToHeart = false;
-// Use the dislike button but hide the count
-// 싫어요 버튼은 사용하고 카운트만 숨기기
-const bool showOnlyDislikeButton = false;
-
-// Show administrator icon
-// 관리자 아이콘 보여주기
-const bool showUserAdminLabel = true;
-// Show the total number of likes received by the user
-// 사용자가 받은 총 좋아요 카운트 보여주기
-const bool showUserLikeCount = true;
-// Show the total number of dislikes received by the user
-// 사용자가 받은 총 싫어요 카운트 보여주기
-const bool showUserDislikeCount = true;
-// Show the total number of likes and dislikes received by the user
-// 사용자가 받은 좋아요 싫어요 합계 보여주기
-const bool showUserSumCount = false;
 
 // Administrator icon color. default 0xFFEEAC4D
 // 관리자 아이콘 색깔. 기본 0xFFEEAC4D

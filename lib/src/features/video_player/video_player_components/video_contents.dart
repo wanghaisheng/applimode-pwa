@@ -1,5 +1,6 @@
 import 'package:applimode_app/src/common_widgets/title_text_widget.dart';
 import 'package:applimode_app/src/common_widgets/user_items/writer_item.dart';
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/posts/domain/post.dart';
 import 'package:applimode_app/src/features/posts/domain/post_and_writer.dart';
@@ -8,10 +9,11 @@ import 'package:applimode_app/src/utils/get_max_width.dart';
 import 'package:applimode_app/src/utils/string_converter.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoContents extends StatelessWidget {
+class VideoContents extends ConsumerWidget {
   const VideoContents({
     super.key,
     required this.controller,
@@ -30,12 +32,14 @@ class VideoContents extends StatelessWidget {
   final bool showVideoTitle;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final adminSettings = ref.watch(adminSettingsProvider);
     final postTitleStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(
           color: Colors.white,
           fontSize: basicPostsItemTitleFontsize,
         );
-    final maxWidth = getMaxWidth(context);
+    final maxWidth =
+        getMaxWidth(context, postsListType: adminSettings.postsListType);
     return Positioned(
       bottom: 24,
       left: 16,
@@ -61,14 +65,16 @@ class VideoContents extends StatelessWidget {
                 profileImagesize: basicPostsItemProfileSize,
                 nameColor: Colors.white,
                 showSubtitle: true,
-                showMainCategory: useCategory,
-                showLikeCount: isPage ? false : showLikeCount,
-                showDislikeCount: isPage ? false : showDislikeCount,
-                showCommentCount: isPage ? false : showCommentCount,
+                showMainCategory: adminSettings.useCategory,
+                showLikeCount: isPage ? false : adminSettings.showLikeCount,
+                showDislikeCount:
+                    isPage ? false : adminSettings.showDislikeCount,
+                showCommentCount:
+                    isPage ? false : adminSettings.showCommentCount,
                 showCommentPlusLikeCount:
-                    isPage ? false : showCommentPlusLikeCount,
-                showSumCount: isPage ? false : showSumCount,
-                isThumbUpToHeart: isThumbUpToHeart,
+                    isPage ? false : adminSettings.showCommentPlusLikeCount,
+                showSumCount: isPage ? false : adminSettings.showSumCount,
+                isThumbUpToHeart: adminSettings.isThumbUpToHeart,
                 captionColor: Colors.white,
                 countColor: Colors.white,
                 index: index,

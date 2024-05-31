@@ -83,7 +83,10 @@ class ScreenPaths {
 @riverpod
 GoRouter goRouter(GoRouterRef ref) {
   final authRepository = ref.watch(authRepositoryProvider);
-  final categories = ref.watch(adminSettingsProvider).mainCategory;
+  final adminSettings = ref.watch(adminSettingsProvider);
+  final categories = adminSettings.mainCategory;
+  final showAppStyleOption = adminSettings.showAppStyleOption;
+  final postsListType = adminSettings.postsListType;
   final appSettings = ref.watch(appSettingsControllerProvider);
   final postsRepository = ref.watch(postsRepositoryProvider);
 
@@ -198,19 +201,26 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
           path: ScreenPaths.search,
           pageBuilder: (context, state) {
+            final preSearchWord = state.extra as String?;
             if (kIsWeb) {
-              return const NoTransitionPage(
-                child: SearchScreen(),
+              return NoTransitionPage(
+                child: SearchScreen(
+                  preSearchWord: preSearchWord,
+                ),
               );
             }
             if (Platform.isAndroid) {
-              return const CustomTransitionPage(
+              return CustomTransitionPage(
                 transitionsBuilder: buildHorizontalSlideTransitiron,
-                child: SearchScreen(),
+                child: SearchScreen(
+                  preSearchWord: preSearchWord,
+                ),
               );
             }
-            return const CupertinoPage(
-              child: SearchScreen(),
+            return CupertinoPage(
+              child: SearchScreen(
+                preSearchWord: preSearchWord,
+              ),
             );
           }),
       GoRoute(

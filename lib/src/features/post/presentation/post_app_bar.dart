@@ -1,3 +1,4 @@
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:applimode_app/src/common_widgets/async_value_widgets/async_value_widget.dart';
 import 'package:applimode_app/src/common_widgets/user_items/writer_item.dart';
@@ -38,6 +39,7 @@ class PostAppBar extends ConsumerWidget implements PreferredSizeWidget {
         user != null ? ref.watch(appUserStreamProvider(user.uid)).value : null;
 
     final isLoading = ref.watch(postScreenControllerProvider).isLoading;
+    final useCategory = ref.watch(adminSettingsProvider).useCategory;
 
     return AppBar(
       centerTitle: false,

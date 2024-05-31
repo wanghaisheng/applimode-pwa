@@ -1,6 +1,7 @@
 import 'package:applimode_app/src/app_settings/app_settings_controller.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/constants/constants.dart';
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -286,6 +287,7 @@ class _SimplePageListViewState<Document>
   @override
   Widget build(BuildContext context) {
     final appSettings = ref.watch(appSettingsControllerProvider);
+    final adminSettings = ref.watch(adminSettingsProvider);
 
     // wher user changes doc, refesh
     if (widget.listState != null) {
@@ -344,9 +346,9 @@ class _SimplePageListViewState<Document>
       );
     }
 
-    final currentListType = showAppStyleOption
+    final currentListType = adminSettings.showAppStyleOption
         ? PostsListType.values[appSettings.appStyle ?? 1]
-        : postsListType;
+        : adminSettings.postsListType;
     final screenWidth = MediaQuery.sizeOf(context).width;
 
     if (currentListType == PostsListType.square &&

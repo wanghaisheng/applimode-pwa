@@ -1,6 +1,7 @@
 import 'package:applimode_app/src/common_widgets/image_widgets/cached_circle_image.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/cached_padding_image.dart';
 import 'package:applimode_app/src/constants/color_palettes.dart';
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
 import 'package:applimode_app/src/features/comments/domain/post_comment.dart';
@@ -12,7 +13,6 @@ import 'package:applimode_app/src/features/comments/presentation/buttons/post_co
 import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/async_value_ui.dart';
 import 'package:applimode_app/src/utils/format.dart';
-import 'package:applimode_app/custom_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -44,6 +44,7 @@ class PostCommentsItem extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     final user = ref.watch(authStateChangesProvider).value;
+    final adminSettings = ref.watch(adminSettingsProvider);
 
     final writerAsync = ref.watch(writerFutureProvider(comment.uid));
 
@@ -153,15 +154,15 @@ class PostCommentsItem extends ConsumerWidget {
                             const SizedBox(height: 4),
                             Row(
                               children: [
-                                if (showLikeCount) ...[
+                                if (adminSettings.showLikeCount) ...[
                                   PostCommentLikeButton(
                                     comment: comment,
                                     likeCount: comment.likeCount,
-                                    isHeart: isThumbUpToHeart,
+                                    isHeart: adminSettings.isThumbUpToHeart,
                                     commentWriter: writer,
                                   ),
                                 ],
-                                if (showDislikeCount) ...[
+                                if (adminSettings.showDislikeCount) ...[
                                   const SizedBox(width: 12),
                                   PostCommentDislikeButton(
                                     comment: comment,
@@ -169,7 +170,7 @@ class PostCommentsItem extends ConsumerWidget {
                                   ),
                                 ],
                                 if (parentCommentId == null &&
-                                    showCommentCount) ...[
+                                    adminSettings.showCommentCount) ...[
                                   const SizedBox(width: 12),
                                   PostCommentReplyButton(comment: comment),
                                 ],

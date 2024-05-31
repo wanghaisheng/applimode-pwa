@@ -1,14 +1,16 @@
 import 'package:applimode_app/src/common_widgets/color_circle.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/cached_circle_image.dart';
 import 'package:applimode_app/src/common_widgets/writer_label.dart';
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class UserItem extends StatelessWidget {
+class UserItem extends ConsumerWidget {
   const UserItem({
     super.key,
     required this.appUser,
@@ -41,7 +43,8 @@ class UserItem extends StatelessWidget {
   final bool isRanking;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final adminSettings = ref.watch(adminSettingsProvider);
     final colorScheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: isProfileScreen
@@ -79,7 +82,7 @@ class UserItem extends StatelessWidget {
                                   ? const Color(0xFFC0C0C0)
                                   : const Color(0xFFCD7F32),
                         ),
-                      if (showUserAdminLabel && appUser.isAdmin)
+                      if (adminSettings.showUserAdminLabel && appUser.isAdmin)
                         Icon(
                           Icons.verified_user,
                           color: const Color(userAdminColor),
@@ -92,7 +95,7 @@ class UserItem extends StatelessWidget {
                           size: titleSize ?? 16,
                         ),
                       if (appUser.verified ||
-                          (showUserAdminLabel && appUser.isAdmin))
+                          (adminSettings.showUserAdminLabel && appUser.isAdmin))
                         const SizedBox(width: 4),
                       Flexible(
                         child: Text(
@@ -105,7 +108,7 @@ class UserItem extends StatelessWidget {
                           ),
                         ),
                       ),
-                      if (showUserLikeCount) ...[
+                      if (adminSettings.showUserLikeCount) ...[
                         const SizedBox(width: 4),
                         WriterLabel(
                           // label: context.loc.likesCount,
@@ -115,7 +118,7 @@ class UserItem extends StatelessWidget {
                           labelSize: profileUserLabelFontSize,
                         ),
                       ],
-                      if (showUserDislikeCount) ...[
+                      if (adminSettings.showUserDislikeCount) ...[
                         const SizedBox(width: 4),
                         WriterLabel(
                           // label: context.loc.dislikesCount,
@@ -125,7 +128,7 @@ class UserItem extends StatelessWidget {
                           labelSize: profileUserLabelFontSize,
                         ),
                       ],
-                      if (showUserSumCount) ...[
+                      if (adminSettings.showUserSumCount) ...[
                         const SizedBox(width: 4),
                         WriterLabel(
                           // label: context.loc.sumCount,

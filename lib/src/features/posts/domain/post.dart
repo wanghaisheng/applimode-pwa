@@ -12,6 +12,8 @@ class Post extends Equatable {
     this.isHeader = false,
     this.isBlock = false,
     this.isRecommended = false,
+    this.isNoTitle = false,
+    this.isNoWriter = false,
     this.category = 0,
     this.mainImageUrl,
     this.mainVideoUrl,
@@ -38,6 +40,8 @@ class Post extends Equatable {
   final bool isHeader;
   final bool isBlock;
   final bool isRecommended;
+  final bool isNoTitle;
+  final bool isNoWriter;
   final int category;
   final String? mainImageUrl;
   final String? mainVideoUrl;
@@ -67,6 +71,8 @@ class Post extends Equatable {
       isHeader: map['isHeader'] as bool? ?? false,
       isBlock: map['isBlock'] as bool? ?? false,
       isRecommended: map['isRecommended'] as bool? ?? false,
+      isNoTitle: map['isNoTitle'] as bool? ?? false,
+      isNoWriter: map['isNoWriter'] as bool? ?? false,
       category: map['category'] as int? ?? 0,
       mainImageUrl: map['mainImageUrl'] as String?,
       mainVideoUrl: map['mainVideoUrl'] as String?,
@@ -100,6 +106,8 @@ class Post extends Equatable {
       'isHeader': isHeader,
       'isBlock': isBlock,
       'isRecommended': isRecommended,
+      'isNoTitle': isNoTitle,
+      'isNoWriter': isNoWriter,
       'category': category,
       'mainImageUrl': mainImageUrl,
       'mainVideoUrl': mainVideoUrl,
@@ -143,6 +151,8 @@ class Post extends Equatable {
         isHeader,
         isBlock,
         isRecommended,
+        isNoTitle,
+        isNoWriter,
         category,
         mainImageUrl,
         mainVideoUrl,

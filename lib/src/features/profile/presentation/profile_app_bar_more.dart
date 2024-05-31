@@ -1,3 +1,4 @@
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/profile/presentation/profile_app_bar_more_controller.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
@@ -33,6 +34,7 @@ class ProfileAppBarMore extends ConsumerWidget {
       next.showAlertDialogOnError(context);
     });
     final isLoading = ref.watch(profileAppBarMoreControllerProvider).isLoading;
+    final mediaMaxMBSize = ref.watch(adminSettingsProvider).mediaMaxMBSize;
 
     return /* isLoading
         ? Padding(
@@ -83,6 +85,7 @@ class ProfileAppBarMore extends ConsumerWidget {
                       final xFile = await showImagePicker(
                         maxWidth: profileMaxWidth,
                         maxHeight: profileMaxHeight,
+                        mediaMaxMBSize: mediaMaxMBSize,
                       );
                       if (xFile != null) {
                         await ref
@@ -112,6 +115,7 @@ class ProfileAppBarMore extends ConsumerWidget {
                         final xFile = await showImagePicker(
                           maxWidth: storyMaxWidth,
                           maxHeight: storyMaxHeight,
+                          mediaMaxMBSize: mediaMaxMBSize,
                         );
                         if (xFile != null) {
                           await ref

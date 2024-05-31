@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 double getMaxWidth(
   BuildContext context, {
+  required PostsListType postsListType,
   double breakPoint = pcWidthBreakpoint,
   double padding = defaultHorizontalPadding,
 }) {

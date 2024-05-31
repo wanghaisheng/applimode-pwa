@@ -14,7 +14,12 @@ import 'package:applimode_app/src/utils/list_state.dart';
 import 'package:applimode_app/src/utils/updated_post_ids_list.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({
+    super.key,
+    this.preSearchWord,
+  });
+
+  final String? preSearchWord;
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -23,6 +28,18 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final controller = TextEditingController();
   String searchWords = '';
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.preSearchWord != null &&
+        widget.preSearchWord!.trim().isNotEmpty) {
+      setState(() {
+        controller.text = widget.preSearchWord!;
+        searchWords = widget.preSearchWord!;
+      });
+    }
+  }
 
   @override
   void dispose() {

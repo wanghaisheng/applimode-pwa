@@ -43,6 +43,24 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
   XFile? _pickedFile;
   late Color _mainColor;
   final List<CategoryController> _categories = [];
+  late bool _showAppStyleOption;
+  late PostsListType _postsListType;
+  late BoxColorType _boxColorType;
+  late double _mediaMaxMBSize;
+  late bool _useRecommendation;
+  late bool _useRanking;
+  late bool _useCategory;
+  late bool _showLogoutOnDrawer;
+  late bool _showLikeCount;
+  late bool _showDislikeCount;
+  late bool _showCommentCount;
+  late bool _showSumCount;
+  late bool _showCommentPlusLikeCount;
+  late bool _isThumbUpToHeart;
+  late bool _showUserAdminLabel;
+  late bool _showUserLikeCount;
+  late bool _showUserDislikeCount;
+  late bool _showUserSumCount;
 
   @override
   void initState() {
@@ -72,6 +90,24 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       _categories[index].titleController.text =
           currentValues.mainCategory[index].title;
     }
+    _showAppStyleOption = currentValues.showAppStyleOption;
+    _postsListType = currentValues.postsListType;
+    _boxColorType = currentValues.boxColorType;
+    _mediaMaxMBSize = currentValues.mediaMaxMBSize;
+    _useRecommendation = currentValues.useRecommendation;
+    _useRanking = currentValues.useRanking;
+    _useCategory = currentValues.useCategory;
+    _showLogoutOnDrawer = currentValues.showLogoutOnDrawer;
+    _showLikeCount = currentValues.showLikeCount;
+    _showDislikeCount = currentValues.showDislikeCount;
+    _showCommentCount = currentValues.showCommentCount;
+    _showSumCount = currentValues.showSumCount;
+    _showCommentPlusLikeCount = currentValues.showCommentPlusLikeCount;
+    _isThumbUpToHeart = currentValues.isThumbUpToHeart;
+    _showUserAdminLabel = currentValues.showUserAdminLabel;
+    _showUserLikeCount = currentValues.showUserLikeCount;
+    _showUserDislikeCount = currentValues.showUserDislikeCount;
+    _showUserSumCount = currentValues.showUserSumCount;
   }
 
   @override
@@ -103,6 +139,24 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
             mainColor: _mainColor,
             mainCategory: mainCategory,
             xFile: _pickedFile,
+            showAppStyleOption: _showAppStyleOption,
+            postsListType: _postsListType,
+            boxColorType: _boxColorType,
+            mediaMaxMBSize: _mediaMaxMBSize,
+            useRecommendation: _useRecommendation,
+            useRanking: _useRanking,
+            useCategory: _useCategory,
+            showLogoutOnDrawer: _showLogoutOnDrawer,
+            showLikeCount: _showLikeCount,
+            showDislikeCount: _showDislikeCount,
+            showCommentCount: _showCommentCount,
+            showSumCount: _showSumCount,
+            showCommentPlusLikeCount: _showCommentPlusLikeCount,
+            isThumbUpToHeart: _isThumbUpToHeart,
+            showUserAdminLabel: _showUserAdminLabel,
+            showUserLikeCount: _showUserLikeCount,
+            showUserDislikeCount: _showUserDislikeCount,
+            showUserSumCount: _showUserSumCount,
           );
       if (mounted && result) {
         if (kIsWeb) {
@@ -275,6 +329,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                                 context.pop();
                                 _pickedFile = await showImagePicker(
                                   maxHeight: 128,
+                                  mediaMaxMBSize: _mediaMaxMBSize,
                                 );
                                 setState(() {});
                               },
@@ -500,6 +555,275 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                   ),
                   const SizedBox(height: 16),
                   const Divider(),
+                  SwitchListTile(
+                    title: Text(context.loc.showAppStyleButton),
+                    value: _showAppStyleOption,
+                    onChanged: (value) {
+                      setState(() {
+                        _showAppStyleOption = value;
+                      });
+                    },
+                  ),
+                  const Divider(),
+                  MenuAnchor(
+                    style: const MenuStyle(
+                        alignment: Alignment.bottomRight,
+                        padding: WidgetStatePropertyAll(
+                            EdgeInsets.symmetric(horizontal: 24))),
+                    builder: (context, controller, child) => ListTile(
+                      onTap: () {
+                        if (controller.isOpen) {
+                          controller.close();
+                        } else {
+                          FocusScope.of(context).unfocus();
+                          controller.open();
+                        }
+                      },
+                      leading: const Icon(Icons.space_dashboard_outlined),
+                      title: Text(context.loc.appStyle),
+                      trailing: Text(_getPostsListTypeLabel(
+                          context, _postsListType.index)),
+                      leadingAndTrailingTextStyle:
+                          Theme.of(context).textTheme.labelLarge,
+                    ),
+                    menuChildren: [
+                      MenuItemButton(
+                        onPressed: () {
+                          _postsListType = PostsListType.small;
+                        },
+                        child: Text(context.loc.listType),
+                      ),
+                      MenuItemButton(
+                        onPressed: () {
+                          _postsListType = PostsListType.square;
+                        },
+                        child: Text(context.loc.cardType),
+                      ),
+                      MenuItemButton(
+                        onPressed: () {
+                          _postsListType = PostsListType.page;
+                        },
+                        child: Text(context.loc.pageType),
+                      ),
+                    ],
+                  ),
+                  const Divider(),
+                  MenuAnchor(
+                    style: const MenuStyle(
+                        alignment: Alignment.bottomRight,
+                        padding: WidgetStatePropertyAll(
+                            EdgeInsets.symmetric(horizontal: 24))),
+                    builder: (context, controller, child) => ListTile(
+                      onTap: () {
+                        if (controller.isOpen) {
+                          controller.close();
+                        } else {
+                          FocusScope.of(context).unfocus();
+                          controller.open();
+                        }
+                      },
+                      leading: const Icon(Icons.color_lens_outlined),
+                      title: Text(context.loc.boxColorType),
+                      trailing: Text(
+                          _getBoxColorTypeLabel(context, _boxColorType.index)),
+                      leadingAndTrailingTextStyle:
+                          Theme.of(context).textTheme.labelLarge,
+                    ),
+                    menuChildren: [
+                      MenuItemButton(
+                        onPressed: () {
+                          _boxColorType = BoxColorType.single;
+                        },
+                        child: Text(context.loc.singleColor),
+                      ),
+                      MenuItemButton(
+                        onPressed: () {
+                          _boxColorType = BoxColorType.gradient;
+                        },
+                        child: Text(context.loc.gradientColor),
+                      ),
+                      /*
+                      MenuItemButton(
+                        onPressed: () {
+                          _postsListType = PostsListType.page;
+                        },
+                        child: Text(context.loc.pageType),
+                      ),
+                      */
+                    ],
+                  ),
+                  const Divider(),
+                  MenuAnchor(
+                    style: const MenuStyle(
+                        alignment: Alignment.bottomRight,
+                        padding: WidgetStatePropertyAll(
+                            EdgeInsets.symmetric(horizontal: 24))),
+                    builder: (context, controller, child) => ListTile(
+                      onTap: () {
+                        if (controller.isOpen) {
+                          controller.close();
+                        } else {
+                          FocusScope.of(context).unfocus();
+                          controller.open();
+                        }
+                      },
+                      title: Text(context.loc.mediaMaxMBSize),
+                      trailing: Text('${_mediaMaxMBSize.round()} MB'),
+                      leadingAndTrailingTextStyle:
+                          Theme.of(context).textTheme.labelLarge,
+                    ),
+                    menuChildren: mediaMaxMBSizesList
+                        .map<MenuItemButton>(
+                          (double size) => MenuItemButton(
+                            onPressed: () {
+                              _mediaMaxMBSize = size;
+                            },
+                            child: Text('${size.round()} MB'),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: Text(context.loc.useRecommendation),
+                    value: _useRecommendation,
+                    onChanged: (value) {
+                      setState(() {
+                        _useRecommendation = value;
+                      });
+                    },
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: Text(context.loc.useRanking),
+                    value: _useRanking,
+                    onChanged: (value) {
+                      setState(() {
+                        _useRanking = value;
+                      });
+                    },
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: Text(context.loc.useCategory),
+                    value: _useCategory,
+                    onChanged: (value) {
+                      setState(() {
+                        _useCategory = value;
+                      });
+                    },
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: Text(context.loc.showLogoutOnDrawer),
+                    value: _showLogoutOnDrawer,
+                    onChanged: (value) {
+                      setState(() {
+                        _showLogoutOnDrawer = value;
+                      });
+                    },
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: Text(context.loc.showCommentCount),
+                    value: _showCommentCount,
+                    onChanged: (value) {
+                      setState(() {
+                        _showCommentCount = value;
+                      });
+                    },
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: Text(context.loc.showLikeCount),
+                    value: _showLikeCount,
+                    onChanged: (value) {
+                      setState(() {
+                        _showLikeCount = value;
+                      });
+                    },
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: Text(context.loc.showDislikeCount),
+                    value: _showDislikeCount,
+                    onChanged: (value) {
+                      setState(() {
+                        _showDislikeCount = value;
+                      });
+                    },
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: Text(context.loc.showSumCount),
+                    value: _showSumCount,
+                    onChanged: (value) {
+                      setState(() {
+                        _showSumCount = value;
+                      });
+                    },
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: Text(context.loc.showCommentPlusLikeCount),
+                    value: _showCommentPlusLikeCount,
+                    onChanged: (value) {
+                      setState(() {
+                        _showCommentPlusLikeCount = value;
+                      });
+                    },
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: Text(context.loc.isThumbUpToHeart),
+                    value: _isThumbUpToHeart,
+                    onChanged: (value) {
+                      setState(() {
+                        _isThumbUpToHeart = value;
+                      });
+                    },
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: Text(context.loc.showUserAdminLabel),
+                    value: _showUserAdminLabel,
+                    onChanged: (value) {
+                      setState(() {
+                        _showUserAdminLabel = value;
+                      });
+                    },
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: Text(context.loc.showUserLikeCount),
+                    value: _showUserLikeCount,
+                    onChanged: (value) {
+                      setState(() {
+                        _showUserLikeCount = value;
+                      });
+                    },
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: Text(context.loc.showUserDislikeCount),
+                    value: _showUserDislikeCount,
+                    onChanged: (value) {
+                      setState(() {
+                        _showUserDislikeCount = value;
+                      });
+                    },
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: Text(context.loc.showUserSumCount),
+                    value: _showUserSumCount,
+                    onChanged: (value) {
+                      setState(() {
+                        _showUserSumCount = value;
+                      });
+                    },
+                  ),
+                  const Divider(),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -533,6 +857,37 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
       case HomeBarTitleStyle.textimage:
         return context.loc.textImageStyle;
     }
+  }
+
+  String _getPostsListTypeLabel(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        return context.loc.listType;
+      case 1:
+        return context.loc.cardType;
+      case 2:
+        return context.loc.pageType;
+      default:
+        return context.loc.cardType;
+    }
+  }
+
+  String _getBoxColorTypeLabel(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        return context.loc.singleColor;
+      case 1:
+        return context.loc.gradientColor;
+      case 2:
+        return context.loc.animationColor;
+      default:
+        return context.loc.gradientColor;
+    }
+  }
+
+  // ignore: unused_element
+  List<double> _getMediaMaxMBSizes() {
+    return [10.0, ...List.generate(20, (int index) => (index * 50.0) + 50.0)];
   }
 }
 

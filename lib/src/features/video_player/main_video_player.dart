@@ -1,6 +1,7 @@
 import 'package:applimode_app/src/app_settings/app_settings_controller.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/platform_network_image.dart';
 import 'package:applimode_app/src/constants/constants.dart';
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/posts/domain/post.dart';
 import 'package:applimode_app/src/features/video_player/video_player_components/video_gesture_detector.dart';
@@ -103,6 +104,7 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     final appSetting = ref.watch(appSettingsControllerProvider);
+    final adminSettings = ref.watch(adminSettingsProvider);
     ref.listen(postsItemPlayingStateProvider, (_, next) {
       if (next == false) {
         _controller.pause();
@@ -220,9 +222,9 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
               child: VideoVolumeButton(
                 padding: widget.post != null &&
                         widget.post!.isHeader &&
-                        (showAppStyleOption
+                        (adminSettings.showAppStyleOption
                             ? appSetting.appStyle != 2
-                            : postsListType != PostsListType.page)
+                            : adminSettings.postsListType != PostsListType.page)
                     ? const EdgeInsets.only(top: 64, left: 8)
                     : const EdgeInsets.only(top: 12, left: 8),
                 controller: _controller,
@@ -240,7 +242,7 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
               isPage: widget.isPage,
               showVideoTitle: widget.showVideoTitle,
             ),
-            */
+          */
         ],
       ),
     );

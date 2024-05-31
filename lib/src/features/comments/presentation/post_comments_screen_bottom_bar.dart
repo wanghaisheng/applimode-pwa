@@ -1,5 +1,6 @@
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/platform_image.dart';
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/comments/presentation/post_comment_controller.dart';
@@ -75,6 +76,7 @@ class _PostCommentsScreenBottomBarState
     ref.listen(postCommentControllerProvider, (_, state) {
       state.showAlertDialogOnError(context);
     });
+    final mediaMaxMBSize = ref.watch(adminSettingsProvider).mediaMaxMBSize;
     final user = ref.watch(authStateChangesProvider).value;
     final isLoading = ref.watch(postCommentControllerProvider).isLoading;
     return InkWell(
@@ -121,6 +123,7 @@ class _PostCommentsScreenBottomBarState
                         _pickedFile = await showImagePicker(
                           maxWidth: postImageMaxWidth,
                           imageQuality: postImageQuality,
+                          mediaMaxMBSize: mediaMaxMBSize,
                         );
                         setState(() {});
                       },

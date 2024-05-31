@@ -1,5 +1,7 @@
+import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:go_router/go_router.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -29,6 +31,8 @@ class StringMarkdown extends StatelessWidget {
           if (uri != null) {
             launchUrl(uri);
           }
+        } else if ((href == null || href.isEmpty) && text.startsWith('#')) {
+          context.push(ScreenPaths.search, extra: text);
         }
       },
       styleSheet: MarkdownStyleSheet(
@@ -151,22 +155,17 @@ class MiddlePaddingBuilder extends MarkdownPaddingBuilder {
 */
 
 class CodeMarkdownElementBuilder extends MarkdownElementBuilder {
-  ScrollController horizontalController = ScrollController();
   @override
   Widget visitText(md.Text text, TextStyle? preferredStyle) {
     // final preFontSize = preferredStyle?.fontSize;
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      controller: horizontalController,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SelectableText(
-          text.text,
-          style: const TextStyle(
-            color: Color(0xFFD4D4D4),
-            // fontFamily: 'monospace',
-            // fontSize: (preFontSize != null ? preFontSize - 2 : 14) * 0.85,
-          ),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: SelectableText(
+        text.text,
+        style: const TextStyle(
+          color: Color(0xFFD4D4D4),
+          // fontFamily: 'monospace',
+          // fontSize: (preFontSize != null ? preFontSize - 2 : 14) * 0.85,
         ),
       ),
     );

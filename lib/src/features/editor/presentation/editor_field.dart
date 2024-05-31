@@ -27,6 +27,9 @@ class EditorField extends StatelessWidget {
             border: InputBorder.none,
           ),
           onChanged: onChanged,
+          autocorrect: false,
+          enableSuggestions: false,
+          expands: true,
         ),
       ),
     );

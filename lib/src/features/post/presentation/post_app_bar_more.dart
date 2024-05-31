@@ -1,3 +1,4 @@
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:applimode_app/src/common_widgets/async_value_widgets/async_value_widget.dart';
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
@@ -8,7 +9,6 @@ import 'package:applimode_app/src/features/posts/domain/post.dart';
 import 'package:applimode_app/src/features/posts/domain/post_and_writer.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
-import 'package:applimode_app/custom_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -36,6 +36,8 @@ class PostAppBarMore extends ConsumerWidget {
         : const AsyncData(null);
     final postAndWriter =
         PostAndWriter(post: postAsync.value!, writer: writerAsync.value!);
+    final useRecommendation =
+        ref.watch(adminSettingsProvider).useRecommendation;
     return AsyncValueWidget(
       value: appUser,
       data: (appUser) {

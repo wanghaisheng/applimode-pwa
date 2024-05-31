@@ -54,8 +54,8 @@ class StringConverter {
 
   static String buildYtFullEmbedUrl(String youtubeId) {
     // https://www.youtube-nocookie.com/embed/$youtubeId?rel=0
-    // https://www.youtube.com/embed/$youtubeId?autoplay=1;
-    return 'https://www.youtube-nocookie.com/embed/$youtubeId?rel=0';
+    // https://www.youtube.com/embed/$youtubeId?rel=0&amp;autoplay=1;
+    return 'https://www.youtube-nocookie.com/embed/$youtubeId?rel=0&amp;autoplay=1;';
   }
 
   static String buildInstaIf(String instaUrl) {
@@ -168,6 +168,10 @@ class StringConverter {
     String? postId,
   }) {
     final splits = content
+        // remove noTitletag
+        .replaceAll(noTitleTag, '')
+        // remove noWriterTag
+        .replaceAll(noWriterTag, '')
         // markdown uses too many memroy. so split it for listview.builder
         .replaceAllMapped(RegExp('\n#+ '), (match) => '$splitTag${match[0]}')
         // youtube url and iframe
@@ -192,6 +196,8 @@ class StringConverter {
         // web video
         .replaceAllMapped(
             Regex.webVideoRegex, (match) => '$splitTag${match[0]}$splitTag')
+        // hashtag
+        .replaceAllMapped(Regex.hashtagLinkRegex, (match) => '[${match[0]}]()')
         // get split list
         .split(splitTag);
     return _splitsToElements(splits: splits, postId: postId);
@@ -199,6 +205,8 @@ class StringConverter {
 
   static String toTitle(String content) {
     return content
+        .replaceAll(noTitleTag, '')
+        .replaceAll(noWriterTag, '')
         .replaceAll(Regex.remoteRegex, '')
         .replaceAll(Regex.iframeRegex, '')
         .replaceAll(Regex.urlWithHttp, '')

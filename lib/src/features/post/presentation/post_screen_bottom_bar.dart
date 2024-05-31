@@ -2,6 +2,7 @@ import 'package:applimode_app/src/common_widgets/buttons/post_comment_button.dar
 import 'package:applimode_app/src/common_widgets/buttons/post_dislike_button.dart';
 import 'package:applimode_app/src/common_widgets/buttons/post_like_button.dart';
 import 'package:applimode_app/src/common_widgets/buttons/post_sum_button.dart';
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/post/presentation/post_likes_controller.dart';
 import 'package:applimode_app/src/features/posts/data/posts_repository.dart';
@@ -13,7 +14,6 @@ import 'package:applimode_app/src/utils/list_state.dart';
 import 'package:applimode_app/src/utils/now_to_int.dart';
 import 'package:applimode_app/src/utils/show_message_snack_bar.dart';
 import 'package:applimode_app/src/utils/updated_post_ids_list.dart';
-import 'package:applimode_app/custom_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,6 +63,8 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
     final mainColor = colorScheme.secondary;
     final countTextStyle = textTheme.bodyLarge?.copyWith(color: mainColor);
 
+    final adminSettings = ref.watch(adminSettingsProvider);
+
     ref.listen(postLikesControllerProvider, (_, next) {
       // next.showAlertDialogOnError(context, content: context.loc.deletePost);
       if (!next.isLoading && next.hasError) {
@@ -80,10 +82,12 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
 
     return InkWell(
       onTap: () {
-        context.push(
-          ScreenPaths.comments(widget.post.id),
-          extra: widget.postWriter,
-        );
+        if (adminSettings.showCommentCount) {
+          context.push(
+            ScreenPaths.comments(widget.post.id),
+            extra: widget.postWriter,
+          );
+        }
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -92,11 +96,11 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
         child: SafeArea(
           child: Row(
             children: [
-              if (showLikeCount) ...[
+              if (adminSettings.showLikeCount) ...[
                 PostLikeButton(
                   postId: currentPost.id,
                   postWriterId: currentPost.uid,
-                  isHeart: isThumbUpToHeart,
+                  isHeart: adminSettings.isThumbUpToHeart,
                   postWriter: widget.postWriter,
                 ),
                 InkWell(
@@ -111,7 +115,7 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
                   ),
                 ),
               ],
-              if (showDislikeCount) ...[
+              if (adminSettings.showDislikeCount) ...[
                 PostDislikeButton(
                   postId: currentPost.id,
                   postWriterId: currentPost.uid,
@@ -128,7 +132,7 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
                   ),
                 ),
               ],
-              if (showSumCount) ...[
+              if (adminSettings.showSumCount) ...[
                 const PostSumButton(),
                 Padding(
                   padding: const EdgeInsets.only(left: 4, right: 16),
@@ -138,7 +142,7 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
                   ),
                 ),
               ],
-              if (showCommentCount) ...[
+              if (adminSettings.showCommentCount) ...[
                 PostCommentButton(
                   postId: currentPost.id,
                   postWriter: widget.postWriter,
@@ -157,22 +161,22 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
                     ),
                   ),
                 ),
-              ],
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 24),
-                  child: Text(
-                    context.loc.leaveComment,
-                    textAlign: TextAlign.left,
-                    overflow: TextOverflow.ellipsis,
-                    style: textTheme.labelLarge?.copyWith(color: mainColor),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 24),
+                    child: Text(
+                      context.loc.leaveComment,
+                      textAlign: TextAlign.left,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.labelLarge?.copyWith(color: mainColor),
+                    ),
                   ),
                 ),
-              ),
-              Icon(
-                Icons.unfold_more_outlined,
-                color: mainColor,
-              ),
+                Icon(
+                  Icons.unfold_more_outlined,
+                  color: mainColor,
+                ),
+              ],
             ],
           ),
         ),

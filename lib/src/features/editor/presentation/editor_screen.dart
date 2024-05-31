@@ -227,10 +227,10 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     );
   }
 
-  Future<void> _getMedia({
-    bool isMedia = false,
-    bool isVideo = false,
-  }) async {
+  Future<void> _getMedia(
+      {bool isMedia = false,
+      bool isVideo = false,
+      required double mediaMaxMBSize}) async {
     final text = _controller.text;
     final selection = _controller.selection;
     final start = selection.start;
@@ -248,6 +248,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       isVideo: isThumbnail ? false : isVideo,
       maxWidth: postImageMaxWidth,
       imageQuality: postImageQuality,
+      mediaMaxMBSize: mediaMaxMBSize,
     ).catchError((error) {
       showAdaptiveAlertDialog(
           context: context,

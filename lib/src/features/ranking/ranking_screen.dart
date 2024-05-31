@@ -1,3 +1,4 @@
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:applimode_app/src/common_widgets/simple_page_list_view.dart';
 import 'package:applimode_app/src/common_widgets/user_items/user_item.dart';
@@ -110,6 +111,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final adminSettings = ref.watch(adminSettingsProvider);
     // default post query
     final postQuery = ref.watch(postsRepositoryProvider).postsRef().orderBy(
           secondFilter.name,
@@ -232,7 +234,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                         );
                       },
                       menuChildren: [
-                        if (showLikeCount)
+                        if (adminSettings.showLikeCount)
                           MenuItemButton(
                             onPressed: () {
                               secondFilter = RankSecondFilter.likeCount;
@@ -241,7 +243,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                             child: Text(
                                 getSecondLabel(RankSecondFilter.likeCount)),
                           ),
-                        if (showDislikeCount)
+                        if (adminSettings.showDislikeCount)
                           MenuItemButton(
                             onPressed: () {
                               secondFilter = RankSecondFilter.dislikeCount;
@@ -250,7 +252,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                             child: Text(
                                 getSecondLabel(RankSecondFilter.dislikeCount)),
                           ),
-                        if (showSumCount)
+                        if (adminSettings.showSumCount)
                           MenuItemButton(
                             onPressed: () {
                               secondFilter = RankSecondFilter.sumCount;

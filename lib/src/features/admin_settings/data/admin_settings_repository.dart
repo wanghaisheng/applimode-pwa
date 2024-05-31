@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/admin_settings/domain/admin_settings.dart';
 import 'package:applimode_app/src/features/admin_settings/domain/app_main_category.dart';
 import 'package:applimode_app/src/utils/format.dart';
@@ -22,6 +23,24 @@ class AdminSettingsRepository {
     required int homeBarStyle,
     required Color mainColor,
     required List<MainCategory> mainCategory,
+    required bool showAppStyleOption,
+    required PostsListType postsListType,
+    required BoxColorType boxColorType,
+    required double mediaMaxMBSize,
+    required bool useRecommendation,
+    required bool useRanking,
+    required bool useCategory,
+    required bool showLogoutOnDrawer,
+    required bool showLikeCount,
+    required bool showDislikeCount,
+    required bool showCommentCount,
+    required bool showSumCount,
+    required bool showCommentPlusLikeCount,
+    required bool isThumbUpToHeart,
+    required bool showUserAdminLabel,
+    required bool showUserLikeCount,
+    required bool showUserDislikeCount,
+    required bool showUserSumCount,
   }) =>
       _firestore.doc(_adminSettingsPath).set({
         'homeBarTitle': homeBarTitle,
@@ -30,6 +49,24 @@ class AdminSettingsRepository {
         'mainColor': Format.colorToHexString(mainColor),
         'mainCategory':
             json.encode(mainCategory.map((e) => e.toMap()).toList()),
+        'showAppStyleOption': showAppStyleOption,
+        'postsListType': postsListType.index,
+        'boxColorType': boxColorType.index,
+        'mediaMaxMBSize': mediaMaxMBSize,
+        'useRecommendation': useRecommendation,
+        'useRanking': useRanking,
+        'useCategory': useCategory,
+        'showLogoutOnDrawer': showLogoutOnDrawer,
+        'showLikeCount': showLikeCount,
+        'showDislikeCount': showDislikeCount,
+        'showCommentCount': showCommentCount,
+        'showSumCount': showSumCount,
+        'showCommentPlusLikeCount': showCommentPlusLikeCount,
+        'isThumbUpToHeart': isThumbUpToHeart,
+        'showUserAdminLabel': showUserAdminLabel,
+        'showUserLikeCount': showUserLikeCount,
+        'showUserDislikeCount': showUserDislikeCount,
+        'showUserSumCount': showUserSumCount,
       });
 
   DocumentReference<AdminSettings> _docRef() =>

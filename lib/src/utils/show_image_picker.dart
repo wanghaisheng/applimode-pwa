@@ -11,6 +11,7 @@ Future<XFile?> showImagePicker({
   double? maxWidth,
   double? maxHeight,
   int? imageQuality,
+  required double mediaMaxMBSize,
 }) async {
   final ImagePicker picker = ImagePicker();
   try {

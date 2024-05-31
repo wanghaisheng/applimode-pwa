@@ -67,7 +67,9 @@ class ProfilePostsScreen extends ConsumerWidget {
           : SimplePageListView(
               query: query,
               listState: postsListStateProvider,
-              itemExtent: MediaQuery.sizeOf(context).width + cardBottomPadding,
+              itemExtent: isSquare
+                  ? MediaQuery.sizeOf(context).width + cardBottomPadding
+                  : listSmallItemHeight,
               /*
                 kIsWeb && MediaQuery.sizeOf(context).width > pcWidthBreakpoint
                     ? pcWidthBreakpoint + cardBottomPadding

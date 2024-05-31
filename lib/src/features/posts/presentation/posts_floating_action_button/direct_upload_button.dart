@@ -1,5 +1,6 @@
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/constants/constants.dart';
+import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_floating_action_button/direct_upload_button_controller.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/show_adaptive_alert_dialog.dart';
@@ -19,6 +20,7 @@ class DirectUploadButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final mediaMaxMBSize = ref.watch(adminSettingsProvider).mediaMaxMBSize;
     return FloatingActionButton.small(
       heroTag: heroTag,
       shape: const CircleBorder(),
@@ -27,6 +29,7 @@ class DirectUploadButton extends ConsumerWidget {
           isMedia: true,
           maxWidth: postImageMaxWidth,
           imageQuality: postImageQuality,
+          mediaMaxMBSize: mediaMaxMBSize,
         ).catchError((error) {
           showAdaptiveAlertDialog(
               context: context,
