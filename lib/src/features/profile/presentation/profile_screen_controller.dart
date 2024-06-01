@@ -37,7 +37,7 @@ class ProfileScreenController extends _$ProfileScreenController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('deleteAccount: ${state.error.toString()}');
       return;
     }
 

@@ -192,5 +192,10 @@
   "showUserDislikeCount": "사용자 싫어요 합계 보여주기",
   "showUserSumCount": "사용자 좋아요 싫어요 합계 보여주기",
   "save": "저장하기",
+  "privacyPolicy": "개인정보 보호정책",
+  "termsOfService": "서비스 약관",
+  "argeeStart": "계속 진행하면 ",
+  "argeeMiddle": "에 동의하고 ",
+  "argeeEnd": "을 읽었음을 인정하는 것으로 간주 됩니다.",
   "unknown": "무명"
 }

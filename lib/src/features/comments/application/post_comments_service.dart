@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/comments/data/post_comment_likes_repository.dart';
@@ -98,7 +100,8 @@ class PostCommentsService {
             .read(postsRepositoryProvider)
             .updatePostCommentCount(id: postId, number: -replies.length - 1);
       } catch (e) {
-        debugPrint('this post has already deleted');
+        dev.log('this post has already deleted');
+        debugPrint('updatePostCommentCount: ${e.toString()}');
       }
     }
     // delete comment likes
@@ -125,7 +128,8 @@ class PostCommentsService {
             .read(postsRepositoryProvider)
             .updatePostCommentCount(id: postId, number: -1);
       } catch (e) {
-        debugPrint('already deleted');
+        dev.log('already deleted');
+        debugPrint('updatePostCommentCount: ${e.toString()}');
       }
     }
   }

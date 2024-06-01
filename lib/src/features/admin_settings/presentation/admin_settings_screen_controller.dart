@@ -92,7 +92,7 @@ class AdminSettingsScreenController extends _$AdminSettingsScreenController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('save admin settings error: ${state.error.toString()}');
       return false;
     }
 

@@ -7,7 +7,7 @@ part of 'post_screen_controller.dart';
 // **************************************************************************
 
 String _$postScreenControllerHash() =>
-    r'a2a17afcc8449cfb0a2716c6423f30e55756a0c2';
+    r'2d05e36ae96cc21596e4acdc45cdfbeab2c7f45c';
 
 /// See also [PostScreenController].
 @ProviderFor(PostScreenController)

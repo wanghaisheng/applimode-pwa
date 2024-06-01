@@ -7,7 +7,7 @@ part of 'edit_username_screen_controller.dart';
 // **************************************************************************
 
 String _$editUsernameScreenControllerHash() =>
-    r'c26183af03b382c3a4c45822a3a50ce261a2d04d';
+    r'09744b99f783e442fe46feb86cbf419f0a392f10';
 
 /// See also [EditUsernameScreenController].
 @ProviderFor(EditUsernameScreenController)

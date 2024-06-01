@@ -232,6 +232,7 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
           );
     } catch (e, st) {
       WakelockPlus.disable();
+      debugPrint('directUploadError: ${e.toString()}');
       state =
           AsyncError(Exception('Please check your network or media files'), st);
       return;
@@ -244,7 +245,7 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
           isTopic: true,
           topic: 'newPost');
     } catch (e) {
-      debugPrint('fcmError: $e');
+      debugPrint('fcmError: ${e.toString()}');
     }
 
     WakelockPlus.disable();

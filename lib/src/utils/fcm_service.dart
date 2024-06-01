@@ -1,5 +1,6 @@
+import 'dart:developer' as dev;
+
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
@@ -20,7 +21,7 @@ class FCMService {
 
     final settings = await _fcm.getNotificationSettings();
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      debugPrint('User granted permission');
+      dev.log('User granted permission');
       setupSub();
       final token = await _fcm.getToken();
       if (token == null) {
@@ -47,10 +48,10 @@ class FCMService {
 
   Future<void> setupSub() async {
     if (_ref.read(sharedPreferencesProvider).getBool('newPostNoti') ?? true) {
-      debugPrint('subscribe');
+      dev.log('subscribe');
       await _fcm.subscribeToTopic('newPost');
     } else {
-      debugPrint('unsubscribe');
+      dev.log('unsubscribe');
       await _fcm.unsubscribeFromTopic('newPost');
     }
   }
@@ -67,7 +68,7 @@ class FCMService {
     final initialMessage = await _fcm.getInitialMessage();
 
     if (initialMessage != null) {
-      debugPrint('initailMessage exists');
+      dev.log('initailMessage exists');
       _handleMessage(initialMessage);
     }
 

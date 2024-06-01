@@ -1,12 +1,15 @@
+import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/common_widgets/sized_circular_progress_indicator.dart';
 import 'package:applimode_app/src/features/authentication/presentation/firebase_sign_in_screen_controller.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:applimode_app/src/features/authentication/presentation/auth_providers.dart';
 import 'package:applimode_app/src/utils/async_value_ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FirebaseSignInScreen extends ConsumerWidget {
   const FirebaseSignInScreen({super.key});
@@ -57,6 +60,76 @@ class FirebaseSignInScreen extends ConsumerWidget {
               providers: authProviders,
               styles: const {
                 EmailFormStyle(signInButtonVariant: ButtonVariant.filled)
+              },
+              footerBuilder: (context, action) {
+                if (action == AuthAction.signUp) {
+                  final textTheme = Theme.of(context).textTheme.bodyMedium;
+                  final linkStyle = textTheme?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  );
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 32,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                              style: const TextStyle(height: 1.5),
+                              children: [
+                                TextSpan(
+                                  text: context.loc.argeeStart,
+                                  style: textTheme,
+                                ),
+                                TextSpan(
+                                  text: shortAppName,
+                                  style: textTheme,
+                                ),
+                                TextSpan(
+                                  text: ' ${context.loc.termsOfService} ',
+                                  style: linkStyle,
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      if (termsUrl.trim().isNotEmpty) {
+                                        launchUrl(
+                                          Uri.parse(termsUrl),
+                                        );
+                                      }
+                                    },
+                                ),
+                                TextSpan(
+                                  text: context.loc.argeeMiddle,
+                                  style: textTheme,
+                                ),
+                                TextSpan(
+                                  text: ' ${context.loc.privacyPolicy} ',
+                                  style: linkStyle,
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      if (privacyUrl.trim().isNotEmpty) {
+                                        launchUrl(
+                                          Uri.parse(privacyUrl),
+                                        );
+                                      }
+                                    },
+                                ),
+                                TextSpan(
+                                  text: context.loc.argeeEnd,
+                                  style: textTheme,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
               },
               actions: [
                 AuthStateChangeAction<SignedIn>(

@@ -33,7 +33,8 @@ class CachedCircleImage extends StatelessWidget {
                   headers: useRTwoSecureGet ? rTwoSecureHeader : null,
                 ) as ImageProvider,
           fit: BoxFit.cover,
-          onError: (exception, stackTrace) => debugPrint('image not found'),
+          onError: (exception, stackTrace) =>
+              debugPrint('image not found: ${exception.toString()}'),
         ),
         shape: BoxShape.circle,
       ),

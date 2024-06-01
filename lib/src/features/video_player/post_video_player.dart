@@ -57,7 +57,7 @@ class _PostVideoPlayerState extends State<PostVideoPlayer> {
       _controller.initialize().then((value) {
         isLoading = false;
         setState(() {});
-      }, onError: (e) => debugPrint('catch: ${e.toString()}'));
+      }, onError: (e) => debugPrint('videoInit: ${e.toString()}'));
     }
   }
 
@@ -86,7 +86,7 @@ class _PostVideoPlayerState extends State<PostVideoPlayer> {
     _controller.initialize().then((value) {
       isLoading = false;
       setState(() {});
-    }, onError: (e) => debugPrint('catch: ${e.toString()}'));
+    }, onError: (e) => debugPrint('videoInit: ${e.toString()}'));
     _controller.play();
   }
 
@@ -264,7 +264,7 @@ class _PostVideoPlayerState extends State<PostVideoPlayer> {
       _controller.initialize().then((value) {
         isLoading = false;
         setState(() {});
-      }, onError: (e) => debugPrint('catch: ${e.toString()}'));
+      }, onError: (e) => debugPrint('videoInit: ${e.toString()}'));
     }
   }
 
@@ -293,7 +293,7 @@ class _PostVideoPlayerState extends State<PostVideoPlayer> {
     _controller.initialize().then((value) {
       isLoading = false;
       setState(() {});
-    }, onError: (e) => debugPrint('catch: ${e.toString()}'));
+    }, onError: (e) => debugPrint('videoInit: ${e.toString()}'));
     _controller.play();
   }
 

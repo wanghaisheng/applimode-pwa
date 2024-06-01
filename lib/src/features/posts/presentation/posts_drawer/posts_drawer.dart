@@ -19,13 +19,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PostsDrawer extends ConsumerWidget {
   const PostsDrawer({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    debugPrint('Posts Drawer build');
+    // dev.log('Posts Drawer build');
     final user = ref.watch(authStateChangesProvider).value;
     final appUser =
         user != null ? ref.watch(appUserFutureProvider(user.uid)).value : null;
@@ -147,6 +148,34 @@ class PostsDrawer extends ConsumerWidget {
                 },
               ),
             ListTile(
+              leading: const Icon(Icons.handshake_outlined),
+              title: Text(context.loc.termsOfService),
+              onTap: () {
+                if (termsUrl.trim().isNotEmpty) {
+                  if (context.canPop()) {
+                    context.pop();
+                  }
+                  launchUrl(
+                    Uri.parse(termsUrl),
+                  );
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.privacy_tip_outlined),
+              title: Text(context.loc.privacyPolicy),
+              onTap: () {
+                if (privacyUrl.trim().isNotEmpty) {
+                  if (context.canPop()) {
+                    context.pop();
+                  }
+                  launchUrl(
+                    Uri.parse(privacyUrl),
+                  );
+                }
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.info_outline),
               title: Text(context.loc.appInfo),
               onTap: () {
@@ -156,8 +185,8 @@ class PostsDrawer extends ConsumerWidget {
                 context.push(ScreenPaths.appInfo);
               },
             ),
-            divider24,
-            if (user != null && adminSettings.showLogoutOnDrawer)
+            if (user != null && adminSettings.showLogoutOnDrawer) ...[
+              divider24,
               ListTile(
                 leading: const Icon(Icons.logout),
                 title: Text(context.loc.logOut),
@@ -169,6 +198,7 @@ class PostsDrawer extends ConsumerWidget {
                   }
                 },
               ),
+            ]
           ],
         ),
       ),

@@ -40,7 +40,7 @@ class ChangePasswordScreenController extends _$ChangePasswordScreenController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('changePassword: ${state.error.toString()}');
       return false;
     }
 

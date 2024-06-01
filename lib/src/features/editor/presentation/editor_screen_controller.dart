@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as dev;
 
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/constants/constants.dart';
@@ -145,7 +146,7 @@ class EditorScreenController extends _$EditorScreenController {
             }
             */
           } catch (e) {
-            debugPrint('error: $e');
+            debugPrint('oldMediaDelete: ${e.toString()}');
           }
         }
       }
@@ -208,7 +209,7 @@ class EditorScreenController extends _$EditorScreenController {
                   videoThumbnailUrl = url;
                 }
               } catch (e) {
-                debugPrint(e.toString());
+                debugPrint('videoThumbnailUpload: ${e.toString()}');
               }
             } else {
               if (kIsWeb) {
@@ -321,7 +322,7 @@ class EditorScreenController extends _$EditorScreenController {
           newContent =
               newContent.replaceFirst(localMediaUrls[i], remoteMediaUrls[i]);
         }
-        debugPrint(newContent);
+        // dev.log(newContent);
       }
 
       if (postId != null) {
@@ -354,7 +355,7 @@ class EditorScreenController extends _$EditorScreenController {
                 }
                 newContent = newContent.replaceFirst(match[1]!, newUrl);
               } catch (e) {
-                debugPrint(e.toString());
+                debugPrint('uploadVideoThumbnail: ${e.toString()}');
               }
             }
           }
@@ -510,11 +511,12 @@ class EditorScreenController extends _$EditorScreenController {
           await ref.read(postContentsRepositoryProvider).deletePostContent(id);
         }
       } catch (e) {
-        debugPrint('already deleted');
+        dev.log('already deleted');
+        debugPrint('deletePostContent: ${e.toString()}');
       }
     } catch (e, st) {
       WakelockPlus.disable();
-      debugPrint('error: $e');
+      debugPrint('editorScreenPublishError: ${e.toString()}');
       state = AsyncError(Exception(faildPostSubmit), st);
       return false;
     }
@@ -534,7 +536,7 @@ class EditorScreenController extends _$EditorScreenController {
             isTopic: true,
             topic: 'newPost');
       } catch (e) {
-        debugPrint('fcmError: $e');
+        debugPrint('fcmError: ${e.toString()}');
       }
     }
 

@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/exceptions/app_exception.dart';
 import 'package:flutter/widgets.dart';
@@ -35,7 +37,7 @@ Future<XFile?> showImagePicker({
     // check file size
     if (pickedFile != null && mediaMaxMBSize != 0.0) {
       final length = await pickedFile.length();
-      debugPrint('length: ${length / (1024 * 1024)}');
+      dev.log('length: ${length / (1024 * 1024)}');
       final mbSize = length / (1024 * 1024);
       if (mbSize > mediaMaxMBSize) {
         throw FileSizeException();
@@ -46,8 +48,7 @@ Future<XFile?> showImagePicker({
   } on FileSizeException {
     rethrow;
   } catch (e) {
-    debugPrint('image picker error');
-    debugPrint(e.toString());
+    debugPrint('imagePickerError: ${e.toString()}');
     // Propagate with rethrow
     // rethrow 로 전파시킬 것
     return null;

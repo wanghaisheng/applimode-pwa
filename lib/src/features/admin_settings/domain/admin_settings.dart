@@ -84,7 +84,11 @@ class AdminSettings extends Equatable {
           map[showAppStyleOptionKey] as bool? ?? spareShowAppStyleOption,
       postsListType: PostsListType.values[postsListTypeInt],
       boxColorType: BoxColorType.values[boxColorTypeInt],
-      mediaMaxMBSize: map[mediaMaxMBSizeKey] as double? ?? spareMediaMaxMBSize,
+      // for iOS type cast error
+      mediaMaxMBSize: map[mediaMaxMBSizeKey] == null
+          ? spareMediaMaxMBSize
+          : (map[mediaMaxMBSizeKey] as int).toDouble(),
+      // mediaMaxMBSize: map[mediaMaxMBSizeKey] as double? ?? spareMediaMaxMBSize,
       useRecommendation:
           map[useRecommendationKey] as bool? ?? spareUseRecommendation,
       useRanking: map[useRankingKey] as bool? ?? spareUseRanking,

@@ -53,7 +53,7 @@ class PostLikesController extends _$PostLikesController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('increasePostLikeCount: ${state.error.toString()}');
       return false;
     }
 
@@ -74,7 +74,7 @@ class PostLikesController extends _$PostLikesController {
           );
         }
       } catch (e) {
-        debugPrint('fcmError: $e');
+        debugPrint('fcmError: ${e.toString()}');
       }
     }
 
@@ -114,7 +114,7 @@ class PostLikesController extends _$PostLikesController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('decreasePostLikeCount: ${state.error.toString()}');
       return false;
     }
 
@@ -155,7 +155,7 @@ class PostLikesController extends _$PostLikesController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('increasePostDislikeCount: ${state.error.toString()}');
       return false;
     }
 
@@ -195,7 +195,7 @@ class PostLikesController extends _$PostLikesController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('decreasePostDislikeCount: ${state.error.toString()}');
       return false;
     }
 

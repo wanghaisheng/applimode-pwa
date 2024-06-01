@@ -37,7 +37,7 @@ class PostCommentsItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    debugPrint('post comment item build');
+    // dev.log('post comment item build');
     ref.listen(postCommentControllerProvider, (_, state) {
       state.showAlertDialogOnError(context);
     });
@@ -198,7 +198,7 @@ class PostCommentsItem extends ConsumerWidget {
               );
       },
       error: (error, stackTrace) {
-        debugPrint(error.toString());
+        debugPrint('writerAsync: ${error.toString()}');
         return const SizedBox.shrink();
       },
       loading: () => const SizedBox.shrink(),

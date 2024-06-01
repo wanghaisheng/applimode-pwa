@@ -41,7 +41,7 @@ class PostScreenController extends _$PostScreenController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('deletePost: ${state.error.toString()}');
       return false;
     }
 
@@ -74,7 +74,7 @@ class PostScreenController extends _$PostScreenController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('blockPost: ${state.error.toString()}');
       return false;
     }
 
@@ -107,7 +107,7 @@ class PostScreenController extends _$PostScreenController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('unblockPost: ${state.error.toString()}');
       return false;
     }
 
@@ -140,7 +140,7 @@ class PostScreenController extends _$PostScreenController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('recommendPost: ${state.error.toString()}');
       return false;
     }
 
@@ -173,7 +173,7 @@ class PostScreenController extends _$PostScreenController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('unrecommendPost: ${state.error.toString()}');
       return false;
     }
 
@@ -206,7 +206,7 @@ class PostScreenController extends _$PostScreenController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('toMainPost: ${state.error.toString()}');
       return false;
     }
 
@@ -239,7 +239,7 @@ class PostScreenController extends _$PostScreenController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('toGeneralPost: ${state.error.toString()}');
       return false;
     }
 

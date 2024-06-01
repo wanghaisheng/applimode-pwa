@@ -7,7 +7,7 @@ part of 'admin_settings_screen_controller.dart';
 // **************************************************************************
 
 String _$adminSettingsScreenControllerHash() =>
-    r'8b4b8cc1ed6db333eb9cfd06c9fcab3a456c63c2';
+    r'e36a34acb5f5075682b9d2a21b943f16fffdc602';
 
 /// See also [AdminSettingsScreenController].
 @ProviderFor(AdminSettingsScreenController)

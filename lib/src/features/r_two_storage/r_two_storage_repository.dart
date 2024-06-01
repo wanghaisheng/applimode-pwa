@@ -23,7 +23,7 @@ class RTwoStorageRepository {
 
   Future<Uint8List> getBytes(XFile file) async {
     final bytes = await file.readAsBytes();
-    debugPrint('uploadXfile: Bytes done');
+    // debugPrint('uploadXfile: Bytes done');
     return bytes;
   }
 
@@ -37,6 +37,7 @@ class RTwoStorageRepository {
   }) async {
     final url = Uri.https(baseUrl, '/$storagePathname/$filename');
     final dio = Dio();
+    // ignore: unused_local_variable
     final response = await dio.put(
       url.toString(),
       data: bytes,
@@ -64,7 +65,7 @@ class RTwoStorageRepository {
     );
     */
     final cdnStoragePathname = storagePathname.replaceAll('/', '%2F');
-    debugPrint('${response.statusCode}');
+    // debugPrint('${response.statusCode}');
     return useCfCdn
         ? 'https://$domainUrl/$cdnStoragePathname%2F$filename'
         : 'https://$baseUrl/$storagePathname/$filename';

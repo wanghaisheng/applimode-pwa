@@ -52,7 +52,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('build post screen');
+    // dev.log('build post screen');
     final isLoading = ref.watch(postScreenControllerProvider).isLoading;
 
     ref.listen(postScreenControllerProvider, (_, state) {
@@ -119,6 +119,8 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                   children: [
                     Expanded(
                       child: SafeArea(
+                        // for iOS
+                        bottom: false,
                         child: LazyLoadingWidget(
                           // lazyDuration: 200,
                           loadingWidget: const Center(
@@ -168,6 +170,8 @@ class _PostScreenState extends ConsumerState<PostScreen> {
             children: [
               Expanded(
                 child: SafeArea(
+                  // for iOS
+                  bottom: false,
                   child: ListView.builder(
                     // shrinkWrap: true,
                     addAutomaticKeepAlives: false,

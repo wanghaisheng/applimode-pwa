@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:applimode_app/src/app_settings/app_settings_controller.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/constants/constants.dart';
@@ -303,7 +305,7 @@ class _SimplePageListViewState<Document>
         widget.updatedDocQuery != null &&
         widget.updatedDocsState != null) {
       ref.listen(widget.updatedDocsState!, (_, next) {
-        debugPrint('updatedDocs: $next');
+        dev.log('updatedDocs: $next');
         updateDocs(next);
       });
     }

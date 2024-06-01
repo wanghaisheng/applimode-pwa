@@ -68,7 +68,7 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
       _controller.initialize().then((value) {
         isLoading = false;
         setState(() {});
-      }, onError: (e) => debugPrint('catch: ${e.toString()}'));
+      }, onError: (e) => debugPrint('videoInit: ${e.toString()}'));
     }
   }
 
@@ -97,7 +97,7 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
     _controller.initialize().then((value) {
       isLoading = false;
       setState(() {});
-    }, onError: (e) => debugPrint('catch: ${e.toString()}'));
+    }, onError: (e) => debugPrint('videoInit: ${e.toString()}'));
     _controller.play();
   }
 

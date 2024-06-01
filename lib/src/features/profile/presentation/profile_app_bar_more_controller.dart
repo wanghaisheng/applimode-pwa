@@ -73,7 +73,7 @@ class ProfileAppBarMoreController extends _$ProfileAppBarMoreController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('blockAppUser: ${state.error.toString()}');
       return false;
     }
 
@@ -94,7 +94,7 @@ class ProfileAppBarMoreController extends _$ProfileAppBarMoreController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('unblockAppUser: ${state.error.toString()}');
       return false;
     }
 

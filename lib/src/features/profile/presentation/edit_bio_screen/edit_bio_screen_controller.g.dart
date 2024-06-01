@@ -7,7 +7,7 @@ part of 'edit_bio_screen_controller.dart';
 // **************************************************************************
 
 String _$editBioScreenControllerHash() =>
-    r'5fdbb4ea04f43ab841e15060a4fe8003464dd8a7';
+    r'2bba89cd03d58fadc588b4b70bba3c01fe1ef4e1';
 
 /// See also [EditBioScreenController].
 @ProviderFor(EditBioScreenController)

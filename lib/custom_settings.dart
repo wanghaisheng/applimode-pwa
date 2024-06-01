@@ -13,7 +13,14 @@ const androidBundleId = 'applimode.my_applimode';
 const appleBundleId = 'applimode.myApplimode';
 const firebaseProjectName = 'my-applimode';
 const appCreator = 'JongsukOh';
-const appVersion = '0.0.5+1';
+const appVersion = '0.0.6+1';
+
+// Link that connects when you tap on the Terms of Service
+// 서비스약관을 탭했을 경우 연결되는 링크
+const termsUrl = '';
+// Link that connects when you tap on the privacy policy
+// 개인보호정책을 탭했을 경우 연결되는 링크
+const privacyUrl = '';
 
 // Change the start screen to the login screen
 // 시작 화면을 로그인 화면으로 변경

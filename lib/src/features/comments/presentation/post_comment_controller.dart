@@ -87,7 +87,7 @@ class PostCommentController extends _$PostCommentController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('leaveComment: ${state.error.toString()}');
       return false;
     }
 
@@ -106,7 +106,7 @@ class PostCommentController extends _$PostCommentController {
           );
         }
       } catch (e) {
-        debugPrint('fcmError: $e');
+        debugPrint('fcmError: ${e.toString()}');
       }
     }
 
@@ -147,7 +147,7 @@ class PostCommentController extends _$PostCommentController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('deleteComment: ${state.error.toString()}');
       return false;
     }
 
@@ -192,7 +192,7 @@ class PostCommentController extends _$PostCommentController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('increasePostCommentLike: ${state.error.toString()}');
       return false;
     }
 
@@ -213,7 +213,7 @@ class PostCommentController extends _$PostCommentController {
           );
         }
       } catch (e) {
-        debugPrint('fcmError: $e');
+        debugPrint('fcmError: ${e.toString()}');
       }
     }
 
@@ -253,7 +253,7 @@ class PostCommentController extends _$PostCommentController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('decreasePostCommentLike: ${state.error.toString()}');
       return false;
     }
 
@@ -300,7 +300,7 @@ class PostCommentController extends _$PostCommentController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('increasePostCommentDislike: ${state.error.toString()}');
       return false;
     }
 
@@ -340,7 +340,7 @@ class PostCommentController extends _$PostCommentController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('decreasePostCommentDislike: ${state.error.toString()}');
       return false;
     }
 

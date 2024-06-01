@@ -85,7 +85,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       setState(() {});
       _remoteMedia = buildRemoteMedia(_controller.text);
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint('buildLongContent: ${e.toString()}');
     }
   }
 
@@ -102,7 +102,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
         _remoteMedia = buildRemoteMedia(_controller.text);
       }
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint('buildCurrentPost: ${e.toString()}');
     }
   }
 
@@ -250,6 +250,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       imageQuality: postImageQuality,
       mediaMaxMBSize: mediaMaxMBSize,
     ).catchError((error) {
+      debugPrint('showImagePicker: ${error.toString()}');
       showAdaptiveAlertDialog(
           context: context,
           title: context.loc.maxFileSizeErrorTitle,
@@ -262,7 +263,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       setState(
         () {
           final mediaType = lookupMimeType(pickedFile.path);
-          debugPrint('mediaType: $mediaType');
+          // dev.log('mediaType: $mediaType');
           if (mediaType == null) {
             isVideo = isVideo;
           } else {

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as dev;
 
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/constants/constants.dart';
@@ -88,32 +89,32 @@ class AdminSettingsService {
   }
 
   Future<void> initialize() async {
-    // debugPrint('adminSettings init starts : ${DateTime.now()}');
+    // dev.log('adminSettings init starts : ${DateTime.now()}');
     final lastModified =
         sharedPreferences.getInt(adminSettingsModifiedTimeKey) ?? 0;
     final durationInSeconds = Duration(
             milliseconds: DateTime.now().millisecondsSinceEpoch - lastModified)
         .inSeconds;
-    debugPrint('duration: $durationInSeconds');
+    dev.log('duration: $durationInSeconds');
     if (durationInSeconds > adminSettingsInterval.inSeconds) {
       fetch();
     } else {
-      debugPrint('adminSettings timelimit');
+      dev.log('adminSettings timelimit');
     }
-    // debugPrint('adminSettings init ends : ${DateTime.now()}');
+    // dev.log('adminSettings init ends : ${DateTime.now()}');
   }
 
   Future<void> fetch() async {
     try {
-      // debugPrint('adminSettings fetch starts : ${DateTime.now()}');
+      // dev.log('adminSettings fetch starts : ${DateTime.now()}');
       final adminSettings = await adminSettingsRepository.fetchAdminSettings();
-      // debugPrint('adminSettings: $adminSettings');
-      // debugPrint('adminSettings update starts : ${DateTime.now()}');
+      // dev.log('adminSettings: $adminSettings');
+      // dev.log('adminSettings update starts : ${DateTime.now()}');
       if (adminSettings != null) {
         final deviceAdminSettings = _ref.read(adminSettingsProvider);
 
         if (adminSettings != deviceAdminSettings) {
-          debugPrint('admin settings update');
+          dev.log('admin settings update');
           sharedPreferences.setString(
               homeBarTitleKey, adminSettings.homeBarTitle);
           sharedPreferences.setString(
@@ -162,14 +163,15 @@ class AdminSettingsService {
           sharedPreferences.setBool(
               showUserSumCountKey, adminSettings.showUserSumCount);
         } else {
-          debugPrint('admin setting same');
+          dev.log('admin setting same');
           sharedPreferences.setInt(adminSettingsModifiedTimeKey,
               DateTime.now().millisecondsSinceEpoch);
         }
       }
-      // debugPrint('adminSettings update ends : ${DateTime.now()}');
+      // dev.log('adminSettings update ends : ${DateTime.now()}');
     } catch (e) {
-      debugPrint('Failed to fetch adminSettings');
+      dev.log('Failed to fetch adminSettings');
+      debugPrint('adminSettings Fetch Fail: ${e.toString()}');
     }
   }
 

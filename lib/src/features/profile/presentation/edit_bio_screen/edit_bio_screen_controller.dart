@@ -31,7 +31,7 @@ class EditBioScreenController extends _$EditBioScreenController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('bioSubmit: ${state.error.toString()}');
       return false;
     }
 

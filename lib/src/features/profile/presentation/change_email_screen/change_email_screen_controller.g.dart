@@ -7,7 +7,7 @@ part of 'change_email_screen_controller.dart';
 // **************************************************************************
 
 String _$changeEmailScreenControllerHash() =>
-    r'624bbc9843877d4f0929c3825b06580fa114f759';
+    r'58e4e0fdc6d2a5e8208fe816f3e2f93b426c4587';
 
 /// See also [ChangeEmailScreenController].
 @ProviderFor(ChangeEmailScreenController)

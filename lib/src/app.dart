@@ -18,7 +18,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    debugPrint('MaterialApp build');
+    // debugPrint('MaterialApp build');
 
     if (!kIsWeb && useFcmMessage) {
       if (Platform.isAndroid || Platform.isIOS && useApns) {

@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/show_adaptive_alert_dialog.dart';
 import 'package:flutter/material.dart';
@@ -8,10 +10,10 @@ extension AsyncValueUI on AsyncValue {
     BuildContext context, {
     String? content,
   }) {
-    debugPrint('AsyncValueUi - isLoading: $isLoading, hasError: $hasError');
+    dev.log('AsyncValueUi - isLoading: $isLoading, hasError: $hasError');
     if (!isLoading && hasError) {
       final message = error.toString();
-      debugPrint(message);
+      debugPrint('AsyncValueUIError: $message');
       showAdaptiveAlertDialog(
         context: context,
         title: context.loc.error,

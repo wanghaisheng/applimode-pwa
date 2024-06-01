@@ -32,7 +32,7 @@ class EditUsernameScreenController extends _$EditUsernameScreenController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('editUsername: ${state.error.toString()}');
       return false;
     }
 

@@ -92,7 +92,7 @@ class _AnimatedColorContainerState extends State<AnimatedColorContainer>
                             ) as ImageProvider,
                       fit: BoxFit.cover,
                       onError: (exception, stackTrace) =>
-                          debugPrint(exception.toString()),
+                          debugPrint('imageError: ${exception.toString()}'),
                     ),
             ),
             child: widget.child,

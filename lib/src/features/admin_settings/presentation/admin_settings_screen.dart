@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/platform_image.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/platform_network_image.dart';
@@ -76,7 +78,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     _mainColor = currentValues.mainColor;
     for (final mainCategory in currentValues.mainCategory) {
       final index = mainCategory.index;
-      debugPrint('index: $index');
+      dev.log('index: $index');
       _categories.add(
         CategoryController(
           index: index,
@@ -130,7 +132,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                 color: e.color,
               ))
           .toList();
-      debugPrint('mainCategory: $mainCategory');
+      dev.log('mainCategory: $mainCategory');
       final result = await ref
           .read(adminSettingsScreenControllerProvider.notifier)
           .saveAdminSettings(
@@ -514,7 +516,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                                           boxSingleColorPalettes.length],
                                 ),
                               );
-                              debugPrint('index: $currentIndex');
+                              dev.log('index: $currentIndex');
                               final indexForName = (_categories.length)
                                   .toString()
                                   .padLeft(3, '0');

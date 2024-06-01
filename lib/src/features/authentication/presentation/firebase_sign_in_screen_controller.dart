@@ -39,7 +39,7 @@ class FirebaseSignInScreenController extends _$FirebaseSignInScreenController {
       // ref.invalidate(appUserStreamProvider);
     }
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('initializeAppUsr: ${state.error.toString()}');
       return;
     }
 

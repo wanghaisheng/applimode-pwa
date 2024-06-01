@@ -35,7 +35,7 @@ class ChangeEmailScreenController extends _$ChangeEmailScreenController {
     }
 
     if (state.hasError) {
-      debugPrint(state.error.toString());
+      debugPrint('changeEmail: ${state.error.toString()}');
       return false;
     }
 

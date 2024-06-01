@@ -40,7 +40,7 @@ class _MarkdownFieldState extends State<MarkdownField> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('markdown filed build');
+    // dev.log('markdown filed build');
     final itemsList =
         StringConverter.stringToElements(content: widget.controller.text);
     return SafeArea(

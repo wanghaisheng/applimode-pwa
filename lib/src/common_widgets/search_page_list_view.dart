@@ -161,7 +161,7 @@ class _SearchPageListViewState<Document>
     }
     Future.microtask(() => setState(() {}));
     if (nextPage) {
-      debugPrint('fetch search next page');
+      // dev.log('fetch search next page');
       final lastIndex = pids.length > docs.length + listFetchLimit
           ? docs.length + listFetchLimit
           : pids.length;
@@ -170,7 +170,7 @@ class _SearchPageListViewState<Document>
         docs.add(snapshot);
       }
     } else {
-      debugPrint('fetch search initial page');
+      // dev.log('fetch search initial page');
       pids = await widget.searchQuery(widget.searchWords);
       final lastIndex =
           pids.length > listFetchLimit ? listFetchLimit : pids.length;
@@ -231,7 +231,7 @@ class _SearchPageListViewState<Document>
 
     if (widget.refreshUpdatedDocs && widget.updatedDocsState != null) {
       ref.listen(widget.updatedDocsState!, (_, next) {
-        debugPrint('updatedDocs: $next');
+        // dev.log('updatedDocs: $next');
         updateDocs(next);
       });
     }
@@ -487,7 +487,7 @@ class _SearchPageListViewState<Document>
 
     if (widget.refreshUpdatedDocs && widget.updatedDocsState != null) {
       ref.listen(widget.updatedDocsState!, (_, next) {
-        debugPrint('updatedDocs: $next');
+        // dev.log('updatedDocs: $next');
         updateDocs(next);
       });
     }

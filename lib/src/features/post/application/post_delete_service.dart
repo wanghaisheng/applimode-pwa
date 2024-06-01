@@ -56,6 +56,7 @@ class PostDeleteService {
       await deleteStorageList(ref, '$commentsPath/$postId');
     } catch (e) {
       debugPrint('already delete');
+      debugPrint('deleteStorageList: ${e.toString()}');
     }
 
     // delete post medias
@@ -64,6 +65,7 @@ class PostDeleteService {
       await deleteStorageList(ref, '$uid/$postsPath/$postId');
     } catch (e) {
       debugPrint('already delete');
+      debugPrint('deleteStorageList: ${e.toString()}');
     }
     // useFirebaseStorage
     if (useRTwoStorage) {
@@ -73,6 +75,7 @@ class PostDeleteService {
             .deleteAssetsList('$uid/$postsPath/$postId');
       } catch (e) {
         debugPrint('already delete');
+        debugPrint('deleteAssetsList: ${e.toString()}');
       }
     }
 
@@ -82,6 +85,7 @@ class PostDeleteService {
         ref.read(dOneRepositoryProvider).deletePostsSearch(postId);
       } catch (e) {
         debugPrint('already delete');
+        debugPrint('deletePostsSearch: ${e.toString()}');
       }
     }
 
@@ -93,6 +97,7 @@ class PostDeleteService {
             .deletePostContent(postId);
       } catch (e) {
         debugPrint('already delete');
+        debugPrint('deletePostContent: ${e.toString()}');
       }
     }
 

@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -17,7 +19,7 @@ class FirebaseStorageRepository {
 
   Future<Uint8List> getBytes(XFile file) async {
     final bytes = await file.readAsBytes();
-    debugPrint('uploadXfile: Bytes done');
+    dev.log('uploadXfile: Bytes done');
     return bytes;
   }
 
@@ -39,7 +41,7 @@ class FirebaseStorageRepository {
   }) async {
     final ref = _storage.ref('$storagePathname/$filename');
     final bytes = await file.readAsBytes();
-    debugPrint('uploadXfile: Bytes done');
+    dev.log('uploadXfile: Bytes done');
     final result = await ref.putData(
       bytes,
       SettableMetadata(contentType: contentType),

@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
@@ -56,7 +58,8 @@ class DeleteAccountService {
       try {
         await _ref.read(rTwoStorageRepositoryProvider).deleteAssetsList(uid);
       } catch (e) {
-        debugPrint('already delete');
+        dev.log('already delete');
+        debugPrint('deleteAssetsList: ${e.toString()}');
       }
     }
 
