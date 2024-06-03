@@ -13,7 +13,7 @@ const androidBundleId = 'applimode.my_applimode';
 const appleBundleId = 'applimode.myApplimode';
 const firebaseProjectName = 'my-applimode';
 const appCreator = 'JongsukOh';
-const appVersion = '0.0.6+1';
+const appVersion = '0.0.7+1';
 
 // Link that connects when you tap on the Terms of Service
 // 서비스약관을 탭했을 경우 연결되는 링크

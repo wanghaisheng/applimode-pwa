@@ -31,6 +31,7 @@ class PostCommentsListWithFS extends ConsumerWidget {
         : ref.watch(postCommentRepliesQueryProvider(parentCommentId!));
     return FirestoreListView(
       query: commentsQuery,
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       emptyBuilder: (context) => Center(
         child: Text(context.loc.noPost),
       ),

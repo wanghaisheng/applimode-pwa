@@ -591,19 +591,25 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     menuChildren: [
                       MenuItemButton(
                         onPressed: () {
-                          _postsListType = PostsListType.small;
+                          setState(() {
+                            _postsListType = PostsListType.small;
+                          });
                         },
                         child: Text(context.loc.listType),
                       ),
                       MenuItemButton(
                         onPressed: () {
-                          _postsListType = PostsListType.square;
+                          setState(() {
+                            _postsListType = PostsListType.square;
+                          });
                         },
                         child: Text(context.loc.cardType),
                       ),
                       MenuItemButton(
                         onPressed: () {
-                          _postsListType = PostsListType.page;
+                          setState(() {
+                            _postsListType = PostsListType.page;
+                          });
                         },
                         child: Text(context.loc.pageType),
                       ),
@@ -634,13 +640,17 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     menuChildren: [
                       MenuItemButton(
                         onPressed: () {
-                          _boxColorType = BoxColorType.single;
+                          setState(() {
+                            _boxColorType = BoxColorType.single;
+                          });
                         },
                         child: Text(context.loc.singleColor),
                       ),
                       MenuItemButton(
                         onPressed: () {
-                          _boxColorType = BoxColorType.gradient;
+                          setState(() {
+                            _boxColorType = BoxColorType.gradient;
+                          });
                         },
                         child: Text(context.loc.gradientColor),
                       ),
@@ -678,7 +688,9 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                         .map<MenuItemButton>(
                           (double size) => MenuItemButton(
                             onPressed: () {
-                              _mediaMaxMBSize = size;
+                              setState(() {
+                                _mediaMaxMBSize = size;
+                              });
                             },
                             child: Text('${size.round()} MB'),
                           ),

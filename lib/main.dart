@@ -23,13 +23,13 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  usePathUrlStrategy();
-  registerErrorHandlers();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   // await RemoteConfigService(FirebaseRemoteConfig.instance).initialize();
+  usePathUrlStrategy();
+  registerErrorHandlers();
   final sharedPreferences = await SharedPreferences.getInstance();
   GoRouter.optionURLReflectsImperativeAPIs = true;
   runApp(

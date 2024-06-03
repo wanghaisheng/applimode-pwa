@@ -126,8 +126,6 @@ class AdminSettingsService {
               mainCategoryKey,
               json.encode(
                   adminSettings.mainCategory.map((e) => e.toMap()).toList()));
-          sharedPreferences.setInt(adminSettingsModifiedTimeKey,
-              DateTime.now().millisecondsSinceEpoch);
           sharedPreferences.setBool(
               showAppStyleOptionKey, adminSettings.showAppStyleOption);
           sharedPreferences.setInt(
@@ -162,6 +160,8 @@ class AdminSettingsService {
               showUserDislikeCountKey, adminSettings.showUserDislikeCount);
           sharedPreferences.setBool(
               showUserSumCountKey, adminSettings.showUserSumCount);
+          sharedPreferences.setInt(adminSettingsModifiedTimeKey,
+              DateTime.now().millisecondsSinceEpoch);
         } else {
           dev.log('admin setting same');
           sharedPreferences.setInt(adminSettingsModifiedTimeKey,

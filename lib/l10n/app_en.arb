@@ -135,7 +135,7 @@
   "allDays": "All days",
   "maxFileSizeErrorTitle": "Maximum file size exceeded",
   "maxFileSizedErrorContent": "The maximum file size has been exceeded. Please reduce the file size and try again.",
-  "appStyle": "Style",
+  "appStyle": "App style",
   "listType": "List style",
   "cardType": "Card style",
   "pageType": "Page style",

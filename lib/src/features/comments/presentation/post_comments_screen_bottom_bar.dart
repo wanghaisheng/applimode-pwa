@@ -32,11 +32,19 @@ class PostCommentsScreenBottomBar extends ConsumerStatefulWidget {
 class _PostCommentsScreenBottomBarState
     extends ConsumerState<PostCommentsScreenBottomBar> {
   final TextEditingController _controller = TextEditingController();
+  // late FocusNode _node;
   XFile? _pickedFile;
+
+  @override
+  void initState() {
+    super.initState();
+    // _node = FocusNode();
+  }
 
   @override
   void dispose() {
     _controller.dispose();
+    // _node.dispose();
     super.dispose();
   }
 
@@ -86,75 +94,72 @@ class _PostCommentsScreenBottomBarState
           : () {},
       child: IgnorePointer(
         ignoring: user == null || isLoading,
-        child: GestureDetector(
-          onVerticalDragDown: (details) => FocusScope.of(context).unfocus(),
-          behavior: HitTestBehavior.translucent,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            color: Theme.of(context).colorScheme.onInverseSurface,
-            child: SafeArea(
-              child: Row(
-                children: [
-                  if (_pickedFile != null)
-                    Expanded(
-                      child: Row(
-                        children: [
-                          FlatformImage(
-                            xFile: _pickedFile!,
-                            height: 96,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          color: Theme.of(context).colorScheme.onInverseSurface,
+          child: SafeArea(
+            child: Row(
+              children: [
+                if (_pickedFile != null)
+                  Expanded(
+                    child: Row(
+                      children: [
+                        FlatformImage(
+                          xFile: _pickedFile!,
+                          height: 96,
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _pickedFile = null;
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.close,
+                            size: 32,
                           ),
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _pickedFile = null;
-                              });
-                            },
-                            icon: const Icon(
-                              Icons.close,
-                              size: 32,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  if (_pickedFile == null)
-                    IconButton(
-                      onPressed: () async {
-                        _pickedFile = await showImagePicker(
-                          maxWidth: postImageMaxWidth,
-                          imageQuality: postImageQuality,
-                          mediaMaxMBSize: mediaMaxMBSize,
-                        );
-                        setState(() {});
-                      },
-                      icon: const Icon(Icons.image_outlined),
-                    ),
-                  if (_pickedFile == null)
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Center(
-                          child: TextField(
-                            controller: _controller,
-                            textInputAction: TextInputAction.done,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.zero,
-                              isDense: true,
-                              hintText: context.loc.leaveComment,
-                              // hintStyle: TextStyle(color: Colors.grey.shade400),
-                            ),
-                            onEditingComplete: _submit,
+                  ),
+                if (_pickedFile == null)
+                  IconButton(
+                    onPressed: () async {
+                      _pickedFile = await showImagePicker(
+                        maxWidth: postImageMaxWidth,
+                        imageQuality: postImageQuality,
+                        mediaMaxMBSize: mediaMaxMBSize,
+                      );
+                      setState(() {});
+                    },
+                    icon: const Icon(Icons.image_outlined),
+                  ),
+                if (_pickedFile == null)
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Center(
+                        child: TextField(
+                          controller: _controller,
+                          // focusNode: _node,
+                          textInputAction: TextInputAction.done,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.zero,
+                            isDense: true,
+                            hintText: context.loc.leaveComment,
+                            // hintStyle: TextStyle(color: Colors.grey.shade400),
                           ),
+                          onEditingComplete: _submit,
                         ),
                       ),
                     ),
-                  IconButton(
-                    onPressed: _submit,
-                    icon: const Icon(Icons.send),
                   ),
-                ],
-              ),
+                IconButton(
+                  onPressed: _submit,
+                  icon: const Icon(Icons.send),
+                ),
+              ],
             ),
           ),
         ),
