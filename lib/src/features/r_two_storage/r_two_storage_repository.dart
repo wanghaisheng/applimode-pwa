@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:applimode_app/src/utils/custom_headers.dart';
+import 'package:applimode_app/src/utils/url_converter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:applimode_app/src/constants/constants.dart';
@@ -18,8 +19,11 @@ class RTwoStorageRepository {
 
   final Ref _ref;
 
-  static const baseUrl = rTwoBaseUrl;
-  static const domainUrl = cfDomainUrl;
+  // static const baseUrl = rTwoBaseUrl;
+  // static const domainUrl = cfDomainUrl;
+
+  String get baseUrl => UrlConverter.stripUrl(rTwoBaseUrl);
+  String get domainUrl => UrlConverter.stripUrl(cfDomainUrl);
 
   Future<Uint8List> getBytes(XFile file) async {
     final bytes = await file.readAsBytes();

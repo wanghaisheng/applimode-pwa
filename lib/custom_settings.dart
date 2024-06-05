@@ -13,7 +13,7 @@ const androidBundleId = 'applimode.my_applimode';
 const appleBundleId = 'applimode.myApplimode';
 const firebaseProjectName = 'my-applimode';
 const appCreator = 'JongsukOh';
-const appVersion = '0.0.7+1';
+const appVersion = '0.0.8+1';
 
 // Link that connects when you tap on the Terms of Service
 // 서비스약관을 탭했을 경우 연결되는 링크
@@ -102,8 +102,11 @@ const searchRegExp = '[^A-Za-z0-9ㄱ-ㅎㅏ-ㅣ가-힣\n ]';
 
 // proxy for youtube image
 // 유튜브 이미지를 위한 프록시 주소
-const youtubeImageProxyUrl =
-    'https://yt-thumbnail-worker.jongsukoh80.workers.dev';
+const youtubeImageProxyUrl = 'yt-thumbnail-worker.jongsukoh80.workers.dev';
+
+// proxy for youtube iframe
+// 유튜브 iframe을 위한 프록시 주소
+const youtubeIframeProxyUrl = '';
 
 // Number of items loaded at once in the main screen list view. default 10
 // 메인 화면 리스트 뷰에서 한번에 불러오는 아이템 숫자. 기본 10

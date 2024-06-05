@@ -48,7 +48,7 @@ class CachedBorderImage extends StatelessWidget {
           headers: useRTwoSecureGet ? rTwoSecureHeader : null,
           errorWidget: Regex.ytImageRegex.hasMatch(imgUrl)
               ? PlatformNetworkImage(
-                  imageUrl: StringConverter.buildYtProxyThumbnail(
+                  imageUrl: StringConverter.buildYtProxySDThumbnail(
                     Regex.ytImageRegex.firstMatch(imgUrl)![1]!,
                   ),
                   fit: BoxFit.cover,

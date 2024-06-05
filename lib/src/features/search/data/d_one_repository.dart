@@ -4,6 +4,7 @@ import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/utils/custom_headers.dart';
 import 'package:applimode_app/src/utils/string_converter.dart';
+import 'package:applimode_app/src/utils/url_converter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:http/http.dart' as http;
 
@@ -12,9 +13,11 @@ part 'd_one_repository.g.dart';
 class DOneRepository {
   const DOneRepository();
 
-  static const baseUrl = dOneBaseUrl;
+  // static const baseUrl = dOneBaseUrl;
   static const postsBasePath = '/api/posts';
   static const searchLimit = 20;
+
+  String get baseUrl => UrlConverter.stripUrl(dOneBaseUrl);
 
   Future<List<String>> getPostsSearchPage(String search, [int? start]) async {
     final optimized = StringConverter.toSearch(search);

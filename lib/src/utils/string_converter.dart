@@ -42,10 +42,20 @@ class StringConverter {
     return 'https://img.youtube.com/vi/$videoId/$ytRes.jpg';
   }
 
+  static String buildYtSDThumbnail(String videoId) {
+    // maxresdefault (1280), sddefault (640), hqdefault (480), mqdefault (320), default (120)
+    return 'https://img.youtube.com/vi/$videoId/sddefault.jpg';
+  }
+
   static String buildYtProxyThumbnail(String videoId) {
     // maxresdefault (1280), sddefault (640), hqdefault (480), mqdefault (320), default (120)
     const ytRes = isMaxResYoutubeThumbnail ? 'maxresdefault' : 'sddefault';
-    return '$youtubeImageProxyUrl/?q=https://img.youtube.com/vi/$videoId/$ytRes.jpg';
+    return 'https://${UrlConverter.stripUrl(youtubeImageProxyUrl)}/?q=https://img.youtube.com/vi/$videoId/$ytRes.jpg';
+  }
+
+  static String buildYtProxySDThumbnail(String videoId) {
+    // maxresdefault (1280), sddefault (640), hqdefault (480), mqdefault (320), default (120)
+    return 'https://${UrlConverter.stripUrl(youtubeImageProxyUrl)}/?q=https://img.youtube.com/vi/$videoId/sddefault.jpg';
   }
 
   static String buildYtUrl(String videoId) {
@@ -53,9 +63,12 @@ class StringConverter {
   }
 
   static String buildYtFullEmbedUrl(String youtubeId) {
-    // https://www.youtube-nocookie.com/embed/$youtubeId?rel=0
-    // https://www.youtube.com/embed/$youtubeId?rel=0&amp;autoplay=1;
-    return 'https://www.youtube-nocookie.com/embed/$youtubeId?rel=0&amp;autoplay=1;';
+    if (youtubeIframeProxyUrl.trim().isEmpty) {
+      // https://www.youtube-nocookie.com/embed/$youtubeId?rel=0
+      // https://www.youtube.com/embed/$youtubeId?rel=0&amp;autoplay=1;
+      return 'https://www.youtube-nocookie.com/embed/$youtubeId?rel=0&amp;autoplay=1;';
+    }
+    return 'https://${UrlConverter.stripUrl(youtubeIframeProxyUrl)}/?q=$youtubeId';
   }
 
   static String buildInstaIf(String instaUrl) {
@@ -147,8 +160,8 @@ class StringConverter {
         elements.add(Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: PostVideoPlayer(
-            videoUrl:
-                getIosWebVideoUrl(Regex.webVideoRegex.firstMatch(split)![2]!),
+            videoUrl: UrlConverter.getIosWebVideoUrl(
+                Regex.webVideoRegex.firstMatch(split)![2]!),
             videoImageUrl: Regex.webVideoRegex.firstMatch(split)![1],
           ),
         ));

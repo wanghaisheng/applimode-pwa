@@ -108,7 +108,7 @@ class BasicPostsItem extends ConsumerWidget {
                       MainVideoPlayer(
                         // when delete video post, resolve old video remain
                         key: UniqueKey(),
-                        videoUrl: getIosWebVideoUrl(mainVideoUrl),
+                        videoUrl: UrlConverter.getIosWebVideoUrl(mainVideoUrl),
                         videoImageUrl: mainVideoImageUrl,
                         aspectRatio: aspectRatio ?? 1.0,
                         writer: writer,

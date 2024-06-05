@@ -1,11 +1,11 @@
 {
-    "name": "my_applimode",
-    "short_name": "my_applimode",
+    "name": "My Applimode",
+    "short_name": "AMB",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#FCB126",
-    "description": "A new Flutter project.",
+    "description": "My Applimode Project.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -26,7 +26,7 @@ class YoutubeLinkShot extends StatelessWidget {
           children: [
             Positioned.fill(
               child: PlatformNetworkImage(
-                imageUrl: StringConverter.buildYtThumbnail(youtubeId),
+                imageUrl: StringConverter.buildYtSDThumbnail(youtubeId),
                 fit: BoxFit.cover,
                 frameBuilder: (context, child, frame, sync) {
                   if (frame == null) {
@@ -37,7 +37,7 @@ class YoutubeLinkShot extends StatelessWidget {
                 progressIndicatorBuilder: (p0, p1, p2) =>
                     const CupertinoActivityIndicator(),
                 errorWidget: PlatformNetworkImage(
-                  imageUrl: StringConverter.buildYtProxyThumbnail(youtubeId),
+                  imageUrl: StringConverter.buildYtProxySDThumbnail(youtubeId),
                   fit: BoxFit.cover,
                   frameBuilder: (context, child, frame, sync) {
                     if (frame == null) {

@@ -134,7 +134,7 @@ const String deleted = 'deleted';
 const String unknown = 'unknown';
 
 const String firebaseStorageUrlHead = 'https://firebasestorage.googleapis.com';
-const String gcpStorageUrlHead = 'https://storage.googleapis.com/';
+const String gcpStorageUrlHead = 'https://storage.googleapis.com';
 
 // no use. but we can use this file name when save a youtube thumbnail
 const String youtubeThumbnailName = 'yt-thumbnail.jpeg';
