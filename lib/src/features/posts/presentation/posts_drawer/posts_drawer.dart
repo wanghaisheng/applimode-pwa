@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:applimode_app/src/common_widgets/color_circle.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/cached_circle_image.dart';
 import 'package:applimode_app/src/constants/constants.dart';
@@ -15,7 +13,7 @@ import 'package:applimode_app/src/features/posts/presentation/posts_drawer/new_p
 import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/custom_settings.dart';
-import 'package:flutter/foundation.dart';
+import 'package:applimode_app/src/utils/fcm_service.dart' show isUsableFcm;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -129,9 +127,7 @@ class PostsDrawer extends ConsumerWidget {
             if (adminSettings.showAppStyleOption) const AppStyleButton(),
             const AppThemeButton(),
             const AppLocaleButton(),
-            if (!kIsWeb &&
-                useFcmMessage &&
-                (Platform.isAndroid || Platform.isIOS && useApns)) ...[
+            if (isUsableFcm()) ...[
               const NewPostNotiButton(),
               if (user != null) const LikeCommentNotiButton(),
             ],

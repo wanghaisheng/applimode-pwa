@@ -238,14 +238,15 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
       return;
     }
 
-    try {
-      callFcmFunction(
-          functionName: 'sendFcmMessage',
-          content: '${user.displayName ?? 'Unknown'} $postNotiString',
-          isTopic: true,
-          topic: 'newPost');
-    } catch (e) {
-      debugPrint('fcmError: ${e.toString()}');
+    if (useFcmMessage) {
+      try {
+        FcmFunctions.callSendMessage(
+            content: '${user.displayName ?? 'Unknown'} $postNotiString',
+            isTopic: true,
+            topic: 'newPost');
+      } catch (e) {
+        debugPrint('fcmError: ${e.toString()}');
+      }
     }
 
     WakelockPlus.disable();

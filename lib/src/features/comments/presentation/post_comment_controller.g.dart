@@ -7,7 +7,7 @@ part of 'post_comment_controller.dart';
 // **************************************************************************
 
 String _$postCommentControllerHash() =>
-    r'e6915aff4a5b35e08f1f43c8d982a3361f64c718';
+    r'a223b59837f7511e5dce604f8f3bb08b3de8eef7';
 
 /// See also [PostCommentController].
 @ProviderFor(PostCommentController)

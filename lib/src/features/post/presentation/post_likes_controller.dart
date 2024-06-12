@@ -65,8 +65,7 @@ class PostLikesController extends _$PostLikesController {
         if (postWriter != null &&
             postWriter.fcmToken != null &&
             postWriter.fcmToken!.isNotEmpty) {
-          callFcmFunction(
-            functionName: 'sendFcmMessage',
+          FcmFunctions.callSendMessage(
             type: 'postLikes',
             content: '${user.displayName ?? 'Unknown'} $postLikeNotiString',
             postId: postId,

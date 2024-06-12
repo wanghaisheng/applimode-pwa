@@ -22,6 +22,7 @@ class AdminSettingsScreenController extends _$AdminSettingsScreenController {
   Future<bool> saveAdminSettings({
     required String homeBarTitle,
     required int homeBarStyle,
+    required String homeBarTitleImageUrl,
     required Color mainColor,
     required List<MainCategory> mainCategory,
     XFile? xFile,
@@ -63,6 +64,7 @@ class AdminSettingsScreenController extends _$AdminSettingsScreenController {
       () => ref.read(adminSettingsServiceProvider).saveAdminSettings(
             homeBarTitle: homeBarTitle,
             homeBarStyle: homeBarStyle,
+            homeBarTitleImageUrl: homeBarTitleImageUrl,
             mainColor: mainColor,
             mainCategory: mainCategory,
             xFile: xFile,

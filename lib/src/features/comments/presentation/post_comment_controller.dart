@@ -94,8 +94,7 @@ class PostCommentController extends _$PostCommentController {
     if (useFcmMessage) {
       try {
         if (postWriter.fcmToken != null && postWriter.fcmToken!.isNotEmpty) {
-          callFcmFunction(
-            functionName: 'sendFcmMessage',
+          FcmFunctions.callSendMessage(
             type: isReply ? 'replies' : 'comments',
             content: isReply
                 ? '${user.displayName ?? 'Unknown'} $replyNotiString'
@@ -204,8 +203,7 @@ class PostCommentController extends _$PostCommentController {
         if (commentWriter != null &&
             commentWriter.fcmToken != null &&
             commentWriter.fcmToken!.isNotEmpty) {
-          callFcmFunction(
-            functionName: 'sendFcmMessage',
+          FcmFunctions.callSendMessage(
             type: 'commentLikes',
             content: '${user.displayName ?? 'Unknown'} $commentLikeNotiString',
             postId: postId,

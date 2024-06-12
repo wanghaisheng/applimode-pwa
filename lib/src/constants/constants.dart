@@ -1,41 +1,5 @@
 import 'package:flutter/material.dart';
 
-// spare values when admin settings is not set
-// Main screen app bar title text.
-const spareHomeBarTitle = 'My Applimode';
-// home app bar title style. 0 is text, 1 is image, 2 is image and text
-const spareHomeBarStyle = 0;
-// main color. Default FCB126
-const spareMainColor = 'FCB126';
-// main category
-const spareMainCategory =
-    '[{"index":0,"path":"/cat001","title":"cat001","color":"FF930F"}]';
-// home app bar title image url
-const String spareHomeBarImageUrl = 'assets/images/app-bar-logo.png';
-// Provides an option to select the main screen list view style
-const bool spareShowAppStyleOption = false;
-// Main screen list view style
-// Select among small, square, page (small, square, page)
-const sparePostsListType = PostsListType.square;
-// Color type of basic post box. single, gradient. basic gradient
-const spareBoxColorType = BoxColorType.gradient;
-// Maximum video file size. Default 50.0 in megabytes
-const double spareMediaMaxMBSize = 50.0;
-const bool spareUseRecommendation = true;
-const bool spareUseRanking = true;
-const bool spareUseCategory = true;
-const bool spareShowLogoutOnDrawer = false;
-const bool spareShowLikeCount = true;
-const bool spareShowDislikeCount = true;
-const bool spareShowCommentCount = true;
-const bool spareShowSumCount = false;
-const bool spareShowCommentPlusLikeCount = false;
-const bool spareIsThumbUpToHeart = false;
-const bool spareShowUserAdminLabel = true;
-const bool spareShowUserLikeCount = true;
-const bool spareShowUserDislikeCount = true;
-const bool spareShowUserSumCount = false;
-
 // admin settings keys
 const String homeBarTitleKey = 'homeBarTitle';
 const String homeBarImageUrlKey = 'homeBarImageUrl';

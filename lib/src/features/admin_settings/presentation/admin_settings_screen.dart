@@ -138,6 +138,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
           .saveAdminSettings(
             homeBarTitle: _titleTextController.text,
             homeBarStyle: _titleStyle,
+            homeBarTitleImageUrl: _titleImageUrl,
             mainColor: _mainColor,
             mainCategory: mainCategory,
             xFile: _pickedFile,

@@ -1,7 +1,3 @@
-// 사용하지 않음
-
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,7 +9,7 @@ Future<bool?> showAlertDialog({
   String? cancelActionText,
   required String defaultActionText,
 }) async {
-  if (kIsWeb || !Platform.isIOS) {
+  if (kIsWeb || defaultTargetPlatform == TargetPlatform.android) {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(

@@ -123,7 +123,8 @@ class StringConverter {
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: PostVideoPlayer(
             videoUrl: Regex.localVideoRegex.firstMatch(split)![2]!,
-            isIosLocal: kIsWeb ? false : Platform.isIOS,
+            isIosLocal:
+                kIsWeb ? false : defaultTargetPlatform == TargetPlatform.iOS,
           ),
         ));
       } else if (split.contains(Regex.remoteImageRegex)) {

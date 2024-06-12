@@ -5,28 +5,59 @@ import 'package:flutter/widgets.dart';
 // 앱정보에 사용되는 데이터
 // Refer to pubspec.yaml for version
 // 버전은 pubspec.yaml을 참고
-const fullAppName = 'My Applimode';
-const shortAppName = 'AMB';
-const underbarAppName = 'my_applimode';
-const camelAppName = 'myApplimode';
-const androidBundleId = 'applimode.my_applimode';
-const appleBundleId = 'applimode.myApplimode';
-const firebaseProjectName = 'my-applimode';
-const appCreator = 'JongsukOh';
-const appVersion = '0.0.8+1';
+const String fullAppName = 'My Applimode';
+const String shortAppName = 'AMB';
+const String underbarAppName = 'my_applimode';
+const String camelAppName = 'myApplimode';
+const String androidBundleId = 'applimode.my_applimode';
+const String appleBundleId = 'applimode.myApplimode';
+const String firebaseProjectName = 'my-applimode';
+const String appCreator = 'JongsukOh';
+const String appVersion = '0.0.9+1';
+
+// spare values when admin settings is not set
+const String spareHomeBarTitle = 'My Applimode';
+// home app bar title style. 0 is text, 1 is image, 2 is image and text
+const int spareHomeBarStyle = 0;
+const String spareMainColor = 'FCB126';
+const String spareMainCategory =
+    '[{"index":0,"path":"/cat001","title":"cat001","color":"FF930F"}]';
+const String spareHomeBarImageUrl = 'assets/images/app-bar-logo.png';
+const bool spareShowAppStyleOption = false;
+// Main screen list view style
+// Select among small, square, page (small, square, page)
+const PostsListType sparePostsListType = PostsListType.square;
+// Color type of basic post box. single, gradient. basic gradient
+const BoxColorType spareBoxColorType = BoxColorType.gradient;
+// Maximum video file size. Default 50.0 in megabytes
+const double spareMediaMaxMBSize = 50.0;
+const bool spareUseRecommendation = true;
+const bool spareUseRanking = true;
+const bool spareUseCategory = true;
+const bool spareShowLogoutOnDrawer = false;
+const bool spareShowLikeCount = true;
+const bool spareShowDislikeCount = true;
+const bool spareShowCommentCount = true;
+const bool spareShowSumCount = false;
+const bool spareShowCommentPlusLikeCount = false;
+const bool spareIsThumbUpToHeart = false;
+const bool spareShowUserAdminLabel = true;
+const bool spareShowUserLikeCount = true;
+const bool spareShowUserDislikeCount = true;
+const bool spareShowUserSumCount = false;
 
 // Link that connects when you tap on the Terms of Service
 // 서비스약관을 탭했을 경우 연결되는 링크
-const termsUrl = '';
+const String termsUrl = '';
 // Link that connects when you tap on the privacy policy
 // 개인보호정책을 탭했을 경우 연결되는 링크
-const privacyUrl = '';
+const String privacyUrl = '';
 
 // Change the start screen to the login screen
 // 시작 화면을 로그인 화면으로 변경
 // To prevent use if not logged in. Security rules must also be changed.
 // 로그인을 안할 경우 사용하지 못하도록 할때. 보안 룰도 함께 변경해야 함
-const isInitialSignIn = false;
+const bool isInitialSignIn = false;
 
 // Only administrators can write
 // 관리자만 글을 쓸 수 있음
@@ -47,6 +78,11 @@ const bool useAnalytics = false;
 // Blaze 요금제를 사용한 후 Cloud functions 을 설정하고
 const bool useFcmMessage = false;
 
+// When using push notifications for web apps.
+// 웹앱을 위한 푸쉬 알림을 사용할 경우.
+// Firebase -> Project settings -> Cloud messaging -> Web configuration
+const String fcmVapidKey = '';
+
 // register as a paid member of the Apple Developer Program for notifications on Apple devices
 // 애플 기기의 알림을 위해 애플 개발자 프로그램에 유료 회원으로 등록한 후
 // and configure the settings for APNS
@@ -55,58 +91,59 @@ const bool useApns = false;
 
 // Mute home screen video sound
 // 홈화면 영상 소리 뮤트
-const isPostsItemVideoMute = false;
+const bool isPostsItemVideoMute = false;
 
 // Use direct upload button on page type
 // 페이지 타입에서 다이렉트 업로드 버튼 사용
-const useDirectUploadButton = false;
+const bool useDirectUploadButton = false;
 
 // Color type of basic post box. single, gradient, animation. basic gradient
 // 베이직 포스트 박스의 컬러 타입. single, gradient, animattion. 기본 gradient
 // const boxColorType = BoxColorType.gradient;
 // Used when specified as single. Colors can be set directly using boxCustomColorPalettes
 // single로 지정했을 경우 사용. boxCustomColorPalettes 를 이용해 직접 컬러 설정 가능
-const boxSingleColors = boxSingleColorPalettes;
+const List<Color> boxSingleColors = boxSingleColorPalettes;
 // Used when specified as gradient, animation. Colors can be set directly using boxCustomGradientColorPalettes
 // gradient, animation을 사용했을 경우 사용. boxCustomGradientColorPalettes 를 이용해 직접 지정 가능
-const boxGradientColors = boxGradientColorPalettes;
+const List<List<Color>> boxGradientColors = boxGradientColorPalettes;
 
 // use r2 storage
 // r2 스토리지 사용
-const useRTwoStorage = false;
+const bool useRTwoStorage = false;
 // When using r2, use secure read
 // r2 사용시 읽기도 보안 가져오기 사용
-const useRTwoSecureGet = false;
+const bool useRTwoSecureGet = false;
 // use Cloudflare CDN
 // 클라우드플레어 CDN 사용 (도메인 등록 필수)
-const useCfCdn = false;
+const bool useCfCdn = false;
 // use Cloudflare D1 for seach
 // 검색서비스를 위해 클라우드플레어 D1 사용
-const useDOneForSearch = false;
+const bool useDOneForSearch = false;
 
 // Cloudflare worker base url for r2 storage
 // 클라우드플레어 r2 스토리지 사용을 위한 워커 베이스 url
-const rTwoBaseUrl = 'yourR2WorkerUrl';
+const String rTwoBaseUrl = 'yourR2WorkerUrl';
 
 // Cloudflare custom domain for cdn
 // 클라우드플레어 커스텀 도메인 url
-const cfDomainUrl = 'yourCustomDomainUrl';
+const String cfDomainUrl = 'yourCustomDomainUrl';
 
 // Cloudflare worker base url for D1 table
 // 클라우드플레어 D1 데이터베이스를 위한 워커 베이스 url
-const dOneBaseUrl = 'yourD1WorkerUrl';
+const String dOneBaseUrl = 'yourD1WorkerUrl';
 
 // Regular expression for search with D1. Set for each language
 // D1에서 검색을 위한 정규표현식. 각 언어에 맞게 설정할 것
-const searchRegExp = '[^A-Za-z0-9ㄱ-ㅎㅏ-ㅣ가-힣\n ]';
+const String searchRegExp = '[^A-Za-z0-9ㄱ-ㅎㅏ-ㅣ가-힣\n ]';
 
 // proxy for youtube image
 // 유튜브 이미지를 위한 프록시 주소
-const youtubeImageProxyUrl = 'yt-thumbnail-worker.jongsukoh80.workers.dev';
+const String youtubeImageProxyUrl =
+    'yt-thumbnail-worker.jongsukoh80.workers.dev';
 
 // proxy for youtube iframe
 // 유튜브 iframe을 위한 프록시 주소
-const youtubeIframeProxyUrl = '';
+const String youtubeIframeProxyUrl = '';
 
 // Number of items loaded at once in the main screen list view. default 10
 // 메인 화면 리스트 뷰에서 한번에 불러오는 아이템 숫자. 기본 10
@@ -222,7 +259,7 @@ const TitleTextAlign titleTextAlign = TitleTextAlign.center;
 const int basicPostsItemMiddleTitleMaxLines = 2;
 // Maximum number of lines in the bottom title. basic 2
 // 하단 타이틀 최대 줄수. 기본 2
-const int basicPostsItemBottomTitleMaxLines = 2;
+const int basicPostsItemBottomTitleMaxLines = 1;
 // Maximum number of lines in video content title. default 1
 // 비디오 컨텐츠 타이틀 최대 줄수. 기본 1
 const int basicPostsItemVideoTitleMaxLines = 1;
@@ -345,7 +382,7 @@ const String noBio = 'noBio';
 
 // Single color box basic color. If you set it yourself, use boxCustomColorPalettes at the bottom.
 // 싱글 컬러 박스 기본 컬러. 직접 설정할 경우 하단의 boxCustomColorPalettes를 사용
-const boxSingleColorPalettes = [
+const List<Color> boxSingleColorPalettes = [
   Color(0xFFFF930F),
   Color(0xFF4CB0A6),
   Color(0xFFFF6F68),
@@ -360,7 +397,7 @@ const boxSingleColorPalettes = [
 
 // Gradient and animation color box default colors. If you set it yourself, use boxCustomGradientColorPalettes at the bottom.
 // 그라디언트 및 애니메이션 컬러 박스 기본 컬러. 직접 설정할 경우 하단의 boxCustomGradientColorPalettes를 사용
-const boxGradientColorPalettes = [
+const List<List<Color>> boxGradientColorPalettes = [
   [Color(0xFFede342), Color(0xFFff51eb)],
   [Color(0xFF439cfb), Color(0xFFf187fb)],
   [Color(0xFF0061FF), Color(0xFF60efff)],
@@ -375,7 +412,7 @@ const boxGradientColorPalettes = [
 
 // Used when directly specifying single color box.
 // 싱글 컬러 박스 직접 지정할 경우 사용.
-const boxCustomColorPalettes = [
+const List<Color> boxCustomColorPalettes = [
   Color(0xFFFF930F),
   Color(0xFF4CB0A6),
   Color(0xFFFF6F68),
@@ -390,7 +427,7 @@ const boxCustomColorPalettes = [
 
 // Used when directly specifying gradient and animation color box.
 // 그라디언트 및 애니메이션 컬러 박스 직접 지정할 경우 사용.
-const boxCustomGradientColorPalettes = [
+const List<List<Color>> boxCustomGradientColorPalettes = [
   [Color(0xFFede342), Color(0xFFff51eb)],
   [Color(0xFF439cfb), Color(0xFFf187fb)],
   [Color(0xFF0061FF), Color(0xFF60efff)],
@@ -405,7 +442,7 @@ const boxCustomGradientColorPalettes = [
 
 // basic colors for color picker.
 // 컬러 선택기 기본 색상
-const colorPickerBasicPalettes = [
+const List<Color> colorPickerBasicPalettes = [
   Color(0xFFEB5757),
   Color(0xFFF37D76),
   Color(0xFFF2994A),

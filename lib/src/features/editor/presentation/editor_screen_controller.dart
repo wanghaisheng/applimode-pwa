@@ -530,8 +530,7 @@ class EditorScreenController extends _$EditorScreenController {
       try {
         final writerName = writer?.displayName ?? user.displayName;
 
-        callFcmFunction(
-            functionName: 'sendFcmMessage',
+        FcmFunctions.callSendMessage(
             content: '${writerName ?? 'Unknown'} $postNotiString',
             isTopic: true,
             topic: 'newPost');

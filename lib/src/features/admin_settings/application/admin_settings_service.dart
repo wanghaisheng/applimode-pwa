@@ -30,6 +30,7 @@ class AdminSettingsService {
   Future<void> saveAdminSettings({
     required String homeBarTitle,
     required int homeBarStyle,
+    required String homeBarTitleImageUrl,
     required Color mainColor,
     required List<MainCategory> mainCategory,
     XFile? xFile,
@@ -52,7 +53,7 @@ class AdminSettingsService {
     required bool showUserDislikeCount,
     required bool showUserSumCount,
   }) async {
-    String homeBarImageUrl = spareHomeBarImageUrl;
+    String homeBarImageUrl = homeBarTitleImageUrl;
     if (xFile != null) {
       homeBarImageUrl =
           await _ref.read(firebaseStorageRepositoryProvider).uploadXFile(
