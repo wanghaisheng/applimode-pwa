@@ -13,7 +13,7 @@ const String androidBundleId = 'applimode.my_applimode';
 const String appleBundleId = 'applimode.myApplimode';
 const String firebaseProjectName = 'my-applimode';
 const String appCreator = 'JongsukOh';
-const String appVersion = '0.0.9+1';
+const String appVersion = '0.1.0+1';
 
 // spare values when admin settings is not set
 const String spareHomeBarTitle = 'My Applimode';
@@ -63,9 +63,6 @@ const bool isInitialSignIn = false;
 // 관리자만 글을 쓸 수 있음
 const bool adminOnlyWrite = false;
 
-// When using the Firebase analytics to know app user size
-// 파이어베이스 분석도구를 사용할 경우. 사용자 규모를 파악할 수 있음
-const bool useAnalytics = false;
 // When using push notifications. default false
 // 푸시 알림을 사용할 경우. 기본 false
 // Use Blaze plan of Firebase to use push notifications
