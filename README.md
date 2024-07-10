@@ -7,14 +7,15 @@ Applimode is a project based on Flutter that allows easy construction of various
 * [Configure Applimode for Windows](https://github.com/mycalls/applimode/blob/main/docs/windows.md)
 * [Configure Applimode for macOS](https://github.com/mycalls/applimode/blob/main/docs/macos.md)
 
+<!--
 ## Configuration overview
 > [!IMPORTANT]
 > * To install your Applimode app on an iOS device, you need a device running macOS.
 > * This guide is a summary. If you have any questions or encounter any problems during the process, please refer to this [section](#configure-your-applimode-app).
 
-
 * Download and install the following packages:
-**Git** (only [Windows]()), **VSCode** ([Win](), [mac]()), **Flutter SDK** ([Win](), [mac]()), **Android Studio** ([Win](), [mac]()), **Xcode** (only [macOS]()), **Node.js** ([Win](), [mac]()), **Firebase CLI** ([Win](), [mac]()), **Flutterfire CLI** ([Win](), [mac]())
+**Git** (only [Windows](https://github.com/mycalls/applimode/blob/main/docs/windows.md#install-git)), **VSCode** ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#install-vscode-and-the-flutter-sdk), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#install-vscode)), **Flutter SDK** ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#install-vscode-and-the-flutter-sdk), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#download-and-install-flutter)), **Android Studio** ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#install-android-studio), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#install-android-studio)), **Xcode** (only [macOS](https://github.com/mycalls/applimode/blob/main/docs/macos.md#install-and-configure-xcode)), **Node.js** · **Firebase CLI** · **Flutterfire CLI** ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#install-nodejs-and-the-firebase-cli-and-the-futterfire-cli), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#install-nodejs-and-the-firebase-cli-and-the-futterfire))
+* Configure Firebase ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#configure-firebase), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#configure-firebase))
 * Run the following commands.
 ```sh
 git clone https://github.com/mycalls/applimode-tool.git
@@ -25,7 +26,7 @@ git clone https://github.com/mycalls/applimode.git
 ```sh
 cd applimode-tool
 ```
-* Modify and run the following command. (for more details, visit this [page]().)
+* Modify and run the following command. (for more details, visit this [page](https://github.com/mycalls/applimode/blob/main/docs/windows.md#configure-your-project).)
 > [!NOTE]
 > * The worker key is used to store media files using **Cloudflare's R2** instead of **Firebase Storage**. This is optional, and you can enter your desired password.
 ```sh
@@ -39,20 +40,21 @@ cd ..; cd applimode
 flutter pub get; dart run flutter_native_splash:create; flutter pub run flutter_launcher_icons; dart run build_runner build -d; flutterfire configure; firebase deploy --only firestore; firebase deploy --only storage;
 ```
 Additionally, you can set or configure the following:
-* Add administrator ([Win](), [mac]())
-* Admin settings and custom settings ([Win](), [mac]())
-* Build an Android app ([Win](), [mac]())
-* Build a web app ([Win](), [mac]())
-* Configure Cloudflare R2 ([Win](), [mac]())
-* Configure Cloudflare D1 ([Win](), [mac]())
-* Configure Cloudflare CDN ([Win](), [mac]())
-* Configure Youtube image proxy ([Win](), [mac]())
-* Configure Youtube video proxy ([Win](), [mac]())
-* Configure push notification ([Win](), [mac]())
-* Use your custom domain ([Win](), [mac]())
-* Upgrade your project with the new Applimode version ([Win](), [mac]())
-* Configure Cloud Firestore Security Rules ([Win](), [mac]())
-* Troubleshooting ([Win](), [mac]())
+* Add administrator ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#add-administrator), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#add-administrator))
+* Admin settings and custom settings ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#admin-settings-and-custom-settings), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#admin-settings-and-custom-settings))
+* Build an Android app ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#build-an-android-app), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#build-an-android-app))
+* Build a web app ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#build-a-web-app), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#build-a-web-app))
+* Configure Cloudflare R2 ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#configure-cloudflare-r2-optional), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#configure-cloudflare-r2-optional))
+* Configure Cloudflare D1 ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#configure-cloudflare-d1-optional), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#configure-cloudflare-d1-optional))
+* Configure Cloudflare CDN ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#configure-cloudflare-cdn-optional), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#configure-cloudflare-cdn-optional))
+* Configure Youtube image proxy ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#configure-youtube-image-proxy-optional), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#configure-youtube-image-proxy-optional))
+* Configure Youtube video proxy ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#configure-youtube-video-proxy-optional), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#configure-youtube-video-proxy-optional))
+* Configure push notification ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#configure-push-notification-optional), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#configure-push-notification-optional))
+* Use your custom domain ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#use-your-custom-domain-optional), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#use-your-custom-domain-optional))
+* Upgrade your project with the new Applimode version ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#upgrade-your-project-with-the-new-applimode-version), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#upgrade-your-project-with-the-new-applimode-version))
+* Configure Cloud Firestore Security Rules ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#configure-cloud-firestore-security-rules), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#configure-cloud-firestore-security-rules))
+* Troubleshooting ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#troubleshooting), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#troubleshooting))
+-->
 
 ## Main features
 * Posts (text, images, videos)
@@ -73,7 +75,19 @@ Additionally, you can set or configure the following:
 * Build and manage on your own server.
 
 ## Demo
-The content of this section will be updated in the future.
+* [Web App](https://applimode-demo.web.app/)
+<!--
+* [Android]()
+* iOS will be updated in the future.
+-->
+
+<!--
+## FAQs
+* 앱 스타일 변경 방법
+* 링크형식의 이미지나 비디오 삽입 방법
+* 비디오 썸네일 직접 지정하는 방법
+* 박스 또는 페이지 스타일에서 제목, 저자 숨기는 방법
+-->
 
 ## Roadmap
 The content of this section will be updated in the future.

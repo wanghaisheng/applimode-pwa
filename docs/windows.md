@@ -1,36 +1,36 @@
 # Configure Applimode for Windows
 
 
-<!--
-1. Install Git
-2. Install VSCode and the Flutter SDK
-3 Install Android Studio
-4. Configure Firebase
-5. Install Node.js and the Firebase CLI and the Futterfire CLI
-6. Configure your project
-7. Test drive
-8. Add administrator
-9. Admin settings and custom settings
-10. Build an Android app
-11. Build a web app
-12. Configure Cloudflare R2 (Optional)
-13. Configure Cloudflare D1 (Optional)
-14. Configure Cloudflare CDN (Optional)
-15. Configure Youtube image proxy (Optional)
-16. Configure Youtube video proxy (Optional)
-17. Configure push notification (Optional)
-18. Use your custom domain (Optional)
-19. Upgrade your project with the new Applimode version
-20. Configure Cloud Firestore Security Rules 
-21. Troubleshooting
--->
-
-
 
 > [!IMPORTANT]
 > * This guide is written in detail for beginners. Skip the unnecessary parts.
 > * To install your Applimode app on an iOS device, you need a device running macOS. For more details, visit [Configure Applimode for macOS](https://github.com/mycalls/applimode/blob/main/docs/macos.md).
 <!--Todos 링크 추가해 줄것-->
+
+
+
+## Table of contents
+* [Install Git](#install-git)
+* [Install VSCode and the Flutter SDK](#install-vscode-and-the-flutter-sdk)
+* [Install Android Studio](#install-android-studio)
+* [Configure Firebase](#configure-firebase)
+* [Install Node.js and the Firebase CLI and the Futterfire CLI](#install-nodejs-and-the-firebase-cli-and-the-futterfire-cli)
+* [Configure your project](#configure-your-project)
+* [Test drive](#test-drive)
+* [Add administrator](#add-administrator)
+* [Admin settings and custom settings](#admin-settings-and-custom-settings)
+* [Build an Android app](#build-an-android-app)
+* [Build a web app](#build-a-web-app)
+* [Configure Cloudflare R2 (Optional)](#configure-cloudflare-r2-optional)
+* [Configure Cloudflare D1 (Optional)](#configure-cloudflare-d1-optional)
+* [Configure Cloudflare CDN (Optional)](#configure-cloudflare-cdn-optional)
+* [Configure Youtube image proxy (Optional)](#configure-youtube-image-proxy-optional)
+* [Configure Youtube video proxy (Optional)](#configure-youtube-video-proxy-optional)
+* [Configure push notification (Optional)](#configure-push-notification-optional)
+* [Use your custom domain (Optional)](#use-your-custom-domain-optional)
+* [Upgrade your project with the new Applimode version](#upgrade-your-project-with-the-new-applimode-version)
+* [Configure Cloud Firestore Security Rules](#configure-cloud-firestore-security-rules)
+* [Troubleshooting](#troubleshooting)
 
 
 
@@ -308,6 +308,13 @@ exit
 > [!IMPORTANT]
 > fullAppName, shortAppName, underbarAppName, camelAppName, androidBundleId, appleBundleId, and firebaseProjectName are values ​​used when upgrading your project. Do not change them. If you want to make changes, refer to [this chapter](#configure-your-project) and configure your project again.
 * The values ​​with **spare** in front of the name are ​​used when users first run your app after installing it. (when Admin settings are not yet activated). You can change them to whatever values you want.
+> [!NOTE]
+> * If you change a value in **Admin settings**, it is recommended to also change the corresponding spare value in the **custom_settings.dart** file.
+> * For example, if you change the **App style** value, also change the **sparePostsListType** value in the **custom_settings.dart** file.
+> * The **App style** values ​​in **Admin Settings** correspond to the **sparePostsListType** values ​​in the **custom_settings.dart** file as follows.
+>   * **List** - **PostsListType.small**
+>   * **Card** - **PostsListType.square**
+>   * **Page** - **PostsListType.page**
 * If you want to register your app on the App Store or Play Store, add the corresponding links to **termsUrl** and **privacyUrl**.
 * If you change the value of **isInitialSignIn** to true, only logged in users will be able to use your app. You can also use Cloud Firestore Security Rules for even stronger security. Please read [this chapter](#configure-cloud-firestore-security-rules) for more details.
 * If you change the value of **adminOnlyWrite** to true, only users designated as administrators can write posts.
@@ -817,13 +824,13 @@ flutter pub get; dart run flutter_native_splash:create; flutter pub run flutter_
 
 
 ## Troubleshooting
-* ###### If you don't see images or videos in your uploaded post, follow these steps. (CORS issue)
+* ### If you don't see images or videos in your uploaded post, follow these steps. (CORS issue)
 1. Open [Google Cloud console](https://console.cloud.google.com/) in your web browser.
 2. Sign up or log in.
 3. Select your project on the top left.
 4. Click **Activate Cloud Shell** on the top right.
 ![gcp-console-head](https://github.com/mycalls/applimode-examples/blob/main/assets/gcp-console-head.png?raw=true)
-1. Run the following command in the shell at the bottom.
+5. Run the following command in the shell at the bottom.
 ```sh
 echo '[{"origin": ["*"],"method": ["GET"],"maxAgeSeconds": 3600}]' > cors.json
 ```
@@ -838,18 +845,18 @@ echo '[{"origin": ["*"],"method": ["GET"],"maxAgeSeconds": 3600}]' > cors.json
   }
 ]
 -->
-1. Open your [Firebase console](https://console.firebase.google.com/) in your web browser.
-2. Click your project.
-3. Click **Storage** (on the left sidebar).
-4. Click the Copy folder path icon (on the right of the URL starting with **gs://**) to copy your cloud storage bucket.
+6. Open your [Firebase console](https://console.firebase.google.com/) in your web browser.
+7. Click your project.
+8. Click **Storage** (on the left sidebar).
+9. Click the Copy folder path icon (on the right of the URL starting with **gs://**) to copy your cloud storage bucket.
 ![fb-storage-head](https://github.com/mycalls/applimode-examples/blob/main/assets/fb-storage-head.png?raw=true)
-5.  Go back to your Google Cloud console.
-6.  Run the following command in the shell at the bottom.
+10.  Go back to your Google Cloud console.
+11.  Run the following command in the shell at the bottom.
 ```sh
 gsutil cors set cors.json gs://<your-cloud-storage-bucket>
 ```
 
-* ###### If an error occurs when building with an Android device, follow these steps.
+* ### If an error occurs when building with an Android device, follow these steps.
 1. Open **VSCode**
 2. Click **File** (on the top menu of VSCode) and select **Open Folder**.
 3. Select your project folder (maybe in the **projects** folder) and click **Open**.
@@ -865,13 +872,13 @@ flutter pub cache repair
 flutter pub get
 ```
 
-* ###### If you don't see your Android device in the target device list, follow these steps.
+* ### If you don't see your Android device in the target device list, follow these steps.
 1. Enable Developer options and USB debugging on your android device.
 2. To enable Developer options and USB debugging on your android device, refer to [this page](https://developer.android.com/studio/debug/dev-options).
 3. Try changing the USB Preferences to Charging or File transfers.
 4. Connet again.
 
-* ###### If you cannot upload a post with images or videos attached when using Cloudflare R2, follow these steps.
+* ### If you cannot upload a post with images or videos attached when using Cloudflare R2, follow these steps.
 1. Open **VSCode**
 2. Click **File** (on the top menu of VSCode) and select **Open Folder**.
 3. Select your project folder (maybe in the **projects** folder) and click **Open**.
