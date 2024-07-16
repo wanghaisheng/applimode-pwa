@@ -78,7 +78,7 @@ Additionally, you can set or configure the following:
 * Build and manage on your own server.
 
 ## Demo
-* [Applimode Demo Web](https://applimode-demo.web.app/){:target="_blank"}
+* [Applimode Demo Web](https://applimode-demo.web.app/)
 <!--
 * [Android]()
 * iOS will be updated in the future.
@@ -91,7 +91,6 @@ Additionally, you can set or configure the following:
 * 비디오 썸네일 직접 지정하는 방법
 * 박스 또는 페이지 스타일에서 제목, 저자 숨기는 방법
 -->
-<!--[새 탭에서 열기](https://www.google.com/){:target="_blank"}-->
 
 ## Roadmap
 The content of this section will be updated in the future.
