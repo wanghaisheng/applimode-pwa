@@ -72,6 +72,7 @@ class SimplePageListView<Document> extends ConsumerStatefulWidget {
     this.updatedDocsState,
     this.useUid = false,
     this.isSearchView = false,
+    this.isNoGridView = false,
     this.searchWords,
   });
 
@@ -118,6 +119,7 @@ class SimplePageListView<Document> extends ConsumerStatefulWidget {
   final ProviderListenable<List<String>>? updatedDocsState;
   final bool useUid;
   final bool isSearchView;
+  final bool isNoGridView;
   final String? searchWords;
 
   @override
@@ -355,7 +357,8 @@ class _SimplePageListViewState<Document>
 
     if (currentListType == PostsListType.square &&
         screenWidth > pcWidthBreakpoint &&
-        !widget.isSearchView) {
+        !widget.isSearchView &&
+        !widget.isNoGridView) {
       return GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,

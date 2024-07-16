@@ -35,6 +35,7 @@ class ProfileCommentsScreen extends ConsumerWidget {
         child: SimplePageListView(
           query: commentsQuery,
           listState: commentsListStateProvider,
+          isNoGridView: true,
           itemBuilder: (context, index, doc) {
             final comment = doc.data();
             return PostCommentsItem(

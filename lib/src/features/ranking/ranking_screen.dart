@@ -407,6 +407,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
               query: query ?? postQuery,
               shrinkWrap: true,
               useDidUpdateWidget: true,
+              isNoGridView: true,
               listState: _buildListState(),
               refreshUpdatedDocs: true,
               updatedDocQuery: _buildUpdatedDocQuery(),
