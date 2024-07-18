@@ -12,8 +12,7 @@
 ## Table of contents
 * [Install and configure Xcode](#install-and-configure-xcode)
 * [Install Rosetta 2](#install-rosetta-2)
-* [Install VSCode](#install-vscode)
-* [Download and install Flutter](#download-and-install-flutter)
+* [Install VSCode and the Flutter SDK](#install-vscode-and-the-flutter-sdk)
 * [Install Android Studio](#install-android-studio)
 * [Install Homebrew](#install-homebrew)
 * [Install rbenv, Ruby, and CocoaPods](#install-rbenv-ruby-and-cocoapods)
@@ -23,7 +22,6 @@
 * [Build your Applimode app](#build-your-applimode-app)
 * [Add administrator](#add-administrator)
 * [Admin settings and custom settings](#admin-settings-and-custom-settings)
-<!--* [Build an iOS app](#build-an-ios-app)-->
 * [Build an APK for Android](#build-an-apk-for-android)
 * [Build and release a web app](#build-and-release-a-web-app)
 * [Configure Cloudflare R2 (Optional)](#configure-cloudflare-r2-optional)
@@ -57,7 +55,8 @@ git --version
 <!--열기 팝업이 추가된 링크-->
 <!--https://apps.apple.com/us/app/xcode/id497799835-->
 * If iOS is not checked in the **Select the platforms** box, check it and click **Install** or **Download & Installl**.
-* Close **Xcode**.
+* Once the download is complete, close **Xcode**.
+<!--
 * Click the Spotlight icon in the menu bar. (or press ```Command``` + ```Space Bar```)
 * In the search field, type *terminal* and select it.
 * Run the following commands.
@@ -67,6 +66,8 @@ sudo sh -c 'xcode-select -s /Applications/Xcode.app/Contents/Developer && xcodeb
 ```sh
 sudo xcodebuild -license
 ```
+* type *agree*.
+-->
 <!--
 ```xcode-select --install```이라는 명령어를 사용하라는 경우도 있다.
 하지만 xcode commandline toos는 xcode가 설치될 때, 같이 설치됨으로 위치만 지정해 주는 것이 맞는 듯 하다.
@@ -79,30 +80,48 @@ sudo xcodebuild -license
 * Click the Spotlight icon in the menu bar. (or press ```Command``` + ```Space Bar```)
 * In the search field, type *terminal* and select it.
 -->
-* Open or go to **Terminal**.
-* Run the following commands.
+* Click the Spotlight icon in the menu bar. (or press ```Command``` + ```Space Bar```)
+* In the search field, type *terminal* and select it.
+* Run the following command.
 ```sh
 sudo softwareupdate --install-rosetta --agree-to-license
 ```
 
 
 
-## Install VSCode
+## Install VSCode and the Flutter SDK
 * Download, install, and launch [VSCode](https://code.visualstudio.com/).
 * To open the Command Palette, press ```Command``` + ```Shift``` + ```P```. (or chosse **View** > **Command Palette**)
 * Type *shell* and select **Shell Command: Install 'code' command in PATH**.
 * Press ```Command``` + ```Shift``` + ```X```. (or choose **View** > **Extensions**)
 * Type *flutter* and click **Install**.
-<!--
 * Press ```Command``` + ```Shift``` + ```P```.
 * In the **Command Palette**, type *flutter*.
 * Select **Flutter: New Project**.
 * Click **Download SDK** at the bottom right.
 * Create a folder (choose File > New Folder, or press ```Command``` + ```Shift``` + ```N```) and name it *development*.
 * Click **Clone Flutter**.
-* Click **Add SDK to PATH**.
-* To open the **VScode**'s built-in terminal, click **View** (on the top menu of VSCode) and select **Terminal**.
+* When finished, the Flutter SDK should be in the ~/development/flutter directory.
+* Open or go to **Terminal**.
+* To add Flutter to the PATH environment variable, run the following command.
+```sh
+nano ~/.zshenv
+```
+> [!NOTE]
+> Use your preferred text editor.
+* Copy the following line and paste it at the end of your ~/.zshenv file.
+```sh
+export PATH=$HOME/development/flutter/bin:$PATH
+```
+* To save your ~/.zshenv file, press ```control``` + ```O```, then **Enter**, and finally ```control``` + ```X```.
+<!--
+* To apply this change, restart all open Terminal sessions.
+-->
 * Run the following command.
+```sh
+source ~/.zshenv
+```
+<!--
 ```sh
 flutter doctor
 ```
@@ -111,6 +130,7 @@ flutter doctor
 
 
 
+<!--
 ## Download and install Flutter
 * Open this [page](https://docs.flutter.dev/get-started/install/macos/mobile-ios) and scroll down.
 * Click **Download and install** in the **Install the Flutter SDK** section.
@@ -134,9 +154,8 @@ nano ~/.zshenv
 ```sh
 export PATH=$HOME/development/flutter/bin:$PATH
 ```
-* Save your ~/.zshenv file. (If you used the nano editor, press ```control``` + ```O```, then ```control``` + ```X```.)
+* To save your ~/.zshenv file, press ```control``` + ```O```, then **Enter**, and finally ```control``` + ```X```.
 * To apply this change, restart all open Terminal sessions.
-<!--
 * Run the following command.
 ```sh
 flutter doctor
@@ -202,18 +221,18 @@ brew install rbenv
 ```
 * To add **rbenv** to the PATH environment variable, run the following command.
 ```sh
-nano ~/.zshenv
+nano ~/.zshrc
 ```
-* Copy the following line and paste it at the end of your ~/.zshenv file.
+* Copy the following line and paste it at the end of your ~/.zshrc file.
 ```sh
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init - zsh)"
 ```
-* Save your ~/.zshenv file. (If you used the nano editor, press ```control``` + ```O```, then ```control``` + ```X```.)
+* To save your ~/.zshrc file, press ```control``` + ```O```, then **Enter**, and finally ```control``` + ```X```.
 * Close **Terminal** and reopen it.
 <!--
 ```sh
-source ~/.zshenv
+source ~/.zshrc
 ```
 -->
 * Run the following commands.
@@ -229,11 +248,18 @@ rbenv install 3.2.3
 rbenv global 3.2.3
 ```
 ```sh
-source ~/.zshenv
+source ~/.zshrc
 ```
 ```sh
 sudo gem install cocoapods
 ```
+```sh
+sudo sh -c 'xcode-select -s /Applications/Xcode.app/Contents/Developer && xcodebuild -runFirstLaunch'
+```
+```sh
+sudo xcodebuild -license
+```
+* type *agree*.
 <!--
 ```sh
 sudo gem update --system x.x.x
@@ -241,17 +267,17 @@ sudo gem update --system x.x.x
 -->
 <!--flutter 공식문서만 패스 추가할 것을 권장함.-->
 ```sh
-nano ~/.zshenv
+nano ~/.zshrc
 ```
-* Copy the following line and paste it at the end of your ~/.zshenv file.
+* Copy the following line and paste it at the end of your ~/.zshrc file.
 ```sh
 export PATH=$HOME/.gem/bin:$PATH
 ```
-* Save your ~/.zshenv file. (If you used the nano editor, press ```control``` + ```O```, then ```control``` + ```X```.)
+* To save your ~/.zshrc file, press ```control``` + ```O```, then **Enter**, and finally ```control``` + ```X```.
 * Close **Terminal**.
 <!--
 ```sh
-source ~/.zshenv
+source ~/.zshrc
 ```
 ```sh
 ruby -v
@@ -292,18 +318,18 @@ mkdir ~/.nvm
 ```
 -->
 ```sh
-nano ~/.zshenv
+nano ~/.zshrc
 ```
-* Copy the following line and paste it at the end of your ~/.zshenv file.
+* Copy the following line and paste it at the end of your ~/.zshrc file.
 ```sh
 export NVM_DIR="$HOME/.nvm"
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
 [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 ```
-* Save your ~/.zshenv file. (If you used the nano editor, press ```control``` + ```O```, then ```control``` + ```X```.)
+* To save your ~/.zshrc file, press ```control``` + ```O```, then **Enter**, and finally ```control``` + ```X```.
 * Run the following commands.
 ```sh
-source ~/.zshenv
+source ~/.zshrc
 ```
 <!--
 ```sh
@@ -333,16 +359,16 @@ firebase login
 dart pub global activate flutterfire_cli
 ```
 ```sh
-nano ~/.zshenv
+nano ~/.zshrc
 ```
-* Copy the following line and paste it at the end of your ~/.zshenv file.
+* Copy the following line and paste it at the end of your ~/.zshrc file.
 ```sh
 export PATH="$PATH":"$HOME/.pub-cache/bin"
 ```
-* Save your ~/.zshenv file. (If you used the nano editor, press ```control``` + ```O```, then ```control``` + ```X```.)
+* To save your ~/.zshrc file, press ```control``` + ```O```, then **Enter**, and finally ```control``` + ```X```.
 * Run the following command.
 ```sh
-source ~/.zshenv
+source ~/.zshrc
 ```
 
 
@@ -396,6 +422,12 @@ npm run init -- --project-name="project name" --full-name="App Full Name" --shor
 * Click **View** (on the top menu of VSCode), then select **Terminal**.
 * Run the following commands in order:
 ```sh
+flutter pub cache clean
+```
+```sh
+flutter clean
+```
+```sh
 flutter pub get
 ```
 ```sh
@@ -417,10 +449,12 @@ firebase deploy --only firestore
 ```sh
 firebase deploy --only storage
 ```
+<!--
 * If you want to enter commands all at once, run the following command:
 ```sh
 flutter pub get; dart run flutter_native_splash:create; flutter pub run flutter_launcher_icons; dart run build_runner build -d; flutterfire configure; firebase deploy --only firestore; firebase deploy --only storage;
 ```
+-->
 * Open [Google Cloud console](https://console.cloud.google.com/) in your web browser.
 * Sign up or log in.
 * Select your project on the top left.
@@ -472,11 +506,28 @@ exit
 * When the **Turn on Developer Mode?** dialog appears, tap **Turn On**.
 * Go to or open your Applimode project in **VSCode**.
 * Attach your iOS device to the USB port on your Mac.
-* Press ```Command``` + ```Shift``` + ```P```. (or choose **View** > **Command Palette**)
+![vscode-run](https://github.com/mycalls/applimode-examples/blob/main/assets/vscode-run.png?raw=true)
+* Click the Select Device section at the bottom right. (or press ```Ctrl``` + ```Shift``` + ```P```, then type *flutter* and select **Flutter: Select Device**.)
+<!--
+* Click **View** (on the top menu of VSCode) and select **Command Palette**. (or press ```Ctrl``` + ```Shift``` + ```P```)
 * Type *flutter* and select the **Flutter: Select Device**.
+-->
 * Select your iOS device from the **Select Device** prompt.
+* Press ```Ctrl``` + ```Shift``` + ```D```. (or click the **Run and Debug** button on the left menu)
+* Click the **Select Debug Mode** button at the top left and select **Run (release mode)**.
 * Click the built-in terminal at the bottom. (or choose **View** > **Terminal**)
 * Run the following commands.
+<!--
+```sh
+flutter pub cache clean
+```
+```sh
+flutter clean
+```
+```sh
+flutter pub get
+```
+-->
 ```sh
 cd ios
 ```
@@ -492,6 +543,7 @@ pod install --repo-update
 ```sh
 cd ..
 ```
+<!--todos 플러터에서 한번 빌드할고 엑스코드에서 실행해야 되는지 확인-->
 ```sh
 open ios/Runner.xcworkspace
 ```

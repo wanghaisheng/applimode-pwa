@@ -188,6 +188,12 @@ npm run init -- --project-name="project name" --full-name="App Full Name" --shor
 * Click **View** (on the top menu of VSCode), then select **Terminal**.
 * Run the following commands in order:
 ```sh
+flutter pub cache clean
+```
+```sh
+flutter clean
+```
+```sh
 flutter pub get
 ```
 ```sh
@@ -209,10 +215,12 @@ firebase deploy --only firestore
 ```sh
 firebase deploy --only storage
 ```
+<!--
 * If you want to enter commands all at once, run the following command:
 ```sh
 flutter pub get; dart run flutter_native_splash:create; flutter pub run flutter_launcher_icons; dart run build_runner build -d; flutterfire configure; firebase deploy --only firestore; firebase deploy --only storage;
 ```
+-->
 * Open [Google Cloud console](https://console.cloud.google.com/) in your web browser.
 * Sign up or log in.
 * Select your project on the top left.
