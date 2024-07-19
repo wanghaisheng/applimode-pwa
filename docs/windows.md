@@ -187,12 +187,11 @@ npm run init -- --project-name="project name" --full-name="App Full Name" --shor
 * Click **File** (on the top menu of VSCode), select **Open Folder**, choose your project folder (maybe in the **projects** folder), and click **Open**.
 * Click **View** (on the top menu of VSCode), then select **Terminal**.
 * Run the following commands in order:
-```sh
-flutter pub cache clean
-```
+<!--
 ```sh
 flutter clean
 ```
+-->
 ```sh
 flutter pub get
 ```

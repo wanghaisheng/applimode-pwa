@@ -131,7 +131,7 @@ const String dOneBaseUrl = 'yourD1WorkerUrl';
 
 // Regular expression for search with D1. Set for each language
 // D1에서 검색을 위한 정규표현식. 각 언어에 맞게 설정할 것
-const String searchRegExp = '[^A-Za-z0-9ㄱ-ㅎㅏ-ㅣ가-힣\n ]';
+const String searchRegExp = '[^A-Za-z0-9ㄱ-ㅎㅏ-ㅣ가-힣ぁ-ゔァ-ヴー々〆〤一-龥\n ]';
 
 // proxy for youtube image
 // 유튜브 이미지를 위한 프록시 주소

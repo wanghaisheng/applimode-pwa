@@ -422,12 +422,6 @@ npm run init -- --project-name="project name" --full-name="App Full Name" --shor
 * Click **View** (on the top menu of VSCode), then select **Terminal**.
 * Run the following commands in order:
 ```sh
-flutter pub cache clean
-```
-```sh
-flutter clean
-```
-```sh
 flutter pub get
 ```
 ```sh
@@ -516,21 +510,46 @@ exit
 * Press ```Ctrl``` + ```Shift``` + ```D```. (or click the **Run and Debug** button on the left menu)
 * Click the **Select Debug Mode** button at the top left and select **Run (release mode)**.
 * Click the built-in terminal at the bottom. (or choose **View** > **Terminal**)
+* Run the following command.
+```sh
+open ios/Runner.xcworkspace
+```
+* Your Applimode project will open in Xcode.
+![xcode-overall](https://github.com/mycalls/applimode-examples/blob/main/assets/xcode-run.png?raw=true)
+* Select your iOS device from the **Select Device** panel.
+* In the left navigation panel under **Targets**, select **Runner**.
+* In the **Runner settings** pane, click **Signing & Capabilities**.
+* Select **All** at the top.
+* Select **Automatically manage signing**.
+* Select a team from the **Team** dropdown menu.
+* If there is no activity in **Xcode**'s progress window, close **Xcode**.
+> [!NOTE]
+> * Teams are created in the App Store Connect section of your Apple Developer Account page. If you have not created a team, you can choose a personal team.
+> * The Team dropdown displays that option as Your Name (Personal Team).
+* Go back to **VSCode**.
+* Click the **Start Debugging** button at the top left. (or press ```F5``` or ```Fn``` + ```F5```)
+* The VSCode build will fail.
+* Click the built-in terminal at the bottom. (or choose **View** > **Terminal**)
 * Run the following commands.
 <!--
 ```sh
 flutter pub cache clean
 ```
+-->
 ```sh
 flutter clean
 ```
 ```sh
 flutter pub get
 ```
--->
 ```sh
 cd ios
 ```
+<!--
+```sh
+rm -rf build
+```
+-->
 ```sh
 rm -rf Pods
 ```
@@ -543,28 +562,22 @@ pod install --repo-update
 ```sh
 cd ..
 ```
-<!--todos 플러터에서 한번 빌드할고 엑스코드에서 실행해야 되는지 확인-->
 ```sh
 open ios/Runner.xcworkspace
 ```
 <!--
 ```sh
-cd ios; rm -rf Pods; rm -rf Podfile.lock; pod install --repo-update; cd ..; open ios/Runner.xcworkspace;
+flutter clean; flutter pub get; cd ios; rm -rf Pods; rm -rf Podfile.lock; pod install --repo-update; cd ..; open ios/Runner.xcworkspace;
 ```
 -->
 * Your Applimode project will open in Xcode.
+![xcode-overall](https://github.com/mycalls/applimode-examples/blob/main/assets/xcode-run.png?raw=true)
+* Select your iOS device from the **Select Device** panel.
 * In the left navigation panel under **Targets**, select **Runner**.
-* In the **Runner settings** pane, click **Signing & Capabilities**.
-* Select **All** at the top.
-* Select **Automatically manage signing**.
-* Select a team from the **Team** dropdown menu.
-![xcode-sign](https://github.com/mycalls/applimode-examples/blob/main/assets/xcode-sign.png?raw=true)
-> [!NOTE]
-> * Teams are created in the App Store Connect section of your Apple Developer Account page. If you have not created a team, you can choose a personal team.
-> * The Team dropdown displays that option as Your Name (Personal Team).
 * Click **Product** (on the top menu of Xcode), then click **Scheme**, and finally click **Edit Scheme**.
 * Click **Run** in the left panel.
 * Select **Release** from the **Build Configuration** dropdown menu in the **Info** tab.
+* If there is no activity in **Xcode**'s progress window, click **Product** (on the top menu of Xcode), then click **Clean Build Folder**.
 * Click the play icon button on the top left. (or press ```Command``` + ```R```)
 > [!NOTE]
 > * If you receive an **Untrusted Developer** error message on your iOS device, follow these steps.
@@ -577,6 +590,9 @@ cd ios; rm -rf Pods; rm -rf Podfile.lock; pod install --repo-update; cd ..; open
 > 1. On your mac, open **System settings**.
 > 2. Choose **Privacy and Security** > **VPN & Device Management**.
 > 3. Scroll down and click **Allow anyway**.
+
+> [!NOTE]
+> If your **Applimode** app fails to build in **Xcode**, follow [these steps](#additionally-if-an-error-occurs-while-building-on-an-ios-device-follow-the-steps-below).
 * After your app build completes, follow [this chapter](#after-your-app-build-completes).
 
 #### Web or Android 
@@ -1321,6 +1337,12 @@ gsutil cors set cors.json gs://<your-cloud-storage-bucket>
 4. Click the built-in terminal at the bottom. (or choose **View** > **Terminal**)
 5. Run the following commands.
 ```sh
+flutter clean
+```
+```sh
+flutter pub get
+```
+```sh
 cd ios
 ```
 ```sh
@@ -1344,7 +1366,9 @@ cd ios; rm -rf Pods; rm -rf Podfile.lock; pod install --repo-update; cd ..; open
 ```
 -->
 6. Your Applimode project will open in Xcode.
-7. Click **Product** (on the top menu of Xcode), then click **Clean Build Folder**.
+![xcode-overall](https://github.com/mycalls/applimode-examples/blob/main/assets/xcode-run.png?raw=true)
+7. If there is no activity in **Xcode**'s progress window, click **Product** (on the top menu of Xcode), then click **Clean Build Folder**.
+8. Click the play icon button on the top left. (or press ```Command``` + ```R```)
 
 * ### If an error occurs when building with an Android device, follow these steps.
 1. Open **VSCode**
