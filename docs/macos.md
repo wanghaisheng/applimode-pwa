@@ -501,13 +501,13 @@ exit
 * Go to or open your Applimode project in **VSCode**.
 * Attach your iOS device to the USB port on your Mac.
 ![vscode-run](https://github.com/mycalls/applimode-examples/blob/main/assets/vscode-run.png?raw=true)
-* Click the Select Device section at the bottom right. (or press ```Ctrl``` + ```Shift``` + ```P```, then type *flutter* and select **Flutter: Select Device**.)
+* Click the Select Device section at the bottom right. (or press ```Command``` + ```Shift``` + ```P```, then type *flutter* and select **Flutter: Select Device**.)
 <!--
-* Click **View** (on the top menu of VSCode) and select **Command Palette**. (or press ```Ctrl``` + ```Shift``` + ```P```)
+* Click **View** (on the top menu of VSCode) and select **Command Palette**. (or press ```Command``` + ```Shift``` + ```P```)
 * Type *flutter* and select the **Flutter: Select Device**.
 -->
 * Select your iOS device from the **Select Device** prompt.
-* Press ```Ctrl``` + ```Shift``` + ```D```. (or click the **Run and Debug** button on the left menu)
+* Press ```Command``` + ```Shift``` + ```D```. (or click the **Run and Debug** button on the left menu)
 * Click the **Select Debug Mode** button at the top left and select **Run (release mode)**.
 * Click the built-in terminal at the bottom. (or choose **View** > **Terminal**)
 * Run the following command.
@@ -607,7 +607,7 @@ flutter clean; flutter pub get; cd ios; rm -rf Pods; rm -rf Podfile.lock; pod in
 * Press ```Command``` + ```Shift``` + ```D```. (or click the **Run and Debug** button on the left menu)
 * Click the **Select Debug Mode** button at the top left and select **Run (release mode)**.
 > [!NOTE]
-> If you change the settings in the **custom_settings.dart** file and want to see how they are applied in your Applimode app, select Chrome in the **Select Device** section and **Run (debug mode)** in the **Select Debug Mode** section. You can see the changes applied by pressing ```Ctrl``` + ```S``` after modifying the values in the **custom_settings.dart** file.
+> If you change the settings in the **custom_settings.dart** file and want to see how they are applied in your Applimode app, select Chrome in the **Select Device** section and **Run (debug mode)** in the **Select Debug Mode** section. You can see the changes applied by pressing ```Command``` + ```S``` after modifying the values in the **custom_settings.dart** file.
 * Click the **Start Debugging** button at the top left. (or press ```F5``` or ```Fn``` + ```F5```)
 <!--
 * Click Run (on the top menu of VSCode) and select **Start Debugging**. (or press ```F5``` or ```fn``` + ```F5```)
