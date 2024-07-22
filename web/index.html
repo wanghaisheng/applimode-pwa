@@ -123,6 +123,21 @@
       }
   </script>
   -->
+  <!--Fixed list freezing issue when swiping forward in mobile Safari-->
+  <script>
+    document.addEventListener(
+      "touchstart",
+      (ev) => {
+        if (ev.touches.length === 1) {
+          const touch = ev.touches[0];
+          if (touch.clientX > window.innerWidth * 0.9) {
+            ev.preventDefault();
+          }
+        }
+      },
+      { passive: false }
+    );  
+  </script>
 
 
 </body></html>

@@ -1,5 +1,3 @@
-import 'package:applimode_app/custom_settings.dart';
-
 class Regex {
   static RegExp localImageRegex = RegExp(r'''\[localImage\]\[(.*)\]\[(.*)\]''');
   static RegExp localVideoRegex = RegExp(r'''\[localVideo\]\[(.*)\]\[(.*)\]''');
@@ -49,7 +47,7 @@ class Regex {
   static RegExp urlWithoutHttp = RegExp(
       '''[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&//=]*)''');
 
-  static RegExp searchRegex = RegExp(searchRegExp);
+  static RegExp searchRegex = RegExp(r'[^\p{Letter}0-9\n ]', unicode: true);
 
   static RegExp urlPathStringRegex = RegExp('[^a-z0-9-]');
 

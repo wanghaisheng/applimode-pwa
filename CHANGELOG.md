@@ -3,6 +3,10 @@
 ### New Features and Improvements
 ### Bug Fixes
 -->
+## Version 0.1.3 (July 22, 2024)
+- Fixed the list freezing issue when swiping forward in mobile Safari.
+- Fixed an issue where only English and Korean could be searched when using D1 search.
+
 ## Version 0.1.2 (July 16, 2024)
 - Fixed issues related to ranking screen.
 - Added and improved docs.

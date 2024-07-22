@@ -13,7 +13,7 @@ const String androidBundleId = 'applimode.my_applimode';
 const String appleBundleId = 'applimode.myApplimode';
 const String firebaseProjectName = 'my-applimode';
 const String appCreator = 'JongsukOh';
-const String appVersion = '0.1.2+1';
+const String appVersion = '0.1.3+1';
 
 // spare values when admin settings is not set
 const String spareHomeBarTitle = 'My Applimode';
@@ -128,10 +128,6 @@ const String cfDomainUrl = 'yourCustomDomainUrl';
 // Cloudflare worker base url for D1 table
 // 클라우드플레어 D1 데이터베이스를 위한 워커 베이스 url
 const String dOneBaseUrl = 'yourD1WorkerUrl';
-
-// Regular expression for search with D1. Set for each language
-// D1에서 검색을 위한 정규표현식. 각 언어에 맞게 설정할 것
-const String searchRegExp = '[^A-Za-z0-9ㄱ-ㅎㅏ-ㅣ가-힣ぁ-ゔァ-ヴー々〆〤一-龥\n ]';
 
 // proxy for youtube image
 // 유튜브 이미지를 위한 프록시 주소
