@@ -137,6 +137,8 @@ class _SimplePageListViewState<Document>
   late int refreshTime = DateTime.now().millisecondsSinceEpoch;
   late bool hasMain = false;
 
+  late bool isPermissionDenied = false;
+
   @override
   void initState() {
     super.initState();
@@ -182,18 +184,22 @@ class _SimplePageListViewState<Document>
   }
 
   Future<void> _checkRecentDoc() async {
-    if (widget.recentDocQuery != null) {
-      final snapshot = await widget.recentDocQuery!.get();
-      if (snapshot.docs.isNotEmpty && docs.isNotEmpty) {
-        final recentDoc = snapshot.docs.first;
-        if (hasMain && docs.length > 1 && recentDoc.id != docs[1].id) {
-          docs = [];
-          _fechDocs();
-        } else if (!hasMain && recentDoc.id != docs[0].id) {
-          docs = [];
-          _fechDocs();
+    try {
+      if (widget.recentDocQuery != null) {
+        final snapshot = await widget.recentDocQuery!.get();
+        if (snapshot.docs.isNotEmpty && docs.isNotEmpty) {
+          final recentDoc = snapshot.docs.first;
+          if (hasMain && docs.length > 1 && recentDoc.id != docs[1].id) {
+            docs = [];
+            _fechDocs();
+          } else if (!hasMain && recentDoc.id != docs[0].id) {
+            docs = [];
+            _fechDocs();
+          }
         }
       }
+    } catch (e) {
+      debugPrint('checkRecentDoc error: $e');
     }
   }
 
@@ -205,52 +211,61 @@ class _SimplePageListViewState<Document>
   }
 
   Future<void> _fechDocs({bool nextPage = false}) async {
-    QuerySnapshot<Document>? querySnapshot;
-    QueryDocumentSnapshot<Document>? mainSnapshot;
-    if (nextPage) {
-      isFetchingMore = true;
-    } else {
-      isFetching = true;
-    }
-    Future.microtask(() => setState(() {}));
-    if (nextPage) {
-      querySnapshot = await widget.query
-          .startAfterDocument(docs.last)
-          .limit(listFetchLimit + 1)
-          .get();
-    } else {
-      if (widget.showMain && widget.mainQuery != null) {
-        final mainQuerySnapshot = await widget.mainQuery!.get();
-        final docs = mainQuerySnapshot.docs;
-        if (docs.isNotEmpty) {
-          mainSnapshot = docs.first;
-          hasMain = true;
-        }
-      }
-      querySnapshot = mainSnapshot != null
-          ? await widget.query.limit(listFetchLimit).get()
-          : await widget.query.limit(listFetchLimit + 1).get();
-      refreshTime = DateTime.now().millisecondsSinceEpoch;
-    }
-    final result = mainSnapshot != null
-        ? [mainSnapshot, ...querySnapshot.docs]
-        : querySnapshot.docs;
-
-    if (result.length > listFetchLimit) {
-      hasMore = true;
-      result.removeLast();
-    } else {
-      hasMore = false;
-    }
-    docs = [...docs, ...result];
-
-    setState(() {
+    try {
+      QuerySnapshot<Document>? querySnapshot;
+      QueryDocumentSnapshot<Document>? mainSnapshot;
       if (nextPage) {
-        isFetchingMore = false;
+        isFetchingMore = true;
       } else {
-        isFetching = false;
+        isFetching = true;
       }
-    });
+      Future.microtask(() => setState(() {}));
+      if (nextPage) {
+        querySnapshot = await widget.query
+            .startAfterDocument(docs.last)
+            .limit(listFetchLimit + 1)
+            .get();
+      } else {
+        if (widget.showMain && widget.mainQuery != null) {
+          final mainQuerySnapshot = await widget.mainQuery!.get();
+          final docs = mainQuerySnapshot.docs;
+          if (docs.isNotEmpty) {
+            mainSnapshot = docs.first;
+            hasMain = true;
+          }
+        }
+        querySnapshot = mainSnapshot != null
+            ? await widget.query.limit(listFetchLimit).get()
+            : await widget.query.limit(listFetchLimit + 1).get();
+        refreshTime = DateTime.now().millisecondsSinceEpoch;
+      }
+      final result = mainSnapshot != null
+          ? [mainSnapshot, ...querySnapshot.docs]
+          : querySnapshot.docs;
+
+      if (result.length > listFetchLimit) {
+        hasMore = true;
+        result.removeLast();
+      } else {
+        hasMore = false;
+      }
+      docs = [...docs, ...result];
+
+      setState(() {
+        if (nextPage) {
+          isFetchingMore = false;
+        } else {
+          isFetching = false;
+        }
+      });
+    } catch (e) {
+      if (e.toString().contains('permission-denied')) {
+        setState(() {
+          isPermissionDenied = true;
+        });
+        debugPrint('fetch docs error: ${e.toString()}');
+      }
+    }
   }
 
   Future<void> updateDocs(List<String> updatedDocIds) async {
@@ -313,7 +328,7 @@ class _SimplePageListViewState<Document>
     }
 
     // when fist fetch loading
-    if (isFetching) {
+    if (isFetching && !isPermissionDenied) {
       if (widget.loadingBuilder != null) {
         return widget.loadingBuilder!.call(context);
       }
@@ -327,7 +342,10 @@ class _SimplePageListViewState<Document>
         return widget.emptyBuilder!.call(context);
       }
 
-      return Center(child: Text(context.loc.noContent));
+      return Center(
+          child: Text(isPermissionDenied
+              ? context.loc.needPermission
+              : context.loc.noContent));
     }
 
     if (widget.isPage) {

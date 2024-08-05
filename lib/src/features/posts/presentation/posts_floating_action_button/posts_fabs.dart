@@ -19,8 +19,9 @@ class PostsFabs extends ConsumerWidget {
     ref.listen(directUploadButtonControllerProvider, (_, state) {
       state.showAlertDialogOnError(context);
     });
-    final user =
-        adminOnlyWrite ? ref.watch(authStateChangesProvider).value : null;
+    final user = adminOnlyWrite || verifiedOnlyWrite
+        ? ref.watch(authStateChangesProvider).value
+        : null;
     final appUser =
         user != null ? ref.watch(appUserFutureProvider(user.uid)).value : null;
     final isLoading = ref.watch(directUploadButtonControllerProvider).isLoading;
@@ -35,8 +36,9 @@ class PostsFabs extends ConsumerWidget {
                   percentage: uploadState.percentage,
                 ),
               )
-            : !adminOnlyWrite ||
-                    (adminOnlyWrite && appUser != null && appUser.isAdmin)
+            : (!adminOnlyWrite && !verifiedOnlyWrite) ||
+                    (adminOnlyWrite && appUser != null && appUser.isAdmin) ||
+                    (verifiedOnlyWrite && appUser != null && appUser.verified)
                 ? const Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [

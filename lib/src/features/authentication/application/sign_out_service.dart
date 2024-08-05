@@ -1,4 +1,4 @@
-import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
+// import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:applimode_app/src/utils/fcm_service.dart';
@@ -17,9 +17,9 @@ class SignOutService {
       await _ref.read(fcmServiceProvider).tokenToEmpty(user.uid);
     }
     await _ref.read(authRepositoryProvider).signOut();
-    _ref.invalidate(authStateChangesProvider);
-    _ref.invalidate(appUserFutureProvider);
-    _ref.invalidate(appUserStreamProvider);
+    // _ref.invalidate(authStateChangesProvider);
+    // _ref.invalidate(appUserFutureProvider);
+    // _ref.invalidate(appUserStreamProvider);
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:applimode_app/src/features/editor/presentation/editor_screen_con
 import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/check_category.dart';
+import 'package:applimode_app/src/utils/shared_preferences.dart';
 import 'package:applimode_app/src/utils/show_adaptive_alert_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -214,6 +215,9 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
                                 postNotiString: context.loc.postNoti,
                               );
                           if (mounted && result) {
+                            ref
+                                .read(sharedPreferencesProvider)
+                                .setString('tempNewPost', '');
                             if (kIsWeb) {
                               WebBackStub().back();
                             } else {

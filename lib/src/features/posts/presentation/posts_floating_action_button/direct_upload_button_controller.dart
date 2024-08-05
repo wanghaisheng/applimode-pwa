@@ -48,16 +48,33 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
 
     state = const AsyncLoading();
 
+    final appUser = await ref.read(appUserFutureProvider(user.uid).future);
     // If only the administrator can write, check permissions
     // 관리자만 글쓰기가 가능할 경우, 권한 체크
     if (adminOnlyWrite) {
-      final appUser = await ref.read(appUserFutureProvider(user.uid).future);
       if (appUser == null || !appUser.isAdmin) {
         WakelockPlus.disable();
         state =
             AsyncError(Exception('Permission is required'), StackTrace.current);
         return;
       }
+    }
+
+    // If only the verified users can write, check permissions
+    // 인증된 사용자만 글쓰기가 가능할 경우, 권한 체크
+    if (verifiedOnlyWrite) {
+      if (appUser == null || !appUser.verified) {
+        WakelockPlus.disable();
+        state =
+            AsyncError(Exception('Permission is required'), StackTrace.current);
+        return;
+      }
+    }
+
+    if (appUser == null || appUser.isBlock) {
+      WakelockPlus.disable();
+      state = AsyncError(Exception('you are blocked'), StackTrace.current);
+      return;
     }
 
     final key = this.key;

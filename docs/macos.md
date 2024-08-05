@@ -1250,7 +1250,11 @@ flutter pub get; dart run flutter_native_splash:create; flutter pub run flutter_
 
 
 ## Configure Cloud Firestore Security Rules 
-* If you change the **isInitialSignIn** value to true in the **custom_settings.dart** file, you can enhance security further by modifying your Firestore rules.
+#### Access is restricted to logged-in users.
+* Go to or open your Applimode project in **VSCode**.
+* Press ```Command``` + ```P``` and type *custom_settings.dart*, then click.
+* Press ```Command``` + ```F``` and type *isInitialSignIn*.
+* Change the **isInitialSignIn** value from **false** to **true**.
 * Open this [page](https://github.com/mycalls/applimode-examples/blob/main/fs_authed.firestore.rules) and click the **Copy raw file** button (next to the **Raw** button) on the upper-right corner of the file view.
 ![copy-raw-file](https://github.com/mycalls/applimode-examples/blob/main/assets/gh-copy-raw-file.png?raw=true)
 * Open or go to your [Firebase console](https://console.firebase.google.com/) in your web browser. 
@@ -1260,7 +1264,22 @@ flutter pub get; dart run flutter_native_splash:create; flutter pub run flutter_
 * Paste the content you copied.
 * Add admin IDs. If you have forgotten how to do this, please follow the [this page](#add-administrator).
 * Click **Publish**.
+
+#### Access is restricted to verified users.
+<!--
 * To configure the rules so that only users you have authorized, not just logged-in users, can access the app, follow these instructions.
+-->
+* Go to or open your Applimode project in **VSCode**.
+* Press ```Command``` + ```P``` and type *custom_settings.dart*, then click.
+* Press ```Command``` + ```F``` and type *isInitialSignIn*.
+* Change the **isInitialSignIn** value from **false** to **true**.
+* Press ```Command``` + ```F``` and type *verifiedOnlyWrite*.
+* Change the **verifiedOnlyWrite** value from **false** to **true**.
+* Open or go to your [Firebase console](https://console.firebase.google.com/) in your web browser. 
+* Click **Firestore Database** (on the left sidebar).
+* Click the users collection and select the UID of the user you want to grant access to.
+* Click the **Edit field** button (pencil shape) next to the **verified** field. (Move your mouse cursor over the **verified** field to display the **Edid field** button)
+* Change the value from **false** to **true** and click **Update**.
 * Open this [page](https://github.com/mycalls/applimode-examples/blob/main/fs_verified.firestore.rules) and click the **Copy raw file** button (next to the **Raw** button) on the upper-right corner of the file view.
 * Paste the content you copied into the Firestore Rules.
 * Add admin IDs and verified IDs.

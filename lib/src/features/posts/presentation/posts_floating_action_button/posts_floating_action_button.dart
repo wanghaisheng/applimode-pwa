@@ -13,12 +13,14 @@ class PostsFloatingActionButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user =
-        adminOnlyWrite ? ref.watch(authStateChangesProvider).value : null;
+    final user = adminOnlyWrite || verifiedOnlyWrite
+        ? ref.watch(authStateChangesProvider).value
+        : null;
     final appUser =
         user != null ? ref.watch(appUserFutureProvider(user.uid)).value : null;
-    return !adminOnlyWrite ||
-            (adminOnlyWrite && appUser != null && appUser.isAdmin)
+    return (!adminOnlyWrite && !verifiedOnlyWrite) ||
+            (adminOnlyWrite && appUser != null && appUser.isAdmin) ||
+            (verifiedOnlyWrite && appUser != null && appUser.verified)
         ? FloatingActionButton(
             heroTag: heroTag,
             shape: const CircleBorder(),

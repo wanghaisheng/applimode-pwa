@@ -13,7 +13,7 @@ const String androidBundleId = 'applimode.my_applimode';
 const String appleBundleId = 'applimode.myApplimode';
 const String firebaseProjectName = 'my-applimode';
 const String appCreator = 'JongsukOh';
-const String appVersion = '0.1.3+1';
+const String appVersion = '0.1.4+1';
 
 // spare values when admin settings is not set
 const String spareHomeBarTitle = 'My Applimode';
@@ -62,6 +62,10 @@ const bool isInitialSignIn = false;
 // Only administrators can write
 // 관리자만 글을 쓸 수 있음
 const bool adminOnlyWrite = false;
+
+// Only verified users can write
+// 관리자에 의해 인증된 사용자만 글을 쓸 수 있음
+const bool verifiedOnlyWrite = false;
 
 // When using push notifications. default false
 // 푸시 알림을 사용할 경우. 기본 false

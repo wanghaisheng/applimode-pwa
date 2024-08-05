@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:applimode_app/src/utils/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'package:applimode_app/src/common_widgets/percent_circular_indicator.dart';
 import 'package:applimode_app/src/common_widgets/web_back_button.dart';
@@ -56,8 +59,12 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   static const bottomBarHeight = 80.0;
   static const widthBreak = 800.0;
 
+  // for auto save when writing a new post
+  late Timer t;
+
   @override
   void initState() {
+    t = Timer(const Duration(milliseconds: 0), () {});
     _focusNode = FocusNode();
     if (widget.postId != null) {
       if (widget.postAndWriter != null) {
@@ -71,8 +78,23 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       } else {
         buildCurrentPost();
       }
-    } else {}
+    } else {
+      final tempNewPost =
+          ref.read(sharedPreferencesProvider).getString('tempNewPost');
+      if (tempNewPost != null && tempNewPost.trim().isNotEmpty) {
+        _controller.text = tempNewPost;
+      }
+      _controller.addListener(_saveTemp);
+    }
     super.initState();
+  }
+
+  void _saveTemp() {
+    t.cancel();
+    t = Timer(const Duration(milliseconds: 1000), () {
+      final sharedPreferences = ref.read(sharedPreferencesProvider);
+      sharedPreferences.setString('tempNewPost', _controller.text);
+    });
   }
 
   Future<void> buildLongContent() async {
@@ -108,6 +130,10 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
 
   @override
   void dispose() {
+    t.cancel();
+    if (widget.postId == null) {
+      _controller.removeListener(_saveTemp);
+    }
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();

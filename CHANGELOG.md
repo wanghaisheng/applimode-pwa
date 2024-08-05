@@ -3,6 +3,12 @@
 ### New Features and Improvements
 ### Bug Fixes
 -->
+## Version 0.1.4 (August 03, 2024)
+- Fixed an issue with database access for verified users only.
+- Removed unnecessary code during sign-out process.
+- Added auto-save feature when writing a new post.
+- Updated a dependency to the latest release.
+
 ## Version 0.1.3 (July 22, 2024)
 - Fixed the list freezing issue when swiping forward in mobile Safari.
 - Fixed an issue where only English and Korean could be searched when using D1 search.

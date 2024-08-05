@@ -90,6 +90,16 @@ class EditorScreenController extends _$EditorScreenController {
       }
     }
 
+    // If only the verified users can write, check permissions
+    // 인증된 사용자만 글쓰기가 가능할 경우, 권한 체크
+    if (verifiedOnlyWrite) {
+      if (appUser == null || !appUser.verified) {
+        WakelockPlus.disable();
+        state = AsyncError(Exception(needPermission), StackTrace.current);
+        return false;
+      }
+    }
+
     if (appUser == null || appUser.isBlock) {
       WakelockPlus.disable();
       state = AsyncError(Exception(needPermission), StackTrace.current);
