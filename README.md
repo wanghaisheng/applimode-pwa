@@ -7,9 +7,9 @@
 <!--
 English | [한글](README_ko.md)
 -->
-![](https://github.com/mycalls/applimode-examples/blob/main/assets/am-preview-540p-low.gif?raw=true)
-Applimode is a project based on Flutter that allows easy construction of various types of apps and websites, ranging from blogs to bulletin boards. Even those without developer experience can create Android, iOS, web, and PWA applications, and deploy them directly to their own Google Firebase server at little to no cost. 
+Applimode is a project based on Flutter that allows easy construction of various types of apps and websites, ranging from blogs to bulletin boards. Even those without developer experience can create Android, iOS, web, and PWA applications, and deploy them directly to their own Google Firebase server at little to no cost.
 <!--Optionally, utilizing Cloudflare's R2 storage, workers, and CDN enables the affordable construction of media services as well.-->
+![](https://github.com/mycalls/applimode-examples/blob/main/assets/am-preview-540p-low.gif?raw=true)
 
 
 ## Configure your Applimode app
