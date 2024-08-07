@@ -31,11 +31,13 @@ class DirectUploadButton extends ConsumerWidget {
           imageQuality: postImageQuality,
           mediaMaxMBSize: mediaMaxMBSize,
         ).catchError((error) {
-          showAdaptiveAlertDialog(
-              context: context,
-              title: context.loc.maxFileSizeErrorTitle,
-              content:
-                  '${context.loc.maxFileSizedErrorContent} (${mediaMaxMBSize}MB)');
+          if (context.mounted) {
+            showAdaptiveAlertDialog(
+                context: context,
+                title: context.loc.maxFileSizeErrorTitle,
+                content:
+                    '${context.loc.maxFileSizedErrorContent} (${mediaMaxMBSize}MB)');
+          }
           return null;
         });
         if (pickedFile != null) {

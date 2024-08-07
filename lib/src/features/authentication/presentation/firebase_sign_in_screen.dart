@@ -1,6 +1,7 @@
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/common_widgets/sized_circular_progress_indicator.dart';
 import 'package:applimode_app/src/features/authentication/presentation/firebase_sign_in_screen_controller.dart';
+import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
@@ -9,6 +10,7 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:applimode_app/src/features/authentication/presentation/auth_providers.dart';
 import 'package:applimode_app/src/utils/async_value_ui.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class FirebaseSignInScreen extends ConsumerWidget {
@@ -98,6 +100,8 @@ class FirebaseSignInScreen extends ConsumerWidget {
                                         launchUrl(
                                           Uri.parse(termsUrl),
                                         );
+                                      } else {
+                                        context.push(ScreenPaths.appTerms);
                                       }
                                     },
                                 ),
@@ -114,6 +118,8 @@ class FirebaseSignInScreen extends ConsumerWidget {
                                         launchUrl(
                                           Uri.parse(privacyUrl),
                                         );
+                                      } else {
+                                        context.push(ScreenPaths.appPrivacy);
                                       }
                                     },
                                 ),

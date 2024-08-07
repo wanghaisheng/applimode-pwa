@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:applimode_app/src/utils/regex.dart';
 import 'package:applimode_app/src/utils/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'package:applimode_app/src/common_widgets/percent_circular_indicator.dart';
@@ -93,7 +94,11 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     t.cancel();
     t = Timer(const Duration(milliseconds: 1000), () {
       final sharedPreferences = ref.read(sharedPreferencesProvider);
-      sharedPreferences.setString('tempNewPost', _controller.text);
+      // because the files selected in the image picker are temporarily saved
+      final onlyText = _controller.text
+          .replaceAll(Regex.localImageRegex, '')
+          .replaceAll(Regex.localVideoRegex, '');
+      sharedPreferences.setString('tempNewPost', onlyText);
     });
   }
 
@@ -277,11 +282,13 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       mediaMaxMBSize: mediaMaxMBSize,
     ).catchError((error) {
       debugPrint('showImagePicker: ${error.toString()}');
-      showAdaptiveAlertDialog(
-          context: context,
-          title: context.loc.maxFileSizeErrorTitle,
-          content:
-              '${context.loc.maxFileSizedErrorContent} (${mediaMaxMBSize}MB)');
+      if (mounted) {
+        showAdaptiveAlertDialog(
+            context: context,
+            title: context.loc.maxFileSizeErrorTitle,
+            content:
+                '${context.loc.maxFileSizedErrorContent} (${mediaMaxMBSize}MB)');
+      }
       return null;
     });
 

@@ -7,6 +7,8 @@ import 'package:applimode_app/src/features/admin_settings/presentation/admin_set
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/authentication/presentation/firebase_phone_screen.dart';
 import 'package:applimode_app/src/features/like_users/like_users_screen.dart';
+import 'package:applimode_app/src/features/policies/app_privacy_screen.dart';
+import 'package:applimode_app/src/features/policies/app_terms_screen.dart';
 import 'package:applimode_app/src/features/posts/data/posts_repository.dart';
 import 'package:applimode_app/src/features/posts/presentation/main_posts_screen.dart';
 import 'package:applimode_app/src/features/posts/presentation/search_screen.dart';
@@ -76,6 +78,8 @@ class ScreenPaths {
   static String image(String imageUrl) => '/image?imageUrl=$imageUrl';
   static String video(String videoUrl) => '/video?videoUrl=$videoUrl';
   static String appInfo = '/appInfo';
+  static String appPrivacy = '/privacy';
+  static String appTerms = '/terms';
 }
 
 @riverpod
@@ -904,6 +908,44 @@ GoRouter goRouter(GoRouterRef ref) {
               videoUrl: videoUrl,
               videoController: controller,
             ),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/privacy',
+        pageBuilder: (context, state) {
+          if (isIosWeb) {
+            return const NoTransitionPage(
+              child: AppPrivacyScreen(),
+            );
+          }
+          if (isAndOrWin) {
+            return const CustomTransitionPage(
+              transitionsBuilder: buildHorizontalSlideTransitiron,
+              child: AppPrivacyScreen(),
+            );
+          }
+          return const CupertinoPage(
+            child: AppPrivacyScreen(),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/terms',
+        pageBuilder: (context, state) {
+          if (isIosWeb) {
+            return const NoTransitionPage(
+              child: AppTermsScreen(),
+            );
+          }
+          if (isAndOrWin) {
+            return const CustomTransitionPage(
+              transitionsBuilder: buildHorizontalSlideTransitiron,
+              child: AppTermsScreen(),
+            );
+          }
+          return const CupertinoPage(
+            child: AppTermsScreen(),
           );
         },
       ),

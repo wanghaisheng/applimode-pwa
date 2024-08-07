@@ -215,6 +215,8 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
                                 postNotiString: context.loc.postNoti,
                               );
                           if (mounted && result) {
+                            // When the post writing is complete,
+                            // delete the temporarily saved post.
                             ref
                                 .read(sharedPreferencesProvider)
                                 .setString('tempNewPost', '');

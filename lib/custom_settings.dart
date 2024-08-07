@@ -13,6 +13,8 @@ const String androidBundleId = 'applimode.my_applimode';
 const String appleBundleId = 'applimode.myApplimode';
 const String firebaseProjectName = 'my-applimode';
 const String appCreator = 'JongsukOh';
+const String appEmail = 'yourEmail@email.com';
+const String appEffectiveDate = '2024-08-06';
 const String appVersion = '0.1.4+1';
 
 // spare values when admin settings is not set

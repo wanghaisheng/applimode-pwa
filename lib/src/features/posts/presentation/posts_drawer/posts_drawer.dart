@@ -147,13 +147,15 @@ class PostsDrawer extends ConsumerWidget {
               leading: const Icon(Icons.handshake_outlined),
               title: Text(context.loc.termsOfService),
               onTap: () {
+                if (context.canPop()) {
+                  context.pop();
+                }
                 if (termsUrl.trim().isNotEmpty) {
-                  if (context.canPop()) {
-                    context.pop();
-                  }
                   launchUrl(
                     Uri.parse(termsUrl),
                   );
+                } else {
+                  context.push(ScreenPaths.appTerms);
                 }
               },
             ),
@@ -161,13 +163,15 @@ class PostsDrawer extends ConsumerWidget {
               leading: const Icon(Icons.privacy_tip_outlined),
               title: Text(context.loc.privacyPolicy),
               onTap: () {
+                if (context.canPop()) {
+                  context.pop();
+                }
                 if (privacyUrl.trim().isNotEmpty) {
-                  if (context.canPop()) {
-                    context.pop();
-                  }
                   launchUrl(
                     Uri.parse(privacyUrl),
                   );
+                } else {
+                  context.push(ScreenPaths.appPrivacy);
                 }
               },
             ),
