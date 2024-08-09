@@ -93,7 +93,9 @@ GoRouter goRouter(GoRouterRef ref) {
   final postsRepository = ref.watch(postsRepositoryProvider);
 
   // for ios web need to remove transition
-  final isIosWeb = kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+  // transition issue on ios safari fixed.
+  // but this issue is occuring on macos safari
+  // final isIosWeb = kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
   final isAndOrWin = defaultTargetPlatform == TargetPlatform.android ||
       defaultTargetPlatform == TargetPlatform.windows;
 
@@ -131,11 +133,13 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
           path: ScreenPaths.firebaseSignIn,
           pageBuilder: (context, state) {
+            /*
             if (isIosWeb) {
               return const NoTransitionPage(
                 child: FirebaseSignInScreen(),
               );
             }
+            */
             if (isAndOrWin) {
               return const CustomTransitionPage(
                 fullscreenDialog: true,
@@ -150,11 +154,13 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
           path: ScreenPaths.phone,
           pageBuilder: (context, state) {
+            /*
             if (isIosWeb) {
               return const NoTransitionPage(
                 child: FirebasePhoneScreen(),
               );
             }
+            */
             if (isAndOrWin) {
               return const CustomTransitionPage(
                 // fullscreenDialog: true,
@@ -169,11 +175,13 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
           path: ScreenPaths.appUserCheck,
           pageBuilder: (context, state) {
+            /*
             if (isIosWeb) {
               return const NoTransitionPage(
                 child: AppUserCheckScreen(),
               );
             }
+            */
             if (isAndOrWin) {
               return const CustomTransitionPage(
                 fullscreenDialog: true,
@@ -189,11 +197,13 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
           path: ScreenPaths.write,
           pageBuilder: (context, state) {
+            /*
             if (isIosWeb) {
               return const NoTransitionPage(
                 child: EditorScreen(),
               );
             }
+            */
             if (isAndOrWin) {
               return const CustomTransitionPage(
                 fullscreenDialog: true,
@@ -209,6 +219,7 @@ GoRouter goRouter(GoRouterRef ref) {
           path: ScreenPaths.search,
           pageBuilder: (context, state) {
             final preSearchWord = state.extra as String?;
+            /*
             if (isIosWeb) {
               return NoTransitionPage(
                 child: SearchScreen(
@@ -216,6 +227,7 @@ GoRouter goRouter(GoRouterRef ref) {
                 ),
               );
             }
+            */
             if (isAndOrWin) {
               return CustomTransitionPage(
                 transitionsBuilder: buildHorizontalSlideTransitiron,
@@ -233,11 +245,13 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
           path: ScreenPaths.adminSettings,
           pageBuilder: (context, state) {
+            /*
             if (isIosWeb) {
               return const NoTransitionPage(
                 child: AdminSettingsScreen(),
               );
             }
+            */
             if (isAndOrWin) {
               return const CustomTransitionPage(
                 transitionsBuilder: buildHorizontalSlideTransitiron,
@@ -251,6 +265,7 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
           path: ScreenPaths.recommendedPosts,
           pageBuilder: (context, state) {
+            /*
             if (isIosWeb) {
               return NoTransitionPage(
                 child: SubPostsScreen(
@@ -262,6 +277,7 @@ GoRouter goRouter(GoRouterRef ref) {
                 ),
               );
             }
+            */
             if (isAndOrWin) {
               return CustomTransitionPage(
                 transitionsBuilder: buildHorizontalSlideTransitiron,
@@ -287,11 +303,13 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
           path: ScreenPaths.ranking,
           pageBuilder: (context, state) {
+            /*
             if (isIosWeb) {
               return const NoTransitionPage(
                 child: RankingScreen(),
               );
             }
+            */
             if (isAndOrWin) {
               return const CustomTransitionPage(
                 transitionsBuilder: buildHorizontalSlideTransitiron,
@@ -306,6 +324,7 @@ GoRouter goRouter(GoRouterRef ref) {
         (category) => GoRoute(
           path: category.path,
           pageBuilder: (context, state) {
+            /*
             if (isIosWeb) {
               return NoTransitionPage(
                 child: SubPostsScreen(
@@ -317,6 +336,7 @@ GoRouter goRouter(GoRouterRef ref) {
                 ),
               );
             }
+            */
             if (isAndOrWin) {
               return CustomTransitionPage(
                 transitionsBuilder: buildHorizontalSlideTransitiron,
@@ -346,6 +366,7 @@ GoRouter goRouter(GoRouterRef ref) {
         pageBuilder: (context, state) {
           final postId = state.pathParameters['id']!;
           final postAndWriter = state.extra as PostAndWriter?;
+          /*
           if (isIosWeb) {
             return NoTransitionPage(
               child: PostScreen(
@@ -354,6 +375,7 @@ GoRouter goRouter(GoRouterRef ref) {
               ),
             );
           }
+          */
           if (isAndOrWin) {
             return CustomTransitionPage(
               transitionsBuilder: buildHorizontalSlideTransitiron,
@@ -376,6 +398,7 @@ GoRouter goRouter(GoRouterRef ref) {
             pageBuilder: (context, state) {
               final postId = state.pathParameters['id'];
               final postAndWriter = state.extra as PostAndWriter?;
+              /*
               if (isIosWeb) {
                 return NoTransitionPage(
                   child: EditorScreen(
@@ -384,6 +407,7 @@ GoRouter goRouter(GoRouterRef ref) {
                   ),
                 );
               }
+              */
               if (isAndOrWin) {
                 return CustomTransitionPage(
                   fullscreenDialog: true,
@@ -406,6 +430,7 @@ GoRouter goRouter(GoRouterRef ref) {
             path: 'likes',
             pageBuilder: (context, state) {
               final postId = state.pathParameters['id'];
+              /*
               if (isIosWeb) {
                 return NoTransitionPage(
                   child: LikeUsersScreen(
@@ -414,6 +439,7 @@ GoRouter goRouter(GoRouterRef ref) {
                   ),
                 );
               }
+              */
               if (isAndOrWin) {
                 return CustomTransitionPage(
                   fullscreenDialog: true,
@@ -436,6 +462,7 @@ GoRouter goRouter(GoRouterRef ref) {
             path: 'dislikes',
             pageBuilder: (context, state) {
               final postId = state.pathParameters['id'];
+              /*
               if (isIosWeb) {
                 return NoTransitionPage(
                   child: LikeUsersScreen(
@@ -444,6 +471,7 @@ GoRouter goRouter(GoRouterRef ref) {
                   ),
                 );
               }
+              */
               if (isAndOrWin) {
                 return CustomTransitionPage(
                   fullscreenDialog: true,
@@ -467,6 +495,7 @@ GoRouter goRouter(GoRouterRef ref) {
             pageBuilder: (context, state) {
               final postId = state.pathParameters['id']!;
               final postWriter = state.extra as AppUser?;
+              /*
               if (isIosWeb) {
                 return NoTransitionPage(
                   child: PostCommentsScreen(
@@ -475,6 +504,7 @@ GoRouter goRouter(GoRouterRef ref) {
                   ),
                 );
               }
+              */
               if (isAndOrWin) {
                 return CustomTransitionPage(
                   fullscreenDialog: true,
@@ -498,6 +528,7 @@ GoRouter goRouter(GoRouterRef ref) {
                 pageBuilder: (context, state) {
                   final postId = state.pathParameters['id']!;
                   final commentId = state.pathParameters['parentCommentId']!;
+                  /*
                   if (isIosWeb) {
                     return NoTransitionPage(
                       child: PostCommentsScreen(
@@ -506,6 +537,7 @@ GoRouter goRouter(GoRouterRef ref) {
                       ),
                     );
                   }
+                  */
                   if (isAndOrWin) {
                     return CustomTransitionPage(
                       transitionsBuilder: buildHorizontalSlideTransitiron,
@@ -531,6 +563,7 @@ GoRouter goRouter(GoRouterRef ref) {
           path: '/account/:uid',
           pageBuilder: (context, state) {
             final uid = state.pathParameters['uid']!;
+            /*
             if (isIosWeb) {
               return NoTransitionPage(
                 child: CustomProfileScreen(
@@ -539,6 +572,7 @@ GoRouter goRouter(GoRouterRef ref) {
                 ),
               );
             }
+            */
             if (isAndOrWin) {
               return CustomTransitionPage(
                 fullscreenDialog: true,
@@ -561,6 +595,7 @@ GoRouter goRouter(GoRouterRef ref) {
               path: 'editUsername/:username',
               pageBuilder: (context, state) {
                 final username = state.pathParameters['username']!;
+                /*
                 if (isIosWeb) {
                   return NoTransitionPage(
                     child: EditUsernameScreen(
@@ -568,6 +603,7 @@ GoRouter goRouter(GoRouterRef ref) {
                     ),
                   );
                 }
+                */
                 if (isAndOrWin) {
                   return CustomTransitionPage(
                     transitionsBuilder: buildHorizontalSlideTransitiron,
@@ -587,6 +623,7 @@ GoRouter goRouter(GoRouterRef ref) {
               path: 'editBio/:bio',
               pageBuilder: (context, state) {
                 final bio = state.pathParameters['bio']!;
+                /*
                 if (isIosWeb) {
                   return NoTransitionPage(
                     child: EditBioScreen(
@@ -594,6 +631,7 @@ GoRouter goRouter(GoRouterRef ref) {
                     ),
                   );
                 }
+                */
                 if (isAndOrWin) {
                   return CustomTransitionPage(
                     transitionsBuilder: buildHorizontalSlideTransitiron,
@@ -613,6 +651,7 @@ GoRouter goRouter(GoRouterRef ref) {
               path: 'changeEmail/:email',
               pageBuilder: (context, state) {
                 final email = state.pathParameters['email']!;
+                /*
                 if (isIosWeb) {
                   return NoTransitionPage(
                     child: ChangeEmailScreen(
@@ -620,6 +659,7 @@ GoRouter goRouter(GoRouterRef ref) {
                     ),
                   );
                 }
+                */
                 if (isAndOrWin) {
                   return CustomTransitionPage(
                     transitionsBuilder: buildHorizontalSlideTransitiron,
@@ -638,11 +678,13 @@ GoRouter goRouter(GoRouterRef ref) {
             GoRoute(
               path: 'changePassword',
               pageBuilder: (context, state) {
+                /*
                 if (isIosWeb) {
                   return const NoTransitionPage(
                     child: ChangePasswordScreen(),
                   );
                 }
+                */
                 if (isAndOrWin) {
                   return const CustomTransitionPage(
                     transitionsBuilder: buildHorizontalSlideTransitiron,
@@ -659,6 +701,7 @@ GoRouter goRouter(GoRouterRef ref) {
         path: '/:uid/posts',
         pageBuilder: (context, state) {
           final uid = state.pathParameters['uid']!;
+          /*
           if (isIosWeb) {
             return NoTransitionPage(
               child: ProfilePostsScreen(
@@ -669,6 +712,7 @@ GoRouter goRouter(GoRouterRef ref) {
               ),
             );
           }
+          */
           if (isAndOrWin) {
             return CustomTransitionPage(
               transitionsBuilder: buildHorizontalSlideTransitiron,
@@ -694,11 +738,13 @@ GoRouter goRouter(GoRouterRef ref) {
         path: '/:uid/comments',
         pageBuilder: (context, state) {
           final uid = state.pathParameters['uid']!;
+          /*
           if (isIosWeb) {
             return NoTransitionPage(
               child: ProfileCommentsScreen(uid: uid),
             );
           }
+          */
           if (isAndOrWin) {
             return CustomTransitionPage(
               transitionsBuilder: buildHorizontalSlideTransitiron,
@@ -714,6 +760,7 @@ GoRouter goRouter(GoRouterRef ref) {
         path: '/:uid/likes',
         pageBuilder: (context, state) {
           final uid = state.pathParameters['uid']!;
+          /*
           if (isIosWeb) {
             return NoTransitionPage(
               child: ProfileLikesScreen(
@@ -724,6 +771,7 @@ GoRouter goRouter(GoRouterRef ref) {
               ),
             );
           }
+          */
           if (isAndOrWin) {
             return CustomTransitionPage(
               transitionsBuilder: buildHorizontalSlideTransitiron,
@@ -749,6 +797,7 @@ GoRouter goRouter(GoRouterRef ref) {
         path: '/profile/:uid',
         pageBuilder: (context, state) {
           final uid = state.pathParameters['uid']!;
+          /*
           if (isIosWeb) {
             return NoTransitionPage(
               child: CustomProfileScreen(
@@ -756,6 +805,7 @@ GoRouter goRouter(GoRouterRef ref) {
               ),
             );
           }
+          */
           if (isAndOrWin) {
             return CustomTransitionPage(
               fullscreenDialog: true,
@@ -776,6 +826,7 @@ GoRouter goRouter(GoRouterRef ref) {
         path: '/comment/:commentId/likes',
         pageBuilder: (context, state) {
           final commentId = state.pathParameters['commentId'];
+          /*
           if (isIosWeb) {
             return NoTransitionPage(
               child: LikeUsersScreen(
@@ -785,6 +836,7 @@ GoRouter goRouter(GoRouterRef ref) {
               ),
             );
           }
+          */
           if (isAndOrWin) {
             return CustomTransitionPage(
               fullscreenDialog: true,
@@ -809,6 +861,7 @@ GoRouter goRouter(GoRouterRef ref) {
         path: '/comment/:commentId/dislikes',
         pageBuilder: (context, state) {
           final commentId = state.pathParameters['commentId'];
+          /*
           if (isIosWeb) {
             return NoTransitionPage(
               child: LikeUsersScreen(
@@ -818,6 +871,7 @@ GoRouter goRouter(GoRouterRef ref) {
               ),
             );
           }
+          */
           if (isAndOrWin) {
             return CustomTransitionPage(
               fullscreenDialog: true,
@@ -849,6 +903,7 @@ GoRouter goRouter(GoRouterRef ref) {
           }
 
           final multiImages = state.extra as MultiImages?;
+          /*
           if (isIosWeb) {
             return NoTransitionPage(
               child: FullImageScreen(
@@ -858,6 +913,7 @@ GoRouter goRouter(GoRouterRef ref) {
               ),
             );
           }
+          */
           if (isAndOrWin) {
             return MaterialPage(
               child: FullImageScreen(
@@ -887,6 +943,7 @@ GoRouter goRouter(GoRouterRef ref) {
           }
 
           final controller = state.extra as VideoPlayerController?;
+          /*
           if (isIosWeb) {
             return NoTransitionPage(
               child: FullVideoScreen(
@@ -895,6 +952,7 @@ GoRouter goRouter(GoRouterRef ref) {
               ),
             );
           }
+          */
           if (isAndOrWin) {
             return MaterialPage(
               child: FullVideoScreen(
@@ -914,11 +972,13 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
         path: '/privacy',
         pageBuilder: (context, state) {
+          /*
           if (isIosWeb) {
             return const NoTransitionPage(
               child: AppPrivacyScreen(),
             );
           }
+          */
           if (isAndOrWin) {
             return const CustomTransitionPage(
               transitionsBuilder: buildHorizontalSlideTransitiron,
@@ -933,11 +993,13 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
         path: '/terms',
         pageBuilder: (context, state) {
+          /*
           if (isIosWeb) {
             return const NoTransitionPage(
               child: AppTermsScreen(),
             );
           }
+          */
           if (isAndOrWin) {
             return const CustomTransitionPage(
               transitionsBuilder: buildHorizontalSlideTransitiron,
@@ -954,6 +1016,7 @@ GoRouter goRouter(GoRouterRef ref) {
         pageBuilder: (context, state) {
           final thisYear = DateTime.now().year;
           final legalese = '© $thisYear $appCreator';
+          /*
           if (isIosWeb) {
             return NoTransitionPage(
               child: LicensePage(
@@ -963,6 +1026,7 @@ GoRouter goRouter(GoRouterRef ref) {
               ),
             );
           }
+          */
           if (isAndOrWin) {
             return CustomTransitionPage(
               transitionsBuilder: buildHorizontalSlideTransitiron,
