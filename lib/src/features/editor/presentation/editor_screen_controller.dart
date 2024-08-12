@@ -409,11 +409,14 @@ class EditorScreenController extends _$EditorScreenController {
       // mainImageUrl
       final firstRemoteImage = Regex.remoteImageRegex.firstMatch(newContent);
       final firstWebImage = Regex.webImageRegex.firstMatch(newContent);
+      final firstWebUrlImage = Regex.webImageUrlRegex.firstMatch(newContent);
       final firstYtImage = Regex.ytRegexB.firstMatch(newContent);
       if (firstRemoteImage != null) {
         mainImageUrl = firstRemoteImage[1];
       } else if (firstWebImage != null) {
         mainImageUrl = firstWebImage[1];
+      } else if (firstWebUrlImage != null) {
+        mainImageUrl = firstWebUrlImage[0];
       } else if (firstYtImage != null) {
         /*
         try {
@@ -449,10 +452,13 @@ class EditorScreenController extends _$EditorScreenController {
       // mainVideoUrl
       final firstRemoteVideo = Regex.remoteVideoRegex.firstMatch(newContent);
       final firstWebVideo = Regex.webVideoRegex.firstMatch(newContent);
+      final firstWebUrlVideo = Regex.webVideoUrlRegex.firstMatch(newContent);
       if (firstRemoteVideo != null) {
         mainVideoUrl = firstRemoteVideo[2];
       } else if (firstWebVideo != null) {
         mainVideoUrl = firstWebVideo[2];
+      } else if (firstWebUrlVideo != null) {
+        mainVideoUrl = firstWebUrlVideo[0];
       }
 
       // to shorten cloud storage object url

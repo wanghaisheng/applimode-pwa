@@ -166,6 +166,23 @@ class StringConverter {
             videoImageUrl: Regex.webVideoRegex.firstMatch(split)![1],
           ),
         ));
+      } else if (split.contains(Regex.webImageUrlRegex)) {
+        // web image url
+        elements.add(CachedPaddingImage(
+          imageUrl: split,
+          vPadding: 12,
+          postId: postId,
+          imageUrlsList: imageUrlsList,
+          currentIndex: imageUrlsList.indexOf(split),
+        ));
+      } else if (split.contains(Regex.webVideoUrlRegex)) {
+        // web video url
+        elements.add(Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: PostVideoPlayer(
+            videoUrl: UrlConverter.getIosWebVideoUrl(split),
+          ),
+        ));
       } else {
         // markdown
         elements.add(StringMarkdown(
@@ -192,24 +209,30 @@ class StringConverter {
         .replaceAllMapped(
             Regex.ytRegexB, (match) => '$splitTag${match[0]}$splitTag')
         //.replaceAllMapped(Regex.ytRegexB, (match) => buildYtIf(match[1]!))
-        // local image
+        // local image [locaImage][][]
         .replaceAllMapped(
             Regex.localImageRegex, (match) => '$splitTag${match[0]}$splitTag')
-        // local video
+        // local video [localVideo][][]
         .replaceAllMapped(
             Regex.localVideoRegex, (match) => '$splitTag${match[0]}$splitTag')
-        // remote image
+        // remote image [remoteImage][][]
         .replaceAllMapped(
             Regex.remoteImageRegex, (match) => '$splitTag${match[0]}$splitTag')
-        // remote video
+        // remote video [remoteVideo][][]
         .replaceAllMapped(
             Regex.remoteVideoRegex, (match) => '$splitTag${match[0]}$splitTag')
-        // web image
+        // web image type [image][][]
         .replaceAllMapped(
             Regex.webImageRegex, (match) => '$splitTag${match[0]}$splitTag')
-        // web video
+        // web video type [video][][]
         .replaceAllMapped(
             Regex.webVideoRegex, (match) => '$splitTag${match[0]}$splitTag')
+        // web image url
+        .replaceAllMapped(
+            Regex.webImageUrlRegex, (match) => '$splitTag${match[0]}$splitTag')
+        // web video url
+        .replaceAllMapped(
+            Regex.webVideoUrlRegex, (match) => '$splitTag${match[0]}$splitTag')
         // hashtag
         .replaceAllMapped(Regex.hashtagLinkRegex, (match) => '[${match[0]}]()')
         // get split list

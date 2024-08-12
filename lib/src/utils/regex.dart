@@ -8,12 +8,15 @@ class Regex {
   static RegExp remoteRegex = RegExp(r'''\[.*\]\[(.*)\]\[(.*)\]''');
   static RegExp webImageRegex = RegExp(r'''\[image\]\[(.*)\]\[(.*)\]''');
   static RegExp webVideoRegex = RegExp(r'''\[video\]\[(.*)\]\[(.*)\]''');
-  /*
-  static RegExp webImageRegex = RegExp(
-      r'''(?:https:\/\/)(?:[\/|.|\w|\s|-])*\.(?:jpg|jpeg|gif|png|webp)(\?[^\s[",><]*)?''');
-  static RegExp webVideoRegex =
-      RegExp(r'''(?:https:\/\/)(?:[\/|.|\w|\s|-])*\.(?:mp4)(\?[^\s[",><]*)?''');
-      */
+
+  static RegExp webImageUrlRegex = RegExp(
+    r'''^(?:https:\/\/)(?:[\/|.|\w|\-|\%])*\.(?:jpg|jpeg|gif|png|webp)(\?[^\s[\"\,\>\<]*)?$''',
+    multiLine: true,
+  );
+  static RegExp webVideoUrlRegex = RegExp(
+    r'''^(?:https:\/\/)(?:[\/|.|\w|\-|\%])*\.(?:mp4|webm)(\?[^\s\[\"\,\>\<]*)?$''',
+    multiLine: true,
+  );
 
   static RegExp ytIframeRegex = RegExp(
       r'<iframe(?:\b|_).*?(?:\b|_)src=\"https:\/\/www.youtube.com\/(?:\b|_).*?(?:\b|_)iframe>');
@@ -65,10 +68,4 @@ class Regex {
       RegExp(r'!\[(userUploadVideo.*)\]\((.+)\)');
   static RegExp markDownRemoteVideoRegex =
       RegExp(r'!\[(remoteUploadVideo.*)\]\((.+)\)');
-  static RegExp webImageRegexA = RegExp(
-      r'''(?:https:\/\/)(?:[\/|.|\w|\s|-])*\.(?:jpg|jpeg|gif|png|webp)(\?[^\s[",><]*)?''');
-  static RegExp webImageRegexB = RegExp(
-      r'''(https:\/\/)([^\s(["<,>]*)(\/)[^\s[",><]*(.png|.jpg|.jpeg|.gif|.webp)(\?[^\s[",><]*)?''');
-  static RegExp webVideoRegexA =
-      RegExp(r'''(?:https:\/\/)(?:[\/|.|\w|\s|-])*\.(?:mp4)(\?[^\s[",><]*)?''');
 }
