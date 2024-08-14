@@ -30,10 +30,12 @@ class PostsFabs extends ConsumerWidget {
         ? const PostsFloatingActionButton()
         : isLoading
             ? Center(
-                child: PercentCircularIndicator(
-                  // backgroundColor: Colors.white,
-                  strokeWidth: 8,
-                  percentage: uploadState.percentage,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 28),
+                  child: PercentCircularIndicator(
+                    strokeWidth: 8,
+                    percentage: uploadState.percentage,
+                  ),
                 ),
               )
             : (!adminOnlyWrite && !verifiedOnlyWrite) ||

@@ -10,6 +10,7 @@
 - Added privacy and terms screens.
 - Improved some screen transitions.
 - Added automatic conversion of web image and video URLs when writing a post.
+- Improved upload progress bar.
 - Updated a dependency to the latest release.
 
 ## Version 0.1.3 (July 22, 2024)

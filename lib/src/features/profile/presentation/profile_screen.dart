@@ -209,6 +209,7 @@ class CustomProfileScreen extends ConsumerWidget {
               errorwidget:
                   ErrorMessageButton(errorMessage: context.loc.wrongMessage),
             ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: isLoading
           ? Center(
               child: PercentCircularIndicator(

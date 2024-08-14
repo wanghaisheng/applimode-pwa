@@ -17,11 +17,18 @@ class PercentCircularIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
-    return Padding(
-      padding: const EdgeInsets.only(left: 28),
+    // final primary = Theme.of(context).colorScheme.primary;
+    const defaultColor = Colors.white;
+    // If not centered, padding left 28
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.all(48),
+      decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+          borderRadius: const BorderRadius.all(Radius.circular(24))),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Stack(
             alignment: Alignment.center,
@@ -31,7 +38,7 @@ class PercentCircularIndicator extends StatelessWidget {
                 height: 96,
                 child: CircularProgressIndicator(
                   strokeWidth: strokeWidth,
-                  color: backgroundColor ?? primary,
+                  color: backgroundColor ?? defaultColor,
                   // backgroundColor: backgroundColor,
                 ),
               ),
@@ -39,18 +46,19 @@ class PercentCircularIndicator extends StatelessWidget {
                 '$percentage%',
                 style: TextStyle(
                     fontSize: 16,
-                    color: backgroundColor ?? primary,
+                    color: backgroundColor ?? defaultColor,
                     fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center,
               ),
             ],
           ),
           if (index != null) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: 24),
             Text(
               '${context.loc.uploadingFile} ${index! + 1}',
               textAlign: TextAlign.center,
-              style: TextStyle(color: backgroundColor ?? primary),
+              style: TextStyle(color: backgroundColor ?? defaultColor),
+              overflow: TextOverflow.ellipsis,
             )
           ]
         ],

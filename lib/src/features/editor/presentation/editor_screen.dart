@@ -245,6 +245,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
             ),
           ],
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: isLoading
             ? Center(
                 child: PercentCircularIndicator(
