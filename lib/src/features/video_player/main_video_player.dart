@@ -1,7 +1,4 @@
-import 'package:applimode_app/src/app_settings/app_settings_controller.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/platform_network_image.dart';
-import 'package:applimode_app/src/constants/constants.dart';
-import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/posts/domain/post.dart';
 import 'package:applimode_app/src/features/video_player/video_player_components/video_gesture_detector.dart';
@@ -29,7 +26,8 @@ class MainVideoPlayer extends ConsumerStatefulWidget {
     this.post,
     this.index,
     this.isPage = false,
-    this.showVideoTitle = true,
+    this.showVideoTitle = false,
+    this.isRound = false,
   });
 
   final String videoUrl;
@@ -40,6 +38,7 @@ class MainVideoPlayer extends ConsumerStatefulWidget {
   final int? index;
   final bool isPage;
   final bool showVideoTitle;
+  final bool isRound;
 
   @override
   ConsumerState<MainVideoPlayer> createState() => _MainVideoPlayerState();
@@ -103,8 +102,6 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    final appSetting = ref.watch(appSettingsControllerProvider);
-    final adminSettings = ref.watch(adminSettingsProvider);
     ref.listen(postsItemPlayingStateProvider, (_, next) {
       if (next == false) {
         _controller.pause();
@@ -154,11 +151,16 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
             ),
             */
             if (!isLoading)
-              IconButton(
-                onPressed: _initializeVideo,
-                icon: const Icon(Icons.play_arrow),
-                iconSize: 80,
-                color: Colors.white70,
+              Padding(
+                padding: widget.isRound
+                    ? const EdgeInsets.only(bottom: 64)
+                    : EdgeInsets.zero,
+                child: IconButton(
+                  onPressed: _initializeVideo,
+                  icon: const Icon(Icons.play_arrow),
+                  iconSize: widget.isRound ? 64 : 80,
+                  color: Colors.white70,
+                ),
               ),
             if (isLoading)
               const CupertinoActivityIndicator(
@@ -214,23 +216,32 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
                 alignment: Alignment.center,
                 child: CupertinoActivityIndicator(color: Colors.white),
               ),
-            if (!_controller.value.isPlaying) const VideoPlayerCenterIcon(),
+            if (!_controller.value.isPlaying)
+              VideoPlayerCenterIcon(
+                isRound: widget.isRound,
+              ),
             VideoPlayerGestureDetector(
               controller: _controller,
             ),
             SafeArea(
+              top: widget.isPage ? true : false,
+              bottom: widget.isPage ? true : false,
+              left: widget.isPage ? true : false,
+              right: widget.isPage ? true : false,
               child: VideoVolumeButton(
-                padding: widget.post != null &&
-                        widget.post!.isHeader &&
-                        (adminSettings.showAppStyleOption
-                            ? appSetting.appStyle != 2
-                            : adminSettings.postsListType != PostsListType.page)
-                    ? const EdgeInsets.only(top: 64, left: 8)
-                    : const EdgeInsets.only(top: 12, left: 8),
+                padding: const EdgeInsets.only(top: 8, left: 8),
                 controller: _controller,
               ),
             ),
-            SafeArea(child: VideoProgressBar(controller: _controller)),
+            SafeArea(
+              top: widget.isPage ? true : false,
+              bottom: widget.isPage ? true : false,
+              left: widget.isPage ? true : false,
+              right: widget.isPage ? true : false,
+              child: VideoProgressBar(
+                controller: _controller,
+              ),
+            ),
           ],
           /*
           if (widget.writer != null && widget.post != null)

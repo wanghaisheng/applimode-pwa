@@ -190,7 +190,7 @@ class _PostVideoPlayerState extends State<PostVideoPlayer> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Align(
-                alignment: Alignment.topRight,
+                alignment: Alignment.topLeft,
                 child: IconButton(
                   onPressed: () async {
                     if (kIsWeb) {

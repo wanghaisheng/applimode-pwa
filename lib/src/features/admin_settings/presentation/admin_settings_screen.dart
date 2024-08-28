@@ -614,6 +614,22 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                         },
                         child: Text(context.loc.pageType),
                       ),
+                      MenuItemButton(
+                        onPressed: () {
+                          setState(() {
+                            _postsListType = PostsListType.round;
+                          });
+                        },
+                        child: Text(context.loc.roundCardType),
+                      ),
+                      MenuItemButton(
+                        onPressed: () {
+                          setState(() {
+                            _postsListType = PostsListType.mixed;
+                          });
+                        },
+                        child: Text(context.loc.mixedType),
+                      ),
                     ],
                   ),
                   const Divider(),
@@ -882,8 +898,12 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
         return context.loc.cardType;
       case 2:
         return context.loc.pageType;
+      case 3:
+        return context.loc.roundCardType;
+      case 4:
+        return context.loc.mixedType;
       default:
-        return context.loc.cardType;
+        return context.loc.mixedType;
     }
   }
 

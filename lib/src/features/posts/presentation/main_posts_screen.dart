@@ -54,6 +54,28 @@ class MainPostsScreen extends StatelessWidget {
           drawerEnableOpenDragGesture: false,
           extendBodyBehindAppBar: true,
         );
+      case PostsListType.round:
+        return const Scaffold(
+          appBar: PostsAppBar(),
+          body: MainPostsList(
+            type: PostsListType.round,
+          ),
+          floatingActionButton:
+              useDirectUploadButton ? PostsFabs() : PostsFloatingActionButton(),
+          drawer: PostsDrawer(),
+          drawerEnableOpenDragGesture: false,
+        );
+      case PostsListType.mixed:
+        return const Scaffold(
+          appBar: PostsAppBar(),
+          body: MainPostsList(
+            type: PostsListType.mixed,
+          ),
+          floatingActionButton:
+              useDirectUploadButton ? PostsFabs() : PostsFloatingActionButton(),
+          drawer: PostsDrawer(),
+          drawerEnableOpenDragGesture: false,
+        );
     }
   }
 }

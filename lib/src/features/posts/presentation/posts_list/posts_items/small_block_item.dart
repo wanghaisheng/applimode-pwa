@@ -27,46 +27,50 @@ class SmallBlockItem extends ConsumerWidget {
     final titleTextStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
           fontSize: smallPostsItemTitleSize,
         );
-    return SafeArea(
-      child: InkWell(
-        onTap: (appUser != null &&
-                appUser.isAdmin &&
-                postId != null &&
-                postAndWriter != null)
-            ? () => context.push(
-                  ScreenPaths.post(postId!),
-                  extra: postAndWriter,
-                )
-            : null,
-        child: Column(
-          children: [
-            SizedBox(
-              height: listSmallItemHeight,
+
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final horizontalPadding = screenWidth > pcWidthBreakpoint
+        ? ((screenWidth - pcWidthBreakpoint) / 2) + defaultHorizontalPadding
+        : defaultHorizontalPadding;
+
+    return InkWell(
+      onTap: (appUser != null &&
+              appUser.isAdmin &&
+              postId != null &&
+              postAndWriter != null)
+          ? () => context.push(
+                ScreenPaths.post(postId!),
+                extra: postAndWriter,
+              )
+          : null,
+      child: Column(
+        children: [
+          SizedBox(
+            height: listSmallItemHeight,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
               child: Center(
                 child: Row(
                   children: [
                     Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: TitleTextWidget(
-                          title: context.loc.blockedPost,
-                          textStyle: titleTextStyle,
-                          maxLines: smallPostsItemTitleMaxLines,
-                        ),
+                      child: TitleTextWidget(
+                        title: context.loc.blockedPost,
+                        textStyle: titleTextStyle,
+                        maxLines: smallPostsItemTitleMaxLines,
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-            const Divider(
-              height: 0,
-              thickness: 0,
-              indent: 24,
-              endIndent: 24,
-            ),
-          ],
-        ),
+          ),
+          Divider(
+            height: 0,
+            thickness: 0,
+            indent: horizontalPadding,
+            endIndent: horizontalPadding,
+          ),
+        ],
       ),
     );
   }

@@ -15,7 +15,7 @@ const String firebaseProjectName = 'my-applimode';
 const String appCreator = 'JongsukOh';
 const String appEmail = 'yourEmail@email.com';
 const String appEffectiveDate = '2024-08-06';
-const String appVersion = '0.1.4+1';
+const String appVersion = '0.1.5+1';
 
 // spare values when admin settings is not set
 const String spareHomeBarTitle = 'My Applimode';
@@ -27,8 +27,8 @@ const String spareMainCategory =
 const String spareHomeBarImageUrl = 'assets/images/app-bar-logo.png';
 const bool spareShowAppStyleOption = false;
 // Main screen list view style
-// Select among small, square, page (small, square, page)
-const PostsListType sparePostsListType = PostsListType.square;
+// Select among small, square, page, round, mixed
+const PostsListType sparePostsListType = PostsListType.mixed;
 // Color type of basic post box. single, gradient. basic gradient
 const BoxColorType spareBoxColorType = BoxColorType.gradient;
 // Maximum video file size. Default 50.0 in megabytes
@@ -214,13 +214,9 @@ const bool isMaxResYoutubeThumbnail = false;
 const Duration adminSettingsInterval = Duration(seconds: 60 * 10);
 
 // Changing this will change the maximum width of the content on the web.
-// Only pcWidthBreakpoint was used.
-// 변경하면 웹에서 컨텐츠의 최대너비가 바뀜. pcWidthBreakpoint만 사용했음.
-// default 600.0
-// 기본 600.0
-const double mobileWidthBreakpoint = 600.0;
-// default 840.0
-// 기본 840.0
+// 변경하면 웹에서 컨텐츠의 최대너비가 바뀜.
+// default 720.0
+// 기본 720.0
 const double pcWidthBreakpoint = 720.0;
 
 // Maximum length of username in sub-info. default 18
@@ -247,12 +243,9 @@ const int userDislikeCountColor = 0xFFFF6F68;
 // 사용자 좋아요 싫어요 합계 아이콘 색깔. 기본 0xFF6C88C4
 const int userSumCountColor = 0xFF6C88C4;
 
-// Edit card type (square, page) main screen style
-// 카드타입 (스퀘어, 페이지) 메인 화면 스타일 편집
-
 // Center title text alignment. Specify among start, center, end. default center
 // 센터 타이틀 텍스트 정렬. start, center, end 중 지정. 기본 center
-const TitleTextAlign titleTextAlign = TitleTextAlign.center;
+const TitleTextAlign basicPostsItemtitleTextAlign = TitleTextAlign.center;
 // Maximum number of lines in the center title. basic 2
 // 센터 타이틀 최대 줄수. 기본 2
 const int basicPostsItemMiddleTitleMaxLines = 2;
@@ -279,10 +272,35 @@ const double basicPostsItemSubInfoSize = 14.0;
 const int basicPostsItemButtonColor = 0xFFFFFFFF;
 // Side button size. default 28.0
 // 사이드 버튼 크기. 기본 28.0
-const double basicPostsItemButtonSize = 28.0;
+const double basicPostsItemButtonSize = 20.0;
 // Side button count font size. default 14.0
 // 사이드 버튼 카운트 글자 크기. 기본 14.0
 const double basicPostsItemButtonFontSize = 14.0;
+
+// Center title text alignment. Specify among start, center, end. default center
+// 센터 타이틀 텍스트 정렬. start, center, end 중 지정. 기본 center
+const TitleTextAlign roundPostsItemtitleTextAlign = TitleTextAlign.center;
+// Maximum number of lines in the center title. basic 1
+// 센터 타이틀 최대 줄수. 기본 1
+const int roundPostsItemMiddleTitleMaxLines = 1;
+// Maximum number of lines in the bottom title. basic 1
+// 하단 타이틀 최대 줄수. 기본 1
+const int roundPostsItemBottomTitleMaxLines = 1;
+// Maximum number of lines in video content title. default 1
+// 비디오 컨텐츠 타이틀 최대 줄수. 기본 1
+const int roundPostsItemVideoTitleMaxLines = 1;
+// Title text size. default 16.0
+// 타이틀 텍스트 크기. 기본 16.0
+const double roundPostsItemTitleFontsize = 16.0;
+// Profile image size. default 40.0
+// 프로필 이미지 크기. 기본 40.0
+const double roundPostsItemProfileSize = 40.0;
+// Username font size. default 16.0
+// 사용자 이름 크기. 기본 16.0
+const double roundPostsItemNameSize = 16.0;
+// Sub-info size. default 12.0
+// 서브 인포 크기. 기본 12.0
+const double roundPostsItemSubInfoSize = 12.0;
 
 // Edit list type (small) main screen style
 // 리스트타입 (스몰) 메인 화면 스타일 편집
@@ -357,6 +375,16 @@ const double defaultHorizontalPadding = 16.0;
 //default 12.0
 // 메인 화면의 카드 아이템 하단 패딩. 0.0 일 경우 여백 없음. 기본 12.0
 const double cardBottomPadding = 12.0;
+
+//Padding of the round card item.
+//default 16.0
+// 둥근 카드 아이템 패딩. 기본 16.0
+const double roundCardPadding = 16.0;
+
+// size of the icons of the post screen bottom bar.
+// default 20.0
+// 포스트 화면 하단 바 아이콘 사이즈. 기본 20.0
+const double postScreenBottomBarIconSize = 20.0;
 
 // How long the full screen video player overlay (like the play button) stays on
 // default 4

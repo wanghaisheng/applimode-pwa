@@ -18,6 +18,13 @@ double getMaxWidth(
     return maxWidth;
   }
 
+  if (postsListType == PostsListType.round) {
+    final maxWidth = mediaWidth > breakPoint
+        ? breakPoint - (2 * roundCardPadding) - (2 * padding) - extraPadding
+        : mediaWidth - (2 * roundCardPadding) - (2 * padding) - extraPadding;
+    return maxWidth;
+  }
+
   final maxWidth = mediaWidth > breakPoint
       ? (mediaWidth - 2 * padding - extraPadding) / 2
       : mediaWidth - 2 * padding - extraPadding;

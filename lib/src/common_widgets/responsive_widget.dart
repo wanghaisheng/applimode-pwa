@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class ResponsiveSizedBox extends StatelessWidget {
   const ResponsiveSizedBox({
     super.key,
-    this.maxContentWidth = mobileWidthBreakpoint,
+    this.maxContentWidth = pcWidthBreakpoint,
     this.padding = const EdgeInsets.all(16),
     required this.child,
   });
@@ -28,7 +28,7 @@ class ResponsiveSizedBox extends StatelessWidget {
 class ResponsiveScrollView extends StatelessWidget {
   const ResponsiveScrollView({
     super.key,
-    this.maxContentWidth = mobileWidthBreakpoint,
+    this.maxContentWidth = pcWidthBreakpoint,
     this.padding = const EdgeInsets.all(16),
     required this.child,
   });
@@ -52,7 +52,7 @@ class ResponsiveScrollView extends StatelessWidget {
 class ResponsiveCenterScrollView extends StatelessWidget {
   const ResponsiveCenterScrollView({
     super.key,
-    this.maxContentWidth = mobileWidthBreakpoint,
+    this.maxContentWidth = pcWidthBreakpoint,
     this.padding = const EdgeInsets.all(16),
     required this.child,
   });
@@ -76,7 +76,7 @@ class ResponsiveCenterScrollView extends StatelessWidget {
 class ResponsiveCenter extends StatelessWidget {
   const ResponsiveCenter({
     super.key,
-    this.maxContentWidth = mobileWidthBreakpoint,
+    this.maxContentWidth = pcWidthBreakpoint,
     this.padding = const EdgeInsets.all(16),
     required this.child,
   });
@@ -99,7 +99,7 @@ class ResponsiveCenter extends StatelessWidget {
 class ResponsiveSliverCenter extends StatelessWidget {
   const ResponsiveSliverCenter({
     super.key,
-    this.maxContentWidth = mobileWidthBreakpoint,
+    this.maxContentWidth = pcWidthBreakpoint,
     this.padding = const EdgeInsets.all(16),
     required this.child,
   });

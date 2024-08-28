@@ -54,8 +54,8 @@ class _PostCommentLikeButtonState extends ConsumerState<PostCommentLikeButton> {
 
     return Row(
       children: [
-        IconButton(
-          onPressed: userCommentLikes == null || postCommentState.isLoading
+        InkWell(
+          onTap: userCommentLikes == null || postCommentState.isLoading
               ? null
               : userCommentLikes!.isEmpty
                   ? () async {
@@ -76,16 +76,20 @@ class _PostCommentLikeButtonState extends ConsumerState<PostCommentLikeButton> {
                         commentWriterId: widget.comment.uid,
                       );
                     },
-          icon: Icon(
-            userCommentLikes == null || userCommentLikes!.isEmpty
-                ? widget.isHeart
-                    ? Icons.favorite_outline_rounded
-                    : Icons.thumb_up_outlined
-                : widget.isHeart
-                    ? Icons.favorite_rounded
-                    : Icons.thumb_up,
-            color: mainColor,
-            size: 20,
+          child: Padding(
+            padding:
+                const EdgeInsets.only(top: 8, bottom: 8, left: 2, right: 4),
+            child: Icon(
+              userCommentLikes == null || userCommentLikes!.isEmpty
+                  ? widget.isHeart
+                      ? Icons.favorite_outline_rounded
+                      : Icons.thumb_up_outlined
+                  : widget.isHeart
+                      ? Icons.favorite_rounded
+                      : Icons.thumb_up,
+              color: mainColor,
+              size: 18,
+            ),
           ),
         ),
         InkWell(
@@ -93,10 +97,11 @@ class _PostCommentLikeButtonState extends ConsumerState<PostCommentLikeButton> {
             context.push(ScreenPaths.commentLikes(widget.comment.id));
           },
           child: Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding:
+                const EdgeInsets.only(top: 8, bottom: 8, left: 2, right: 16),
             child: Text(
               Format.formatNumber(context, widget.likeCount),
-              style: textTheme.bodyLarge?.copyWith(color: mainColor),
+              style: textTheme.bodyMedium?.copyWith(color: mainColor),
             ),
           ),
         ),

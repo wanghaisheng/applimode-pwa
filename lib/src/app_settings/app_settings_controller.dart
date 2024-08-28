@@ -1,3 +1,4 @@
+import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -19,7 +20,8 @@ class AppSettingsController extends _$AppSettingsController {
         Color(sharedPreferences.getInt('appColor') ?? Colors.orange.value);
     final appLocaleString = sharedPreferences.getString('appLocale');
     final appLocale = appLocaleString == null ? null : Locale(appLocaleString);
-    final appStyle = sharedPreferences.getInt('appStyle') ?? 1;
+    final appStyle =
+        sharedPreferences.getInt('appStyle') ?? sparePostsListType.index;
 
     return AppSettings(
       appThemeMode: appThemeMode,
@@ -83,7 +85,8 @@ class AppSettingsController extends _$AppSettingsController {
   Future<void> setAppStyle(PostsListType postsListType) async {
     final sharedPreferences = ref.read(sharedPreferencesProvider);
     await sharedPreferences.setInt('appStyle', postsListType.index);
-    final appStyle = sharedPreferences.getInt('appStyle') ?? 1;
+    final appStyle =
+        sharedPreferences.getInt('appStyle') ?? sparePostsListType.index;
 
     state = AppSettings(
       appThemeMode: state.appThemeMode,

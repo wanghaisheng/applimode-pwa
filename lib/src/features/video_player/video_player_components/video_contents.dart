@@ -44,6 +44,10 @@ class VideoContents extends ConsumerWidget {
       bottom: 24,
       left: 16,
       child: SafeArea(
+        top: false,
+        bottom: isPage ? true : false,
+        left: isPage ? true : false,
+        right: isPage ? true : false,
         child: InkWell(
           onTap: () {
             controller.pause();

@@ -10,14 +10,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class BasicBlockItem extends ConsumerWidget {
-  const BasicBlockItem({
+class RoundBlockItem extends ConsumerWidget {
+  const RoundBlockItem({
     super.key,
     this.aspectRatio,
     this.isPage = false,
     this.index,
     this.postId,
     this.postAndWriter,
+    this.needTopMargin = false,
+    this.needBottomMargin = true,
   });
 
   final double? aspectRatio;
@@ -25,6 +27,8 @@ class BasicBlockItem extends ConsumerWidget {
   final int? index;
   final String? postId;
   final PostAndWriter? postAndWriter;
+  final bool needTopMargin;
+  final bool needBottomMargin;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,9 +37,12 @@ class BasicBlockItem extends ConsumerWidget {
         user != null ? ref.watch(appUserFutureProvider(user.uid)).value : null;
     final postTitleStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(
           color: Colors.white,
-          fontSize: basicPostsItemTitleFontsize,
+          fontSize: roundPostsItemTitleFontsize,
         );
     final screenWidth = MediaQuery.sizeOf(context).width;
+    final horizontalMargin = screenWidth > pcWidthBreakpoint
+        ? ((screenWidth - pcWidthBreakpoint) / 2) + roundCardPadding
+        : roundCardPadding;
 
     return InkWell(
       onTap: (appUser != null &&
@@ -47,29 +54,33 @@ class BasicBlockItem extends ConsumerWidget {
                 extra: postAndWriter,
               )
           : null,
-      child: Column(
-        children: [
-          AspectRatio(
-            aspectRatio: aspectRatio ?? 1.0,
-            child: GradientColorBox(
-              index: index,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 64),
-                child: SafeArea(
-                  top: false,
-                  bottom: false,
-                  child: TitleTextWidget(
-                    title: context.loc.blockedPost,
-                    textStyle: postTitleStyle,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+      child: Container(
+        margin: EdgeInsets.only(
+          left: horizontalMargin,
+          right: horizontalMargin,
+          top: needTopMargin ? roundCardPadding : 0,
+          bottom: needBottomMargin ? roundCardPadding : 0,
+        ),
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(
+            Radius.circular(24),
+          ),
+        ),
+        clipBehavior: Clip.hardEdge,
+        child: AspectRatio(
+          aspectRatio: aspectRatio ?? 16 / 9,
+          child: GradientColorBox(
+            index: index,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 64),
+              child: TitleTextWidget(
+                title: context.loc.blockedPost,
+                textStyle: postTitleStyle,
+                textAlign: TextAlign.center,
               ),
             ),
           ),
-          if (!isPage && screenWidth <= pcWidthBreakpoint)
-            const SizedBox(height: cardBottomPadding),
-        ],
+        ),
       ),
     );
   }

@@ -49,6 +49,18 @@ class AppStyleButton extends ConsumerWidget {
           },
           child: Text(context.loc.pageType),
         ),
+        MenuItemButton(
+          onPressed: () {
+            appStyleController.setAppStyle(PostsListType.round);
+          },
+          child: Text(context.loc.roundCardType),
+        ),
+        MenuItemButton(
+          onPressed: () {
+            appStyleController.setAppStyle(PostsListType.mixed);
+          },
+          child: Text(context.loc.mixedType),
+        ),
       ],
     );
   }
@@ -61,8 +73,12 @@ class AppStyleButton extends ConsumerWidget {
         return context.loc.cardType;
       case 2:
         return context.loc.pageType;
+      case 3:
+        return context.loc.roundCardType;
+      case 4:
+        return context.loc.mixedType;
       default:
-        return context.loc.cardType;
+        return context.loc.mixedType;
     }
   }
 }

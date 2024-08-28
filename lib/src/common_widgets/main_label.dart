@@ -10,6 +10,9 @@ class MainLabel extends StatelessWidget {
     this.bottom,
     this.containerColor,
     this.labelColor,
+    this.horizontalPadidng,
+    this.verticalPadding,
+    this.textStyle,
   });
 
   final double? left;
@@ -18,6 +21,9 @@ class MainLabel extends StatelessWidget {
   final double? bottom;
   final Color? containerColor;
   final Color? labelColor;
+  final double? horizontalPadidng;
+  final double? verticalPadding;
+  final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +34,17 @@ class MainLabel extends StatelessWidget {
       right: right,
       bottom: bottom,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+        padding: EdgeInsets.symmetric(
+          horizontal: horizontalPadidng ?? 24,
+          vertical: verticalPadding ?? 8,
+        ),
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(64)),
           color: containerColor ?? theme.colorScheme.primaryContainer,
         ),
         child: Text(
           context.loc.mainLabel,
-          style: theme.textTheme.titleSmall,
+          style: textStyle ?? theme.textTheme.titleSmall,
         ),
       ),
     );

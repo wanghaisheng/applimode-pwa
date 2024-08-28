@@ -88,16 +88,23 @@ class PostLikeButton extends ConsumerWidget {
                           postId: postId,
                           postWriterId: postWriterId,
                         ),
-            child: Icon(
-              userPostLikes == null || userPostLikes.isEmpty
-                  ? isHeart
-                      ? Icons.favorite_outline_rounded
-                      : Icons.thumb_up_alt_outlined
-                  : isHeart
-                      ? Icons.favorite_rounded
-                      : Icons.thumb_up,
-              color: iconColor ?? Theme.of(context).colorScheme.secondary,
-              size: iconSize,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: const BoxDecoration(
+                color: Colors.white24,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                userPostLikes == null || userPostLikes.isEmpty
+                    ? isHeart
+                        ? Icons.favorite_outline_rounded
+                        : Icons.thumb_up_alt_outlined
+                    : isHeart
+                        ? Icons.favorite_rounded
+                        : Icons.thumb_up,
+                color: iconColor ?? Theme.of(context).colorScheme.secondary,
+                size: iconSize,
+              ),
             ),
           );
   }

@@ -1,3 +1,4 @@
+import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/common_widgets/buttons/post_comment_button.dart';
 import 'package:applimode_app/src/common_widgets/buttons/post_dislike_button.dart';
 import 'package:applimode_app/src/common_widgets/buttons/post_like_button.dart';
@@ -61,7 +62,7 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final mainColor = colorScheme.secondary;
-    final countTextStyle = textTheme.bodyLarge?.copyWith(color: mainColor);
+    final countTextStyle = textTheme.bodyMedium?.copyWith(color: mainColor);
 
     final adminSettings = ref.watch(adminSettingsProvider);
 
@@ -90,7 +91,7 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
         }
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         color: colorScheme.onInverseSurface,
         // height: 96,
         child: SafeArea(
@@ -102,12 +103,13 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
                   postWriterId: currentPost.uid,
                   isHeart: adminSettings.isThumbUpToHeart,
                   postWriter: widget.postWriter,
+                  iconSize: postScreenBottomBarIconSize,
                 ),
                 InkWell(
                   onTap: () =>
                       context.push(ScreenPaths.postLikes(currentPost.id)),
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 4, right: 16),
+                    padding: const EdgeInsets.only(left: 2, right: 16),
                     child: Text(
                       Format.formatNumber(context, currentPost.likeCount),
                       style: countTextStyle,
@@ -119,12 +121,13 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
                 PostDislikeButton(
                   postId: currentPost.id,
                   postWriterId: currentPost.uid,
+                  iconSize: postScreenBottomBarIconSize,
                 ),
                 InkWell(
                   onTap: () =>
                       context.push(ScreenPaths.postDislikes(currentPost.id)),
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 4, right: 16),
+                    padding: const EdgeInsets.only(left: 2, right: 16),
                     child: Text(
                       Format.formatNumber(context, currentPost.dislikeCount),
                       style: countTextStyle,
@@ -133,9 +136,11 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
                 ),
               ],
               if (adminSettings.showSumCount) ...[
-                const PostSumButton(),
+                const PostSumButton(
+                  iconSize: postScreenBottomBarIconSize,
+                ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 4, right: 16),
+                  padding: const EdgeInsets.only(left: 2, right: 16),
                   child: Text(
                     Format.formatNumber(context, currentPost.sumCount),
                     style: countTextStyle,
@@ -146,6 +151,7 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
                 PostCommentButton(
                   postId: currentPost.id,
                   postWriter: widget.postWriter,
+                  iconSize: postScreenBottomBarIconSize,
                 ),
                 InkWell(
                   onTap: () => context.push(
@@ -153,7 +159,7 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
                     extra: widget.postWriter,
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 4, right: 16),
+                    padding: const EdgeInsets.only(left: 2, right: 16),
                     child: Text(
                       Format.formatNumber(
                           context, currentPost.postCommentCount),
@@ -175,6 +181,7 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
                 Icon(
                   Icons.unfold_more_outlined,
                   color: mainColor,
+                  size: postScreenBottomBarIconSize,
                 ),
               ],
             ],

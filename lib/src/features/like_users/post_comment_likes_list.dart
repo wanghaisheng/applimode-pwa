@@ -23,9 +23,12 @@ class PostCommentLikesList extends ConsumerWidget {
     final postCommentLikesQuery = ref.watch(postCommentLikesQueryProvider(
         commentId: postCommentId, isDislike: isDislike));
     return SafeArea(
+      top: false,
+      bottom: false,
       child: SimplePageListView(
         query: postCommentLikesQuery,
         listState: likesListStateProvider,
+        isNoGridView: true,
         itemBuilder: (context, index, doc) {
           final postCommentLike = doc.data();
           final likeUser = ref.watch(writerFutureProvider(postCommentLike.uid));

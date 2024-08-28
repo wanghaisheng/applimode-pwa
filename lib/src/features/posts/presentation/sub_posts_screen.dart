@@ -1,4 +1,5 @@
 import 'package:applimode_app/src/constants/constants.dart';
+import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/round_posts_item.dart';
 import 'package:flutter/foundation.dart';
 import 'package:applimode_app/src/common_widgets/simple_page_list_view.dart';
 import 'package:applimode_app/src/common_widgets/web_back_button.dart';
@@ -30,6 +31,11 @@ class SubPostsScreen extends ConsumerWidget {
     final updatedPostQuery = ref.watch(postsRepositoryProvider).postsRef();
     final resetUpdatedDocIds =
         ref.watch(updatedPostIdsListProvider.notifier).removeAll;
+
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final horizontalMargin = screenWidth > pcWidthBreakpoint
+        ? ((screenWidth - pcWidthBreakpoint) / 2) + roundCardPadding
+        : roundCardPadding;
 
     switch (type) {
       case PostsListType.small:
@@ -66,11 +72,6 @@ class SubPostsScreen extends ConsumerWidget {
             query: query,
             listState: postsListStateProvider,
             itemExtent: MediaQuery.sizeOf(context).width + cardBottomPadding,
-            /*
-                kIsWeb && MediaQuery.sizeOf(context).width > pcWidthBreakpoint
-                    ? pcWidthBreakpoint + cardBottomPadding
-                    : MediaQuery.sizeOf(context).width + cardBottomPadding,
-                    */
             itemBuilder: (context, index, doc) {
               final post = doc.data();
               return BasicPostsItem(
@@ -109,6 +110,64 @@ class SubPostsScreen extends ConsumerWidget {
                 isPage: true,
                 // isTappable: false,
                 showMainLabel: false,
+              );
+            },
+            refreshUpdatedDocs: true,
+            updatedDocQuery: updatedPostQuery,
+            resetUpdatedDocIds: resetUpdatedDocIds,
+            updatedDocsState: updatedPostIdsListProvider,
+          ),
+        );
+      case PostsListType.round:
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(appBarTitle ?? ''),
+            automaticallyImplyLeading: kIsWeb ? false : true,
+            leading: kIsWeb ? const WebBackButton() : null,
+          ),
+          body: SimplePageListView(
+            query: query,
+            listState: postsListStateProvider,
+            itemExtent: ((screenWidth - (2 * horizontalMargin)) * 9 / 16) +
+                roundCardPadding,
+            itemBuilder: (context, index, doc) {
+              final post = doc.data();
+              return RoundPostsItem(
+                post: post,
+                index: index,
+              );
+            },
+            refreshUpdatedDocs: true,
+            updatedDocQuery: updatedPostQuery,
+            resetUpdatedDocIds: resetUpdatedDocIds,
+            updatedDocsState: updatedPostIdsListProvider,
+          ),
+        );
+      case PostsListType.mixed:
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(appBarTitle ?? ''),
+            automaticallyImplyLeading: kIsWeb ? false : true,
+            leading: kIsWeb ? const WebBackButton() : null,
+          ),
+          body: SimplePageListView(
+            query: query,
+            listState: postsListStateProvider,
+            padding: const EdgeInsets.only(bottom: roundCardPadding),
+            itemBuilder: (context, index, doc) {
+              final post = doc.data();
+              if (post.mainVideoUrl != null ||
+                  (post.mainImageUrl != null && post.title.trim().isEmpty)) {
+                return RoundPostsItem(
+                  post: post,
+                  index: index,
+                  needTopMargin: index == 0 ? false : true,
+                  needBottomMargin: false,
+                );
+              }
+              return SmallPostsItem(
+                post: post,
+                index: index,
               );
             },
             refreshUpdatedDocs: true,

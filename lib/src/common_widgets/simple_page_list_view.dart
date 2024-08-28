@@ -339,6 +339,9 @@ class _SimplePageListViewState<Document>
     // when doc is empty
     if (docs.isEmpty) {
       if (widget.emptyBuilder != null) {
+        if (isPermissionDenied) {
+          return Text(context.loc.needPermission);
+        }
         return widget.emptyBuilder!.call(context);
       }
 

@@ -19,17 +19,21 @@ class PostCommentReplyButton extends StatelessWidget {
 
     return Row(
       children: [
-        IconButton(
-          onPressed: () => context.push(
+        InkWell(
+          onTap: () => context.push(
             ScreenPaths.replies(
               comment.postId,
               comment.parentCommentId,
             ),
           ),
-          icon: Icon(
-            Icons.mode_comment_outlined,
-            color: mainColor,
-            size: 20,
+          child: Padding(
+            padding:
+                const EdgeInsets.only(top: 8, bottom: 8, left: 2, right: 4),
+            child: Icon(
+              Icons.mode_comment_outlined,
+              color: mainColor,
+              size: 18,
+            ),
           ),
         ),
         InkWell(
@@ -40,10 +44,11 @@ class PostCommentReplyButton extends StatelessWidget {
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding:
+                const EdgeInsets.only(top: 8, bottom: 8, left: 2, right: 16),
             child: Text(
               Format.formatNumber(context, comment.replyCount),
-              style: textTheme.bodyLarge?.copyWith(color: mainColor),
+              style: textTheme.bodyMedium?.copyWith(color: mainColor),
             ),
           ),
         )

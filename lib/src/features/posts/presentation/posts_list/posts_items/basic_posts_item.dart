@@ -1,4 +1,3 @@
-import 'package:applimode_app/src/app_settings/app_settings_controller.dart';
 import 'package:applimode_app/src/common_widgets/gradient_color_box.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/platform_network_image.dart';
 import 'package:applimode_app/src/common_widgets/main_label.dart';
@@ -36,7 +35,7 @@ class BasicPostsItem extends ConsumerWidget {
     this.isPage = false,
     this.isTappable = true,
     this.showMainLabel = true,
-    this.showVideoTitle = true,
+    this.showVideoTitle = false,
   });
 
   final Post post;
@@ -52,7 +51,6 @@ class BasicPostsItem extends ConsumerWidget {
     // debugInvertOversizedImages = true;
 
     final writerAsync = ref.watch(writerFutureProvider(post.uid));
-    final appSettings = ref.watch(appSettingsControllerProvider);
     final adminSettings = ref.watch(adminSettingsProvider);
     final mainImageUrl = post.mainImageUrl;
     final mainVideoUrl = post.mainVideoUrl;
@@ -151,12 +149,15 @@ class BasicPostsItem extends ConsumerWidget {
                                   : Padding(
                                       padding: const EdgeInsets.all(64.0),
                                       child: SafeArea(
+                                        top: false,
+                                        bottom: false,
                                         child: TitleTextWidget(
                                           title: post.title,
                                           textStyle: postTitleStyle,
                                           maxLines:
                                               basicPostsItemMiddleTitleMaxLines,
-                                          textAlign: switch (titleTextAlign) {
+                                          textAlign: switch (
+                                              basicPostsItemtitleTextAlign) {
                                             TitleTextAlign.start =>
                                               TextAlign.start,
                                             TitleTextAlign.center =>
@@ -188,6 +189,10 @@ class BasicPostsItem extends ConsumerWidget {
                         left: 16,
                         bottom: 24,
                         child: SafeArea(
+                          top: false,
+                          bottom: isPage ? true : false,
+                          left: isPage ? true : false,
+                          right: isPage ? true : false,
                           child: InkWell(
                             onTap: () {
                               ref
@@ -271,21 +276,10 @@ class BasicPostsItem extends ConsumerWidget {
                         ),
                       ),
                     ],
-                    if (isContent &&
-                        (adminSettings.showAppStyleOption
-                            ? appSettings.appStyle == 2
-                            : adminSettings.postsListType ==
-                                PostsListType.page))
+                    if (isContent && isPage)
                       Positioned(
                         right: 16,
-                        bottom: MediaQuery.of(context).orientation ==
-                                Orientation.portrait
-                            ? useDirectUploadButton
-                                ? 160
-                                : 120
-                            : useDirectUploadButton
-                                ? 160
-                                : 80,
+                        bottom: useDirectUploadButton ? 160 : 96,
                         child: SafeArea(
                           child: PageItemButtons(
                             post: post,

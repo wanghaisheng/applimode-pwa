@@ -153,6 +153,8 @@ enum PostsListType {
   small,
   square,
   page,
+  round,
+  mixed,
 }
 
 enum BoxColorType {

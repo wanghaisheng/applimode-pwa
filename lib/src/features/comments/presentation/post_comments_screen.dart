@@ -4,6 +4,7 @@ import 'package:applimode_app/src/features/comments/presentation/post_comment_co
 import 'package:applimode_app/src/features/comments/presentation/post_comments_list_with_fs.dart';
 import 'package:applimode_app/src/features/comments/presentation/post_comments_screen_app_bar.dart';
 import 'package:applimode_app/src/features/comments/presentation/post_comments_screen_bottom_bar.dart';
+import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -30,9 +31,12 @@ class PostCommentsScreen extends ConsumerWidget {
         children: [
           Expanded(
             child: SafeArea(
+              top: false,
+              bottom: false,
               child: PostCommentsListWithFS(
                 postId: postId,
                 parentCommentId: parentCommentId,
+                emptyString: context.loc.startFirstComment,
               ),
             ),
           ),

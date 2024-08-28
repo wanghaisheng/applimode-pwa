@@ -46,87 +46,86 @@ class SmallPostsItem extends ConsumerWidget {
     final mainMediaUrl = post.mainImageUrl ?? post.mainVideoImageUrl;
     final mainCategory = ref.watch(adminSettingsProvider).mainCategory;
 
-    return ResponsiveCenter(
-      maxContentWidth: pcWidthBreakpoint,
-      padding: EdgeInsets.zero,
-      child: AsyncValueWidget(
-        value: writerAsync,
-        data: (writer) {
-          // debugPrint('SmallPostsItem build $index');
-          if (writer == null) {
-            return const SmallBlockItem();
-          }
-          if (writer.isBlock || post.isBlock) {
-            return SmallBlockItem(
-              postId: post.id,
-              postAndWriter: PostAndWriter(post: post, writer: writer),
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final horizontalPadding = screenWidth > pcWidthBreakpoint
+        ? ((screenWidth - pcWidthBreakpoint) / 2) + defaultHorizontalPadding
+        : defaultHorizontalPadding;
+
+    return AsyncValueWidget(
+      value: writerAsync,
+      data: (writer) {
+        // debugPrint('SmallPostsItem build $index');
+        if (writer == null) {
+          return const SmallBlockItem();
+        }
+        if (writer.isBlock || post.isBlock) {
+          return SmallBlockItem(
+            postId: post.id,
+            postAndWriter: PostAndWriter(post: post, writer: writer),
+          );
+        }
+        return InkWell(
+          onTap: () {
+            context.push(
+              ScreenPaths.post(post.id),
+              extra: PostAndWriter(post: post, writer: writer),
             );
-          }
-          return InkWell(
-            onTap: () {
-              context.push(
-                ScreenPaths.post(post.id),
-                extra: PostAndWriter(post: post, writer: writer),
-              );
-            },
-            child: SafeArea(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: listSmallItemHeight,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Center(
-                        child: Row(
-                          children: [
-                            if (mainMediaUrl != null &&
-                                mainMediaUrl.isNotEmpty) ...[
-                              CachedBorderImage(
-                                imgUrl: mainMediaUrl,
-                                index: index,
-                              ),
-                              const SizedBox(width: 12),
-                            ],
-                            Expanded(
-                              child: SmallPostsItemContents(
-                                post: post,
-                                writer: writer,
-                                mainCategory: mainCategory,
-                                isRankingPage: isRankingPage,
-                                isLikeRanking: isLikeRanking,
-                                isDislikeRanking: isDislikeRanking,
-                                isSumRanking: isSumRanking,
-                                index: index,
-                              ),
-                            ),
-                          ],
+          },
+          child: Column(
+            children: [
+              SizedBox(
+                height: listSmallItemHeight,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                  child: Center(
+                    child: Row(
+                      children: [
+                        if (mainMediaUrl != null &&
+                            mainMediaUrl.isNotEmpty) ...[
+                          CachedBorderImage(
+                            imgUrl: mainMediaUrl,
+                            index: index,
+                          ),
+                          const SizedBox(width: 12),
+                        ],
+                        Expanded(
+                          child: SmallPostsItemContents(
+                            post: post,
+                            writer: writer,
+                            mainCategory: mainCategory,
+                            isRankingPage: isRankingPage,
+                            isLikeRanking: isLikeRanking,
+                            isDislikeRanking: isDislikeRanking,
+                            isSumRanking: isSumRanking,
+                            index: index,
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                  const Divider(
-                    height: 0,
-                    thickness: 0,
-                    indent: 24,
-                    endIndent: 24,
-                  ),
-                  // 너무 진할 경우 사용
-                  /*
+                ),
+              ),
               Divider(
                 height: 0,
                 thickness: 0,
-                indent: 24,
-                endIndent: 24,
-                color: Theme.of(context).dividerColor.withOpacity(0.2),
-              )
-              */
-                ],
+                indent: horizontalPadding,
+                endIndent: horizontalPadding,
               ),
-            ),
-          );
-        },
-        loadingWidget: const SizedBox(height: listSmallItemHeight),
-      ),
+              // 너무 진할 경우 사용
+              /*
+          Divider(
+            height: 0,
+            thickness: 0,
+            indent: 24,
+            endIndent: 24,
+            color: Theme.of(context).dividerColor.withOpacity(0.2),
+          )
+          */
+            ],
+          ),
+        );
+      },
+      loadingWidget: const SizedBox(height: listSmallItemHeight),
     );
   }
 }

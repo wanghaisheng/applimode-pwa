@@ -1,4 +1,6 @@
+import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/constants/constants.dart';
+import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/round_posts_item.dart';
 import 'package:flutter/foundation.dart';
 import 'package:applimode_app/src/common_widgets/async_value_widgets/async_value_widget.dart';
 import 'package:applimode_app/src/common_widgets/simple_page_list_view.dart';
@@ -25,7 +27,15 @@ class ProfileLikesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isPage = type == PostsListType.page;
-    final isSquare = type == PostsListType.square;
+    final isSmall = type == PostsListType.small;
+    final isRound = type == PostsListType.round;
+    final isMixed = type == PostsListType.mixed;
+
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final horizontalMargin = screenWidth > pcWidthBreakpoint
+        ? ((screenWidth - pcWidthBreakpoint) / 2) + roundCardPadding
+        : roundCardPadding;
+
     return Scaffold(
       extendBodyBehindAppBar: isPage ? true : false,
       backgroundColor: isPage ? Colors.black : null,
@@ -42,60 +52,107 @@ class ProfileLikesScreen extends StatelessWidget {
           final query =
               ref.watch(postLikesQueryProvider(uid: uid, isDislike: false));
 
-          return isPage
-              ? SimplePageListView(
-                  query: query,
-                  isPage: true,
-                  listState: postsListStateProvider,
-                  itemBuilder: (context, index, doc) {
-                    final postLike = doc.data();
-                    final postAsync =
-                        ref.watch(postFutureProvider(postLike.postId));
-                    return AsyncValueWidget(
-                      value: postAsync,
-                      data: (post) {
-                        if (post == null) {
-                          return const SizedBox.shrink();
-                        }
-                        return BasicPostsItem(
+          switch (type) {
+            case PostsListType.page:
+              return SimplePageListView(
+                query: query,
+                isPage: true,
+                listState: postsListStateProvider,
+                itemBuilder: (context, index, doc) {
+                  final postLike = doc.data();
+                  final postAsync =
+                      ref.watch(postFutureProvider(postLike.postId));
+                  return AsyncValueWidget(
+                    value: postAsync,
+                    data: (post) {
+                      if (post == null) {
+                        return const SizedBox.shrink();
+                      }
+                      return BasicPostsItem(
+                        post: post,
+                        index: index,
+                        aspectRatio: MediaQuery.sizeOf(context).aspectRatio,
+                        isPage: true,
+                        // isTappable: false,
+                        showMainLabel: false,
+                      );
+                    },
+                  );
+                },
+              );
+            case PostsListType.square ||
+                  PostsListType.small ||
+                  PostsListType.round ||
+                  PostsListType.mixed:
+              return SimplePageListView(
+                query: query,
+                listState: postsListStateProvider,
+                itemExtent: switch (type) {
+                  PostsListType.page => null,
+                  PostsListType.small => listSmallItemHeight,
+                  PostsListType.square =>
+                    MediaQuery.sizeOf(context).width + cardBottomPadding,
+                  PostsListType.round =>
+                    ((screenWidth - (2 * horizontalMargin)) * 9 / 16) +
+                        roundCardPadding,
+                  PostsListType.mixed => null,
+                },
+                padding: switch (type) {
+                  PostsListType.page ||
+                  PostsListType.small ||
+                  PostsListType.square ||
+                  PostsListType.round =>
+                    null,
+                  PostsListType.mixed =>
+                    const EdgeInsets.only(bottom: roundCardPadding),
+                },
+                itemBuilder: (context, index, doc) {
+                  final postLike = doc.data();
+                  final postAsync =
+                      ref.watch(postFutureProvider(postLike.postId));
+                  return AsyncValueWidget(
+                    value: postAsync,
+                    data: (post) {
+                      if (post == null) {
+                        return const SizedBox.shrink();
+                      }
+                      if (isSmall) {
+                        return SmallPostsItem(
                           post: post,
                           index: index,
-                          aspectRatio: MediaQuery.sizeOf(context).aspectRatio,
-                          isPage: true,
-                          // isTappable: false,
-                          showMainLabel: false,
                         );
-                      },
-                    );
-                  },
-                )
-              : SimplePageListView(
-                  query: query,
-                  listState: postsListStateProvider,
-                  itemBuilder: (context, index, doc) {
-                    final postLike = doc.data();
-                    final postAsync =
-                        ref.watch(postFutureProvider(postLike.postId));
-                    return AsyncValueWidget(
-                      value: postAsync,
-                      data: (post) {
-                        if (post == null) {
-                          return const SizedBox.shrink();
-                        }
-                        if (isSquare) {
-                          return BasicPostsItem(
+                      }
+                      if (isRound) {
+                        return RoundPostsItem(
+                          post: post,
+                          index: index,
+                        );
+                      }
+                      if (isMixed) {
+                        if (post.mainVideoUrl != null ||
+                            (post.mainImageUrl != null &&
+                                post.title.trim().isEmpty)) {
+                          return RoundPostsItem(
                             post: post,
                             index: index,
+                            needTopMargin: index == 0 ? false : true,
+                            needBottomMargin: false,
                           );
                         }
                         return SmallPostsItem(
                           post: post,
                           index: index,
                         );
-                      },
-                    );
-                  },
-                );
+                      }
+                      return BasicPostsItem(
+                        post: post,
+                        index: index,
+                      );
+                    },
+                  );
+                },
+              );
+          }
         },
       ),
     );

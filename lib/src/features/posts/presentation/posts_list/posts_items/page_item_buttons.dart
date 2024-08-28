@@ -59,9 +59,10 @@ class PageItemButtons extends ConsumerWidget {
               ),
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
         ],
-        if (adminSettings.showDislikeCount) ...[
+        if (adminSettings.showDislikeCount &&
+            MediaQuery.of(context).orientation == Orientation.portrait) ...[
           PostDislikeButton(
             postId: post.id,
             postWriterId: post.uid,
@@ -80,7 +81,7 @@ class PageItemButtons extends ConsumerWidget {
               ),
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
         ],
         if (adminSettings.showCommentCount) ...[
           PostCommentButton(

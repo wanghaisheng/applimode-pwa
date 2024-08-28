@@ -32,6 +32,8 @@ class ProfileCommentsScreen extends ConsumerWidget {
       ),
       // body: ProfileCommentsList(uid: uid),
       body: SafeArea(
+        top: false,
+        bottom: false,
         child: SimplePageListView(
           query: commentsQuery,
           listState: commentsListStateProvider,

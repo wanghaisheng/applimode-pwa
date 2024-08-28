@@ -39,6 +39,7 @@ class FirebaseSignInScreen extends ConsumerWidget {
         'credential-already-in-use' => context.loc.emailAlreadyInUse,
         'wrong-password' => context.loc.wrongPassword,
         'invalid-login-credentials' => context.loc.invalidLoginCredentials,
+        'invalid-credential' => context.loc.invalidCredential,
         _ => context.loc.unknownIssueWithAuth,
       };
     };

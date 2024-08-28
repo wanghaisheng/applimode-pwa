@@ -11,10 +11,12 @@ class PostCommentsListWithFS extends ConsumerWidget {
     super.key,
     required this.postId,
     this.parentCommentId,
+    this.emptyString,
   });
 
   final String postId;
   final String? parentCommentId;
+  final String? emptyString;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,7 +35,7 @@ class PostCommentsListWithFS extends ConsumerWidget {
       query: commentsQuery,
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       emptyBuilder: (context) => Center(
-        child: Text(context.loc.noPost),
+        child: Text(emptyString != null ? emptyString! : context.loc.noComment),
       ),
       errorBuilder: (context, error, stackTrace) => Center(
         child: Text(error.toString()),

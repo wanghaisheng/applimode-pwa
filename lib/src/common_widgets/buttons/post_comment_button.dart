@@ -34,10 +34,17 @@ class PostCommentButton extends StatelessWidget {
         : InkWell(
             onTap: () =>
                 context.push(ScreenPaths.comments(postId), extra: postWriter),
-            child: Icon(
-              Icons.chat_bubble_outline_rounded,
-              color: iconColor ?? Theme.of(context).colorScheme.secondary,
-              size: iconSize,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: const BoxDecoration(
+                color: Colors.white24,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.chat_bubble_outline_rounded,
+                color: iconColor ?? Theme.of(context).colorScheme.secondary,
+                size: iconSize,
+              ),
             ),
           );
   }

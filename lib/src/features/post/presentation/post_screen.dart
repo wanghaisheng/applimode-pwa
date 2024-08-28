@@ -120,6 +120,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                     Expanded(
                       child: SafeArea(
                         // for iOS
+                        top: false,
                         bottom: false,
                         child: LazyLoadingWidget(
                           // lazyDuration: 200,
@@ -171,6 +172,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
               Expanded(
                 child: SafeArea(
                   // for iOS
+                  top: false,
                   bottom: false,
                   child: ListView.builder(
                     // shrinkWrap: true,

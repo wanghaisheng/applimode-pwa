@@ -44,6 +44,8 @@ class _MarkdownFieldState extends State<MarkdownField> {
     final itemsList =
         StringConverter.stringToElements(content: widget.controller.text);
     return SafeArea(
+      top: false,
+      bottom: false,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: itemsList.length,

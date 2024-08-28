@@ -49,8 +49,8 @@ class _PostCommentDislikeButtonState
 
     return Row(
       children: [
-        IconButton(
-          onPressed: userCommentDislikes == null || postCommentState.isLoading
+        InkWell(
+          onTap: userCommentDislikes == null || postCommentState.isLoading
               ? null
               : userCommentDislikes!.isEmpty
                   ? () async {
@@ -69,12 +69,16 @@ class _PostCommentDislikeButtonState
                         commentWriterId: widget.comment.uid,
                       );
                     },
-          icon: Icon(
-            userCommentDislikes == null || userCommentDislikes!.isEmpty
-                ? Icons.thumb_down_outlined
-                : Icons.thumb_down,
-            color: mainColor,
-            size: 20,
+          child: Padding(
+            padding:
+                const EdgeInsets.only(top: 8, bottom: 8, left: 2, right: 4),
+            child: Icon(
+              userCommentDislikes == null || userCommentDislikes!.isEmpty
+                  ? Icons.thumb_down_outlined
+                  : Icons.thumb_down,
+              color: mainColor,
+              size: 18,
+            ),
           ),
         ),
         InkWell(
@@ -82,10 +86,11 @@ class _PostCommentDislikeButtonState
             context.push(ScreenPaths.commentDislikes(widget.comment.id));
           },
           child: Padding(
-            padding: const EdgeInsets.only(left: 4, right: 16),
+            padding:
+                const EdgeInsets.only(top: 8, bottom: 8, left: 2, right: 16),
             child: Text(
               Format.formatNumber(context, widget.dislikeCount),
-              style: textTheme.bodyLarge?.copyWith(color: mainColor),
+              style: textTheme.bodyMedium?.copyWith(color: mainColor),
             ),
           ),
         ),

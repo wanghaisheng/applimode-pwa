@@ -75,12 +75,19 @@ class PostDislikeButton extends ConsumerWidget {
                           postId: postId,
                           postWriterId: postWriterId,
                         ),
-            child: Icon(
-              userPostDislikes == null || userPostDislikes.isEmpty
-                  ? Icons.thumb_down_alt_outlined
-                  : Icons.thumb_down,
-              color: iconColor ?? Theme.of(context).colorScheme.secondary,
-              size: iconSize,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: const BoxDecoration(
+                color: Colors.white24,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                userPostDislikes == null || userPostDislikes.isEmpty
+                    ? Icons.thumb_down_alt_outlined
+                    : Icons.thumb_down,
+                color: iconColor ?? Theme.of(context).colorScheme.secondary,
+                size: iconSize,
+              ),
             ),
           );
   }

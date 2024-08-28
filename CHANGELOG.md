@@ -3,6 +3,10 @@
 ### New Features and Improvements
 ### Bug Fixes
 -->
+## Version 0.1.5 (August 24, 2024)
+- Added round card type and mixed type to app style
+- Improved overall design.
+
 ## Version 0.1.4 (August 09, 2024)
 - Fixed an issue with database access for verified users only.
 - Removed unnecessary code during sign-out process.
