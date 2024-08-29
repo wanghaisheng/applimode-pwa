@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://github.com/mycalls/applimode-examples/blob/main/assets/am-campaign-head.png?raw=true">
+    <img src="https://github.com/mycalls/applimode-examples/blob/main/assets/am-campaign-head-v2.png?raw=true">
 </p>
 
 
@@ -9,7 +9,10 @@ English | [한글](README_ko.md)
 -->
 Applimode is a project based on Flutter that allows easy construction of various types of apps and websites, ranging from blogs to bulletin boards. Even those without developer experience can create Android, iOS, web, and PWA applications, and deploy them directly to their own Google Firebase server at little to no cost.
 <!--Optionally, utilizing Cloudflare's R2 storage, workers, and CDN enables the affordable construction of media services as well.-->
-![](https://github.com/mycalls/applimode-examples/blob/main/assets/am-preview-540p-low.gif?raw=true)
+<!--![](https://github.com/mycalls/applimode-examples/blob/main/assets/am-preview-540p-low.gif?raw=true)-->
+<p align="center">
+    <img src="https://github.com/mycalls/applimode-examples/blob/main/assets/am-preview-480p-10f-240829.gif?raw=true" width="320">
+</p>
 
 
 ## Configure your Applimode app
@@ -18,14 +21,12 @@ Applimode is a project based on Flutter that allows easy construction of various
 
 
 ## Main features
+* Android, iOS, Web, PWA
 * Posts (text, images, videos)
-<!--![](https://github.com/mycalls/applimode-examples/blob/main/assets/am_preview_basic.gif?raw=true)-->
 * Comments (text, images)
 * Like, dislike
-* 3 types of bulletin board styles (list, box, page)
-![](https://github.com/mycalls/applimode-examples/blob/main/assets/am_preview_type.gif?raw=true)
+* 5 types of bulletin board styles (list, box, round box page, mixed)
 * Post Markdown support
-<!--![](https://github.com/mycalls/applimode-examples/blob/main/assets/am_preview_markdown.gif?raw=true)-->
 * Hashtag
 * Category and ranking
 * Various admin settings options
