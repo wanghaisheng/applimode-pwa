@@ -1,3 +1,4 @@
+import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/regex.dart';
 import 'package:applimode_app/custom_settings.dart';
@@ -139,22 +140,73 @@ class Format {
     return name;
   }
 
-  static String mimeTypeToExt(String mime) {
+  static String mimeTypeToExtWithDot(String mime) {
     switch (mime) {
-      case 'image/jpeg':
+      case contentTypeJpeg:
         return '.jpeg';
-      case 'image/gif':
-        return '.gif';
-      case 'image/png':
+      case contentTypePng:
         return '.png';
-      case 'image/webp':
-        return '.wepb';
-      case 'video/mp4':
+      case contentTypeGif:
+        return '.gif';
+      case contentTypeWebp:
+        return '.webp';
+      case contentTypeMp4:
         return '.mp4';
-      case 'video/webm':
+      case contentTypeQv:
+        return '.mov';
+      case contentTypeWebm:
         return '.webm';
       default:
         return '.jpeg';
     }
+  }
+
+  static String mimeTypeToExt(String mime) {
+    switch (mime) {
+      case contentTypeJpeg:
+        return 'jpeg';
+      case contentTypePng:
+        return 'png';
+      case contentTypeGif:
+        return 'gif';
+      case contentTypeWebp:
+        return 'webp';
+      case contentTypeMp4:
+        return 'mp4';
+      case contentTypeQv:
+        return 'mov';
+      case contentTypeWebm:
+        return 'webm';
+      default:
+        return 'jpeg';
+    }
+  }
+
+  static String extToMimeType(String ext) {
+    switch (ext.toLowerCase()) {
+      case 'jpeg' || 'jpg':
+        return contentTypeJpeg;
+      case 'png':
+        return contentTypePng;
+      case 'gif':
+        return contentTypeGif;
+      case 'webp':
+        return contentTypeWebp;
+      case 'mp4':
+        return contentTypeMp4;
+      case 'mov':
+        return contentTypeQv;
+      case 'webm':
+        return contentTypeWebm;
+      default:
+        return 'jpeg';
+    }
+  }
+
+  static String fixMediaWithExt(String path) {
+    final mediaWithExtRegex = Regex.mediaWithExtRegex;
+    return mediaWithExtRegex.hasMatch(path)
+        ? mediaWithExtRegex.firstMatch(path)![1]!
+        : path;
   }
 }

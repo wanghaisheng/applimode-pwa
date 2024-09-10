@@ -13,7 +13,7 @@ class AppSettingsController extends _$AppSettingsController {
 
   @override
   AppSettings build() {
-    final sharedPreferences = ref.read(sharedPreferencesProvider);
+    final sharedPreferences = ref.read(prefsWithCacheProvider).requireValue;
     final appThemeMode =
         ThemeMode.values[sharedPreferences.getInt('appThemeMode') ?? 0];
     final appMainColor =
@@ -32,7 +32,7 @@ class AppSettingsController extends _$AppSettingsController {
   }
 
   Future<void> setAppThemeMode(ThemeMode theme) async {
-    final sharedPreferences = ref.read(sharedPreferencesProvider);
+    final sharedPreferences = ref.read(prefsWithCacheProvider).requireValue;
     await sharedPreferences.setInt('appThemeMode', theme.index);
     final appThemeMode =
         ThemeMode.values[sharedPreferences.getInt('appThemeMode') ?? 0];
@@ -46,7 +46,7 @@ class AppSettingsController extends _$AppSettingsController {
   }
 
   Future<void> setAppColor(Color color) async {
-    final sharedPreferences = ref.read(sharedPreferencesProvider);
+    final sharedPreferences = ref.read(prefsWithCacheProvider).requireValue;
     await sharedPreferences.setInt('appColor', color.value);
     final appMainColor =
         Color(sharedPreferences.getInt('appColor') ?? 0xFFFCB126);
@@ -59,7 +59,7 @@ class AppSettingsController extends _$AppSettingsController {
   }
 
   Future<void> setAppLocale(String languageCode) async {
-    final sharedPreferences = ref.read(sharedPreferencesProvider);
+    final sharedPreferences = ref.read(prefsWithCacheProvider).requireValue;
     await sharedPreferences.setString('appLocale', languageCode);
     final appLocaleString = sharedPreferences.getString('appLocale');
     final appLocale = appLocaleString == null ? null : Locale(appLocaleString);
@@ -72,7 +72,7 @@ class AppSettingsController extends _$AppSettingsController {
   }
 
   Future<void> removeAppLocale() async {
-    final sharedPreferences = ref.read(sharedPreferencesProvider);
+    final sharedPreferences = ref.read(prefsWithCacheProvider).requireValue;
     await sharedPreferences.remove('appLocale');
     state = AppSettings(
       appThemeMode: state.appThemeMode,
@@ -83,7 +83,7 @@ class AppSettingsController extends _$AppSettingsController {
   }
 
   Future<void> setAppStyle(PostsListType postsListType) async {
-    final sharedPreferences = ref.read(sharedPreferencesProvider);
+    final sharedPreferences = ref.read(prefsWithCacheProvider).requireValue;
     await sharedPreferences.setInt('appStyle', postsListType.index);
     final appStyle =
         sharedPreferences.getInt('appStyle') ?? sparePostsListType.index;

@@ -7,7 +7,7 @@ part of 'profile_app_bar_more_controller.dart';
 // **************************************************************************
 
 String _$profileAppBarMoreControllerHash() =>
-    r'a40f8464b3d6b8f39bc8c6873e912af8def972d1';
+    r'61fbe6ddb068eb491f82b4dafaecf7596db2f621';
 
 /// See also [ProfileAppBarMoreController].
 @ProviderFor(ProfileAppBarMoreController)

@@ -15,7 +15,7 @@ const String firebaseProjectName = 'my-applimode';
 const String appCreator = 'JongsukOh';
 const String appEmail = 'yourEmail@email.com';
 const String appEffectiveDate = '2024-08-06';
-const String appVersion = '0.1.5+1';
+const String appVersion = '0.1.6+1';
 
 // spare values when admin settings is not set
 const String spareHomeBarTitle = 'My Applimode';
@@ -208,6 +208,10 @@ const int videoThumbnailQuality = 90;
 // When get a maximum size YouTube thumbnail
 // 유튜브 썸네일 최대 사이즈로 가져올 경우
 const bool isMaxResYoutubeThumbnail = false;
+
+// Periodically call admin settings to save database reads
+// 데이터 베이스 읽기 수를 절약하기 위해 어드민 세팅값들을 주기적으로 부름
+const bool useAdminSettingsInterval = false;
 
 // Frequency of admin Settings calls. default 600 seconds
 // 어드민 세팅 호출 빈도. 기본 값 600초.

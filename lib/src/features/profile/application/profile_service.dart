@@ -1,5 +1,5 @@
+import 'package:applimode_app/src/utils/format.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:mime/mime.dart';
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
@@ -33,16 +33,19 @@ class ProfileService {
   Future<void> changeProfileImage({
     required String uid,
     XFile? xFile,
+    String? mediaType,
   }) async {
     await deleteStorageList(ref, '$uid/$profilePath');
     String? remotePhotoUrl;
     if (xFile != null) {
+      final fileExt =
+          mediaType == null ? '.jpeg' : Format.mimeTypeToExtWithDot(mediaType);
       final bytes = await storageRepository.getBytes(xFile);
       final uploadTask = storageRepository.uploadTask(
         bytes: bytes,
         storagePathname: '$uid/$profilePath',
-        filename: nanoid(),
-        contentType: lookupMimeType(xFile.path) ?? contentTypeJpeg,
+        filename: '${nanoid()}$fileExt',
+        contentType: mediaType ?? contentTypeJpeg,
       );
 
       uploadTask.snapshotEvents.listen(
@@ -80,16 +83,19 @@ class ProfileService {
   Future<void> changeStoryImage({
     required String uid,
     XFile? xFile,
+    String? mediaType,
   }) async {
     await deleteStorageList(ref, '$uid/$storyPath');
     String? remotePhotoUrl;
     if (xFile != null) {
+      final fileExt =
+          mediaType == null ? '.jpeg' : Format.mimeTypeToExtWithDot(mediaType);
       final bytes = await storageRepository.getBytes(xFile);
       final uploadTask = storageRepository.uploadTask(
         bytes: bytes,
         storagePathname: '$uid/$storyPath',
-        filename: nanoid(),
-        contentType: lookupMimeType(xFile.path) ?? contentTypeJpeg,
+        filename: '${nanoid()}$fileExt',
+        contentType: mediaType ?? contentTypeJpeg,
       );
 
       uploadTask.snapshotEvents.listen(

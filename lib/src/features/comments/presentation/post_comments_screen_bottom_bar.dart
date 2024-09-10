@@ -1,11 +1,13 @@
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/common_widgets/image_widgets/platform_image.dart';
+import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/comments/presentation/post_comment_controller.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/async_value_ui.dart';
+import 'package:applimode_app/src/utils/format.dart';
 import 'package:applimode_app/src/utils/show_adaptive_alert_dialog.dart';
 import 'package:applimode_app/src/utils/show_image_picker.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +36,7 @@ class _PostCommentsScreenBottomBarState
   final TextEditingController _controller = TextEditingController();
   // late FocusNode _node;
   XFile? _pickedFile;
+  String? _mediaType;
 
   @override
   void initState() {
@@ -64,6 +67,7 @@ class _PostCommentsScreenBottomBarState
               isReply: widget.parentCommentId != null,
               content: _controller.text,
               xFile: _pickedFile,
+              mediaType: _mediaType,
               postWriter: widget.postWriter,
               commentNotiString: context.loc.commentNoti,
               replyNotiString: context.loc.replyNoti,
@@ -126,10 +130,30 @@ class _PostCommentsScreenBottomBarState
                   IconButton(
                     onPressed: () async {
                       _pickedFile = await showImagePicker(
+                        isImage: true,
                         maxWidth: postImageMaxWidth,
                         imageQuality: postImageQuality,
                         mediaMaxMBSize: mediaMaxMBSize,
                       );
+                      if (_pickedFile != null) {
+                        _mediaType = _pickedFile!.mimeType;
+
+                        if (_mediaType == null) {
+                          final fileExt =
+                              _pickedFile!.name.split('.').last.toLowerCase();
+                          if (imageExts.contains(fileExt)) {
+                            _mediaType = Format.extToMimeType(fileExt);
+                          } else {
+                            debugPrint('ext is unsupported mediaType');
+                            return;
+                          }
+                        } else {
+                          if (!imageContentTypes.contains(_mediaType)) {
+                            debugPrint('unsupported mediaType');
+                            return;
+                          }
+                        }
+                      }
                       setState(() {});
                     },
                     icon: const Icon(Icons.image_outlined),

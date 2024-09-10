@@ -32,6 +32,7 @@ class AdminSettings extends Equatable {
     required this.showUserLikeCount,
     required this.showUserDislikeCount,
     required this.showUserSumCount,
+    this.isMaintenance = false,
   });
 
   final String homeBarTitle;
@@ -57,6 +58,7 @@ class AdminSettings extends Equatable {
   final bool showUserLikeCount;
   final bool showUserDislikeCount;
   final bool showUserSumCount;
+  final bool isMaintenance;
 
   factory AdminSettings.fromMap(Map<String, dynamic> map) {
     final postsListTypeInt = List.generate(
@@ -120,6 +122,7 @@ class AdminSettings extends Equatable {
           map[showUserDislikeCountKey] as bool? ?? spareShowUserDislikeCount,
       showUserSumCount:
           map[showUserSumCountKey] as bool? ?? spareShowUserSumCount,
+      isMaintenance: map[isMaintenanceKey] as bool? ?? false,
     );
   }
 
@@ -148,6 +151,7 @@ class AdminSettings extends Equatable {
       'showUserLikeCount': showUserLikeCount,
       'showUserDislikeCount': showUserDislikeCount,
       'showUserSumCount': showUserSumCount,
+      'isMaintenance': isMaintenance,
     };
   }
 
@@ -179,5 +183,6 @@ class AdminSettings extends Equatable {
         showUserLikeCount,
         showUserDislikeCount,
         showUserSumCount,
+        isMaintenance,
       ];
 }

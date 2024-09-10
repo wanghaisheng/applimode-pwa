@@ -6,7 +6,6 @@ import 'package:applimode_app/src/features/posts/presentation/posts_floating_act
 import 'package:applimode_app/src/features/posts/presentation/posts_floating_action_button/direct_upload_button_controller.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_floating_action_button/posts_floating_action_button.dart';
 import 'package:applimode_app/src/utils/async_value_ui.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:applimode_app/src/utils/upload_progress_state.dart';
@@ -26,31 +25,29 @@ class PostsFabs extends ConsumerWidget {
         user != null ? ref.watch(appUserFutureProvider(user.uid)).value : null;
     final isLoading = ref.watch(directUploadButtonControllerProvider).isLoading;
     final uploadState = ref.watch(uploadProgressStateProvider);
-    return kIsWeb
-        ? const PostsFloatingActionButton()
-        : isLoading
-            ? Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 28),
-                  child: PercentCircularIndicator(
-                    strokeWidth: 8,
-                    percentage: uploadState.percentage,
+    return isLoading
+        ? Center(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 28),
+              child: PercentCircularIndicator(
+                strokeWidth: 8,
+                percentage: uploadState.percentage,
+              ),
+            ),
+          )
+        : (!adminOnlyWrite && !verifiedOnlyWrite) ||
+                (adminOnlyWrite && appUser != null && appUser.isAdmin) ||
+                (verifiedOnlyWrite && appUser != null && appUser.verified)
+            ? const Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  DirectUploadButton(
+                    heroTag: 'uploadFab',
                   ),
-                ),
+                  SizedBox(height: 12),
+                  PostsFloatingActionButton(heroTag: 'publishFab'),
+                ],
               )
-            : (!adminOnlyWrite && !verifiedOnlyWrite) ||
-                    (adminOnlyWrite && appUser != null && appUser.isAdmin) ||
-                    (verifiedOnlyWrite && appUser != null && appUser.verified)
-                ? const Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      DirectUploadButton(
-                        heroTag: 'uploadFab',
-                      ),
-                      SizedBox(height: 12),
-                      PostsFloatingActionButton(heroTag: 'publishFab'),
-                    ],
-                  )
-                : const SizedBox.shrink();
+            : const SizedBox.shrink();
   }
 }

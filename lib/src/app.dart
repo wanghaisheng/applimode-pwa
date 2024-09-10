@@ -1,3 +1,4 @@
+import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,7 +26,9 @@ class MyApp extends ConsumerWidget {
     final goRouter = ref.watch(goRouterProvider);
     final appSettings = ref.watch(appSettingsControllerProvider);
 
-    ref.watch(adminSettingsServiceProvider).initialize();
+    if (useAdminSettingsInterval) {
+      ref.watch(adminSettingsServiceProvider).initialize();
+    }
     final adminSettings = ref.watch(adminSettingsProvider);
 
     return MaterialApp.router(

@@ -2,6 +2,7 @@ import 'package:applimode_app/src/common_widgets/image_widgets/platform_network_
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
+import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -29,34 +30,52 @@ class PostsAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final homeBarStyle = adminSettings.homeBarStyle;
     final homeBarTitle = adminSettings.homeBarTitle;
     final homeBarImageUrl = adminSettings.homeBarImageUrl;
+    final isMaintenance = adminSettings.isMaintenance;
     return AppBar(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (homeBarStyle == 1 || homeBarStyle == 2)
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: mainScreenAppBarPadding),
-              child: SizedBox(
-                height: mainScreenAppBarHeight - 2 * mainScreenAppBarPadding,
-                child: homeBarImageUrl.startsWith('assets')
-                    ? Image.asset(homeBarImageUrl)
-                    : PlatformNetworkImage(
-                        imageUrl: homeBarImageUrl,
-                        /*
+      title: isMaintenance
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  context.loc.maintenanceTitle,
+                  style: Theme.of(context).textTheme.titleMedium,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  context.loc.maintenanceAccess,
+                  style: Theme.of(context).textTheme.labelMedium,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (homeBarStyle == 1 || homeBarStyle == 2)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: mainScreenAppBarPadding),
+                    child: SizedBox(
+                      height:
+                          mainScreenAppBarHeight - 2 * mainScreenAppBarPadding,
+                      child: homeBarImageUrl.startsWith('assets')
+                          ? Image.asset(homeBarImageUrl)
+                          : PlatformNetworkImage(
+                              imageUrl: homeBarImageUrl,
+                              /*
                         cacheHeight: (mainScreenAppBarHeight -
                                 2 * mainScreenAppBarPadding)
                             .round(),
                         */
-                        errorWidget: const SizedBox.shrink(),
-                      ),
-              ),
+                              errorWidget: const SizedBox.shrink(),
+                            ),
+                    ),
+                  ),
+                if (homeBarStyle == 2) const SizedBox(width: 8),
+                if (homeBarStyle == 0 || homeBarStyle == 2) Text(homeBarTitle),
+              ],
             ),
-          if (homeBarStyle == 2) const SizedBox(width: 8),
-          if (homeBarStyle == 0 || homeBarStyle == 2) Text(homeBarTitle),
-        ],
-      ),
       forceMaterialTransparency: forceMaterialTransparency,
       foregroundColor: foregroundColor,
       elevation: elevation,

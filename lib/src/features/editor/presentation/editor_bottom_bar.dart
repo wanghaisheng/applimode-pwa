@@ -25,11 +25,7 @@ class EditorBottomBar extends ConsumerStatefulWidget {
   });
 
   final double bottomBarHeight;
-  final Future<void> Function({
-    required double mediaMaxMBSize,
-    bool isMedia,
-    bool isVideo,
-  }) getMedia;
+  final Future<void> Function(double mediaMaxMBSize) getMedia;
   final TextEditingController controller;
   final String? postId;
   final int? catetory;
@@ -112,33 +108,12 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
                 Row(
                   children: [
                     // media
-                    if (!kIsWeb)
-                      IconButton(
-                        onPressed: () => widget.getMedia(
-                            isMedia: true, mediaMaxMBSize: mediaMaxMBSize),
-                        icon: const Icon(Icons.image_outlined),
-                        iconSize: iconSizeForBottomBar,
-                      ),
-                    if (kIsWeb)
-                      // image
-                      ...[
-                      IconButton(
-                        onPressed: () => widget.getMedia(
-                          mediaMaxMBSize: mediaMaxMBSize,
-                        ),
-                        icon: const Icon(Icons.image_outlined),
-                        iconSize: iconSizeForBottomBar,
-                      ),
-                      // video
-                      IconButton(
-                        onPressed: () => widget.getMedia(
-                          isVideo: true,
-                          mediaMaxMBSize: mediaMaxMBSize,
-                        ),
-                        icon: const Icon(Icons.slideshow_outlined),
-                        iconSize: iconSizeForBottomBar,
-                      ),
-                    ],
+                    IconButton(
+                      onPressed: () => widget.getMedia(mediaMaxMBSize),
+                      icon: const Icon(Icons.image_outlined),
+                      iconSize: iconSizeForBottomBar,
+                    ),
+
                     if (useCategory) ...[
                       const SizedBox(width: 12),
                       MenuAnchor(
@@ -218,7 +193,8 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
                             // When the post writing is complete,
                             // delete the temporarily saved post.
                             ref
-                                .read(sharedPreferencesProvider)
+                                .read(prefsWithCacheProvider)
+                                .requireValue
                                 .setString('tempNewPost', '');
                             if (kIsWeb) {
                               WebBackStub().back();

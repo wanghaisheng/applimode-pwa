@@ -23,7 +23,6 @@ import 'package:applimode_app/src/utils/string_converter.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mime/mime.dart';
 import 'package:applimode_app/src/utils/updated_post_ids_list.dart';
 import 'package:applimode_app/src/utils/upload_progress_state.dart';
 import 'package:applimode_app/src/utils/web_video_thumbnail/wvt_stub.dart';
@@ -181,32 +180,42 @@ class EditorScreenController extends _$EditorScreenController {
           String? videoThumbnailUrl = '';
 
           // media type check
-          String? mediaType;
-          final mimeType = lookupMimeType(isVideo ? match[2]! : match[1]!);
-          if (mimeType != null) {
-            mediaType = mimeType;
-          } else {
-            mediaType = isVideo ? contentTypeMp4 : contentTypeJpeg;
-          }
-          final ext = Format.mimeTypeToExt(mediaType);
+          final String mediaType = isVideo
+              ? Format.extToMimeType(
+                  Regex.mediaWithExtRegex.firstMatch(match[2]!)![2]!)
+              : Format.extToMimeType(
+                  Regex.mediaWithExtRegex.firstMatch(match[1]!)![2]!);
+
+          debugPrint('mediaType: $mediaType');
+
+          final ext = Format.mimeTypeToExtWithDot(mediaType);
 
           // 태그에 따라 bytes로 변경
           final bytes = isVideo
-              ? await storageRepository.getBytes(XFile(match[2]!))
-              : await storageRepository.getBytes(XFile(match[1]!));
+              ? await storageRepository
+                  .getBytes(XFile(Format.fixMediaWithExt(match[2]!)))
+              : await storageRepository
+                  .getBytes(XFile(Format.fixMediaWithExt(match[1]!)));
 
           // generate video thumbnail
           if (isVideo) {
             String thumbnailFilename = '$filename-thumbnail.jpeg';
             if (match[1] != null && match[1]!.isNotEmpty) {
               try {
-                final videoThumbnail =
-                    await storageRepository.getBytes(XFile(match[1]!));
+                final thumbnailMediaType = Format.extToMimeType(
+                    Regex.mediaWithExtRegex.firstMatch(match[1]!)![2]!);
+
+                final thumbnailExt =
+                    Format.mimeTypeToExtWithDot(thumbnailMediaType);
+                thumbnailFilename = '$filename-thumbnail$thumbnailExt';
+                final videoThumbnail = await storageRepository
+                    .getBytes(XFile(Format.fixMediaWithExt(match[1]!)));
                 if (useRTwoStorage) {
                   final url = await rTwoRepository.uploadBytes(
                     bytes: videoThumbnail,
                     storagePathname: '$postWriterId/$postsPath/$id',
                     filename: thumbnailFilename,
+                    contentType: thumbnailMediaType,
                     showPercentage: false,
                   );
                   videoThumbnailUrl = url;
@@ -215,6 +224,7 @@ class EditorScreenController extends _$EditorScreenController {
                     bytes: videoThumbnail,
                     storagePathname: '$postWriterId/$postsPath/$id',
                     filename: thumbnailFilename,
+                    contentType: thumbnailMediaType,
                   );
                   videoThumbnailUrl = url;
                 }
@@ -224,7 +234,7 @@ class EditorScreenController extends _$EditorScreenController {
             } else {
               if (kIsWeb) {
                 final videoThumbnail = await WvtStub().getThumbnailData(
-                  video: match[2]!,
+                  video: Format.fixMediaWithExt(match[2]!),
                   maxWidth: videoThumbnailMaxWidth,
                   maxHeight: videoThumbnailMaxHeight,
                   quality: videoThumbnailQuality,
@@ -250,7 +260,7 @@ class EditorScreenController extends _$EditorScreenController {
                 }
               } else {
                 final videoThumbnail = await VideoThumbnail.thumbnailData(
-                  video: match[2]!,
+                  video: Format.fixMediaWithExt(match[2]!),
                   imageFormat: ImageFormat.JPEG,
                   maxWidth: videoThumbnailMaxWidth,
                   maxHeight: videoThumbnailMaxHeight,
@@ -284,7 +294,7 @@ class EditorScreenController extends _$EditorScreenController {
             final uploadTask = storageRepository.uploadTask(
               bytes: bytes,
               storagePathname: '$postWriterId/$postsPath/$id',
-              filename: isVideo ? '$filename.mp4' : '$filename$ext',
+              filename: '$filename$ext',
               contentType: mediaType,
             );
 
@@ -316,7 +326,7 @@ class EditorScreenController extends _$EditorScreenController {
               ? await rTwoRepository.uploadBytes(
                   bytes: bytes,
                   storagePathname: '$postWriterId/$postsPath/$id',
-                  filename: isVideo ? '$filename.mp4' : '$filename$ext',
+                  filename: '$filename$ext',
                   contentType: mediaType,
                   index: i,
                 )
@@ -345,15 +355,22 @@ class EditorScreenController extends _$EditorScreenController {
                 (oldRemoteMedia == null ||
                     !oldRemoteMedia.contains(match[1]))) {
               try {
-                final videoThumbnail =
-                    await storageRepository.getBytes(XFile(match[1]!));
-                String thumbnailFilename = '${nanoid()}-thumbnail.jpeg';
+                final thumbnailMediaType = Format.extToMimeType(
+                    Regex.mediaWithExtRegex.firstMatch(match[1]!)![2]!);
+
+                final thumbnailExt =
+                    Format.mimeTypeToExtWithDot(thumbnailMediaType);
+                String thumbnailFilename = '${nanoid()}-thumbnail$thumbnailExt';
+                final videoThumbnail = await storageRepository
+                    .getBytes(XFile(Format.fixMediaWithExt(match[1]!)));
+
                 String newUrl = '';
                 if (useRTwoStorage) {
                   newUrl = await rTwoRepository.uploadBytes(
                     bytes: videoThumbnail,
                     storagePathname: '$postWriterId/$postsPath/$id',
                     filename: thumbnailFilename,
+                    contentType: thumbnailMediaType,
                     showPercentage: false,
                   );
                 } else {
@@ -361,6 +378,7 @@ class EditorScreenController extends _$EditorScreenController {
                     bytes: videoThumbnail,
                     storagePathname: '$postWriterId/$postsPath/$id',
                     filename: thumbnailFilename,
+                    contentType: thumbnailMediaType,
                   );
                 }
                 newContent = newContent.replaceFirst(match[1]!, newUrl);

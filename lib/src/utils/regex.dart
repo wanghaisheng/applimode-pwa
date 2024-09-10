@@ -58,6 +58,16 @@ class Regex {
       RegExp(r'''posts\%2F(.*)-needupdate''');
   static RegExp firebaseObjectPath = RegExp(r'''\/o\/(.*)\?''');
 
+  static RegExp blobRegex = RegExp(r'''blob:[\/|.|\w|\-|\%|\:]*''');
+
+  // for blob media files on web
+  static RegExp blobMediaRegex = RegExp(
+      r'''(blob:[\/|.|\w|\-|\%|\:]*)\?(jpeg|jpg|png|gif|webp|mp4|mov|webm)''');
+
+  // for media files with ext
+  static RegExp mediaWithExtRegex =
+      RegExp(r'''(.*)\?(jpeg|jpg|png|gif|webp|mp4|mov|webm)''');
+
   // old version
   static RegExp markDownImageRegex = RegExp(r'!\[(.*)\]\((.+)\)');
   static RegExp markDownUserImageRegex =

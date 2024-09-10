@@ -41,6 +41,7 @@ class AdminSettingsRepository {
     required bool showUserLikeCount,
     required bool showUserDislikeCount,
     required bool showUserSumCount,
+    required bool isMaintenance,
   }) =>
       _firestore.doc(_adminSettingsPath).set({
         'homeBarTitle': homeBarTitle,
@@ -67,6 +68,7 @@ class AdminSettingsRepository {
         'showUserLikeCount': showUserLikeCount,
         'showUserDislikeCount': showUserDislikeCount,
         'showUserSumCount': showUserSumCount,
+        'isMaintenance': isMaintenance,
       });
 
   DocumentReference<AdminSettings> _docRef() =>
@@ -76,7 +78,8 @@ class AdminSettingsRepository {
           toFirestore: (value, _) => value.toMap());
 
   Future<AdminSettings?> fetchAdminSettings() async {
-    final snapshot = await _docRef().get();
+    final snapshot =
+        await _docRef().get().timeout(const Duration(milliseconds: 1000));
     return snapshot.data();
   }
 

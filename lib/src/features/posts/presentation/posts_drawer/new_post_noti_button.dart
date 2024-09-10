@@ -14,7 +14,7 @@ class NewPostNotiButton extends ConsumerStatefulWidget {
 class _NewPostNotiButtonState extends ConsumerState<NewPostNotiButton> {
   @override
   Widget build(BuildContext context) {
-    final sharedPreferences = ref.watch(sharedPreferencesProvider);
+    final sharedPreferences = ref.watch(prefsWithCacheProvider).requireValue;
     return ListTile(
       leading: const Icon(Icons.notifications_outlined),
       title: Text(context.loc.newPostNoti),

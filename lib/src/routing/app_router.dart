@@ -4,6 +4,7 @@ import 'package:applimode_app/src/common_widgets/error_widgets/error_scaffold.da
 import 'package:applimode_app/src/common_widgets/image_widgets/full_image_screen.dart';
 import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/admin_settings/presentation/admin_settings_screen.dart';
+import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/authentication/presentation/firebase_phone_screen.dart';
 import 'package:applimode_app/src/features/like_users/like_users_screen.dart';
@@ -22,6 +23,7 @@ import 'package:applimode_app/src/features/profile/presentation/profile_likes_sc
 import 'package:applimode_app/src/features/profile/presentation/profile_posts_screen/profile_posts_screen.dart';
 import 'package:applimode_app/src/features/ranking/ranking_screen.dart';
 import 'package:applimode_app/src/features/video_player/full_video_screen.dart';
+import 'package:applimode_app/src/routing/maintenance_screen.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/build_slide_transition.dart';
 import 'package:applimode_app/custom_settings.dart';
@@ -46,6 +48,7 @@ part 'app_router.g.dart';
 
 class ScreenPaths {
   static String home = '/';
+  static String maintenance = '/maintenance';
   static String firebaseSignIn = '/firebaseSignIn';
   static String phone = '/phone';
   static String appUserCheck = '/appUserCheck';
@@ -105,7 +108,29 @@ GoRouter goRouter(GoRouterRef ref) {
     redirect: (context, state) async {
       final user = authRepository.currentUser;
       final isLoggedIn = user != null;
+      final isMaintenance = adminSettings.isMaintenance;
       final path = state.uri.path;
+      if (isMaintenance) {
+        if (user == null) {
+          return ScreenPaths.maintenance;
+        } else {
+          final asyncAppUser = ref.watch(appUserFutureProvider(user.uid));
+          asyncAppUser.when(
+            data: (appUser) {
+              if (appUser == null || !appUser.isAdmin) {
+                return ScreenPaths.maintenance;
+              }
+            },
+            error: (error, stackTrace) => ScreenPaths.maintenance,
+            loading: () => const Center(child: CupertinoActivityIndicator()),
+          );
+        }
+      }
+      if (!isMaintenance) {
+        if (path == ScreenPaths.maintenance) {
+          return ScreenPaths.home;
+        }
+      }
       if (isLoggedIn) {
         if (path == ScreenPaths.firebaseSignIn) {
           return ScreenPaths.home;
@@ -129,6 +154,10 @@ GoRouter goRouter(GoRouterRef ref) {
               ? PostsListType.values[appSettings.appStyle ?? 1]
               : postsListType,
         ),
+      ),
+      GoRoute(
+        path: ScreenPaths.maintenance,
+        builder: (context, state) => const MaintenanceScreen(),
       ),
       GoRoute(
           path: ScreenPaths.firebaseSignIn,

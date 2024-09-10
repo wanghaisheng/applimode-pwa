@@ -69,7 +69,8 @@ class FCMService {
           return;
         }
         final appUser = await _ref.read(appUserFutureProvider(user.uid).future);
-        final sharedPreferences = _ref.read(sharedPreferencesProvider);
+        final sharedPreferences =
+            _ref.read(prefsWithCacheProvider).requireValue;
         final isLikeComment = sharedPreferences.getBool('likeCommentNoti');
         if (appUser == null ||
             (appUser.fcmToken != null && appUser.fcmToken == token) ||
@@ -88,7 +89,11 @@ class FCMService {
 
   Future<void> setupSub(String token) async {
     try {
-      if (_ref.read(sharedPreferencesProvider).getBool('newPostNoti') ?? true) {
+      if (_ref
+              .read(prefsWithCacheProvider)
+              .requireValue
+              .getBool('newPostNoti') ??
+          true) {
         debugPrint('subscribe');
         if (kIsWeb) {
           FcmFunctions.callSubscribeToTopic(token: token, topic: 'newPost');

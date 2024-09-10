@@ -36,6 +36,7 @@ class PostCommentController extends _$PostCommentController {
     required bool isReply,
     String? content,
     XFile? xFile,
+    String? mediaType,
     AppUser? postWriter,
     required String commentNotiString,
     required String replyNotiString,
@@ -79,6 +80,7 @@ class PostCommentController extends _$PostCommentController {
         isReply: isReply,
         content: content,
         xFile: xFile,
+        mediaType: mediaType,
       ),
     );
 

@@ -23,7 +23,7 @@ final adminSettingsServiceProvider =
 );
 
 typedef AdminSettingsServiceRef = AutoDisposeProviderRef<AdminSettingsService>;
-String _$adminSettingsHash() => r'729bd10f7cd1a6c4c453f0325d266cfa84d7abcd';
+String _$adminSettingsHash() => r'49cfeef7c64f72af5834a9b5c9164ec5eff91210';
 
 /// See also [adminSettings].
 @ProviderFor(adminSettings)

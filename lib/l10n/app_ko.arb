@@ -203,5 +203,9 @@
   "argeeStart": "계속 진행하면 ",
   "argeeMiddle": "에 동의하고 ",
   "argeeEnd": "을 읽었음을 인정하는 것으로 간주 됩니다.",
+  "maintenanceTitle": "시스템 점검",
+  "maintenanceMessage": "현재 시스템 점검 중입니다.",
+  "maintenanceAccess": "관리자만 접근이 가능합니다.",
+  "systemMaintenanceMode": "시스템 점검 모드",
   "unknown": "무명"
 }

@@ -7,6 +7,7 @@ import 'package:applimode_app/src/common_widgets/string_markdown.dart';
 import 'package:applimode_app/src/common_widgets/youtube_link_shot.dart';
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/video_player/post_video_player.dart';
+import 'package:applimode_app/src/utils/format.dart';
 import 'package:applimode_app/src/utils/regex.dart';
 import 'package:applimode_app/src/utils/url_converter.dart';
 import 'package:flutter/foundation.dart';
@@ -106,14 +107,16 @@ class StringConverter {
         if (kIsWeb) {
           // local image for web
           elements.add(CachedPaddingImage(
-            imageUrl: Regex.localImageRegex.firstMatch(split)![1]!,
+            imageUrl: Format.fixMediaWithExt(
+                Regex.localImageRegex.firstMatch(split)![1]!),
             vPadding: 12,
             postId: postId,
           ));
         } else {
           // local image for mobile
           elements.add(FilePaddingImage(
-            file: File(Regex.localImageRegex.firstMatch(split)![1]!),
+            file: File(Format.fixMediaWithExt(
+                Regex.localImageRegex.firstMatch(split)![1]!)),
             vPadding: 12,
           ));
         }
@@ -122,7 +125,14 @@ class StringConverter {
         elements.add(Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: PostVideoPlayer(
-            videoUrl: Regex.localVideoRegex.firstMatch(split)![2]!,
+            videoUrl: Format.fixMediaWithExt(
+                Regex.localVideoRegex.firstMatch(split)![2]!),
+            videoImageUrl:
+                Regex.localVideoRegex.firstMatch(split)![1] == null ||
+                        Regex.localVideoRegex.firstMatch(split)![1]!.isEmpty
+                    ? null
+                    : Format.fixMediaWithExt(
+                        Regex.localVideoRegex.firstMatch(split)![1]!),
             isIosLocal:
                 kIsWeb ? false : defaultTargetPlatform == TargetPlatform.iOS,
           ),

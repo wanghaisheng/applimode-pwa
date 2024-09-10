@@ -25,6 +25,7 @@ const String showUserAdminLabelKey = 'showUserAdminLabel';
 const String showUserLikeCountKey = 'showUserLikeCount';
 const String showUserDislikeCountKey = 'showUserDislikeCount';
 const String showUserSumCountKey = 'showUserSumCount';
+const String isMaintenanceKey = 'isMaintenance';
 
 // media max sizes for admin settings
 const List<double> mediaMaxMBSizesList = [
@@ -81,8 +82,8 @@ const String contentTypeWebp = 'image/webp';
 // video
 const String contentTypeMp4 = 'video/mp4';
 const String contentTypeM4v = 'video/x-m4v';
-const String contentTypeWebm = 'video/webm';
 const String contentTypeQv = 'video/quicktime';
+const String contentTypeWebm = 'video/webm';
 
 // audio
 const String contentTypeMp3 = 'audio/mpeg';
@@ -92,6 +93,26 @@ const String contentTypeWave = 'audio/x-wav';
 const String contentTextPlain = 'text/plain';
 const String contentTextHtml = 'text/html';
 const String contentJson = 'application/json';
+
+const List<String> imageExts = ['jpeg', 'jpg', 'png', 'gif', 'webp'];
+const List<String> videoExts = ['mp4', 'mov', 'webm'];
+const List<String> audioExts = ['mp3'];
+const List<String> supportedExts = [...imageExts, ...videoExts];
+const List<String> imageContentTypes = [
+  contentTypeJpeg,
+  contentTypeGif,
+  contentTypePng,
+  contentTypeWebp
+];
+const List<String> videoConetntTypes = [
+  contentTypeMp4,
+  contentTypeQv,
+  contentTypeWebm
+];
+const List<String> supporteContentTypes = [
+  ...imageContentTypes,
+  ...videoConetntTypes
+];
 
 // id for a deleted or unknown user
 const String deleted = 'deleted';

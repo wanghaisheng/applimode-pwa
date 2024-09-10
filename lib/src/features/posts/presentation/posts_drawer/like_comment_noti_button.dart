@@ -16,7 +16,7 @@ class LikeCommentNotiButton extends ConsumerStatefulWidget {
 class _LikeCommentNotiButtonState extends ConsumerState<LikeCommentNotiButton> {
   @override
   Widget build(BuildContext context) {
-    final sharedPreferences = ref.watch(sharedPreferencesProvider);
+    final sharedPreferences = ref.watch(prefsWithCacheProvider).requireValue;
     return ListTile(
       leading: const Icon(Icons.notifications_outlined),
       title: Text(context.loc.likeCommentNoti),

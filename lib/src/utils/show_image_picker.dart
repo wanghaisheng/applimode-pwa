@@ -7,8 +7,7 @@ import 'package:image_picker/image_picker.dart';
 
 Future<XFile?> showImagePicker({
   ImageSource imageSource = ImageSource.gallery,
-  bool isMedia = false,
-  bool isVideo = false,
+  bool isImage = false,
   int maxSeconds = videoMaxDuration,
   double? maxWidth,
   double? maxHeight,
@@ -17,23 +16,18 @@ Future<XFile?> showImagePicker({
 }) async {
   final ImagePicker picker = ImagePicker();
   try {
-    final XFile? pickedFile = isMedia
-        ? await picker.pickMedia(
+    final XFile? pickedFile = isImage
+        ? await picker.pickImage(
+            source: imageSource,
             maxWidth: maxWidth,
             maxHeight: maxHeight,
             imageQuality: imageQuality,
           )
-        : isVideo
-            ? await picker.pickVideo(
-                source: imageSource,
-                maxDuration: Duration(seconds: maxSeconds),
-              )
-            : await picker.pickImage(
-                source: imageSource,
-                maxWidth: maxWidth,
-                maxHeight: maxHeight,
-                imageQuality: imageQuality,
-              );
+        : await picker.pickMedia(
+            maxWidth: maxWidth,
+            maxHeight: maxHeight,
+            imageQuality: imageQuality,
+          );
     // check file size
     if (pickedFile != null && mediaMaxMBSize != 0.0) {
       final length = await pickedFile.length();

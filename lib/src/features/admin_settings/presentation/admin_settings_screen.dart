@@ -43,6 +43,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
   late int _titleStyle;
   late String _titleImageUrl;
   XFile? _pickedFile;
+  String? _pickedFileMediaType;
   late Color _mainColor;
   final List<CategoryController> _categories = [];
   late bool _showAppStyleOption;
@@ -63,6 +64,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
   late bool _showUserLikeCount;
   late bool _showUserDislikeCount;
   late bool _showUserSumCount;
+  late bool _isMaintenance;
 
   @override
   void initState() {
@@ -110,6 +112,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     _showUserLikeCount = currentValues.showUserLikeCount;
     _showUserDislikeCount = currentValues.showUserDislikeCount;
     _showUserSumCount = currentValues.showUserSumCount;
+    _isMaintenance = currentValues.isMaintenance;
   }
 
   @override
@@ -142,6 +145,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
             mainColor: _mainColor,
             mainCategory: mainCategory,
             xFile: _pickedFile,
+            mediaType: _pickedFileMediaType,
             showAppStyleOption: _showAppStyleOption,
             postsListType: _postsListType,
             boxColorType: _boxColorType,
@@ -160,6 +164,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
             showUserLikeCount: _showUserLikeCount,
             showUserDislikeCount: _showUserDislikeCount,
             showUserSumCount: _showUserSumCount,
+            isMaintenance: _isMaintenance,
           );
       if (mounted && result) {
         if (kIsWeb) {
@@ -331,9 +336,13 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                               secondTap: () async {
                                 context.pop();
                                 _pickedFile = await showImagePicker(
+                                  isImage: true,
                                   maxHeight: 128,
                                   mediaMaxMBSize: _mediaMaxMBSize,
                                 );
+                                if (_pickedFile != null) {
+                                  _pickedFileMediaType = _pickedFile!.mimeType;
+                                }
                                 setState(() {});
                               },
                             );
@@ -851,6 +860,16 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     onChanged: (value) {
                       setState(() {
                         _showUserSumCount = value;
+                      });
+                    },
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: Text(context.loc.systemMaintenanceMode),
+                    value: _isMaintenance,
+                    onChanged: (value) {
+                      setState(() {
+                        _isMaintenance = value;
                       });
                     },
                   ),

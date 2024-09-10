@@ -14,7 +14,6 @@ import 'package:applimode_app/src/utils/now_to_int.dart';
 import 'package:applimode_app/src/utils/regex.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mime/mime.dart';
 import 'package:applimode_app/src/utils/upload_progress_state.dart';
 import 'package:applimode_app/src/utils/web_video_thumbnail/wvt_stub.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -37,6 +36,7 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
   Future<void> upload({
     required String content,
     required String postNotiString,
+    required String mediaType,
   }) async {
     WakelockPlus.enable();
     final user = ref.read(authRepositoryProvider).currentUser;
@@ -92,15 +92,8 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
 
     String? videoThumbnailUrl = '';
 
-    // media type check
-    String? mediaType;
-    final mimeType = lookupMimeType(isVideo ? match[2]! : match[1]!);
-    if (mimeType != null) {
-      mediaType = mimeType;
-    } else {
-      mediaType = isVideo ? contentTypeMp4 : contentTypeJpeg;
-    }
-    final ext = Format.mimeTypeToExt(mediaType);
+    debugPrint('mediaType: $mediaType');
+    final ext = Format.mimeTypeToExtWithDot(mediaType);
 
     try {
       final bytes = isVideo
@@ -171,7 +164,7 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
         final uploadTask = storageRepository.uploadTask(
           bytes: bytes,
           storagePathname: '${user.uid}/$postsPath/$id',
-          filename: isVideo ? '$filename.mp4' : '$filename$ext',
+          filename: '$filename$ext',
           contentType: mediaType,
         );
 
@@ -202,7 +195,7 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
           ? await rTwoRepository.uploadBytes(
               bytes: bytes,
               storagePathname: '${user.uid}/$postsPath/$id',
-              filename: isVideo ? '$filename.mp4' : '$filename$ext',
+              filename: '$filename$ext',
               contentType: mediaType,
               index: 0,
             )

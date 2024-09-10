@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:applimode_app/src/utils/format.dart';
 import 'package:applimode_app/src/utils/regex.dart';
 import 'package:applimode_app/src/utils/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
@@ -22,7 +23,6 @@ import 'package:applimode_app/custom_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mime/mime.dart';
 import 'package:applimode_app/src/utils/upload_progress_state.dart';
 
 // tabBar comp
@@ -80,8 +80,10 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
         buildCurrentPost();
       }
     } else {
-      final tempNewPost =
-          ref.read(sharedPreferencesProvider).getString('tempNewPost');
+      final tempNewPost = ref
+          .read(prefsWithCacheProvider)
+          .requireValue
+          .getString('tempNewPost');
       if (tempNewPost != null && tempNewPost.trim().isNotEmpty) {
         _controller.text = tempNewPost;
       }
@@ -93,7 +95,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   void _saveTemp() {
     t.cancel();
     t = Timer(const Duration(milliseconds: 1000), () {
-      final sharedPreferences = ref.read(sharedPreferencesProvider);
+      final sharedPreferences = ref.read(prefsWithCacheProvider).requireValue;
       // because the files selected in the image picker are temporarily saved
       final onlyText = _controller.text
           .replaceAll(Regex.localImageRegex, '')
@@ -259,14 +261,13 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     );
   }
 
-  Future<void> _getMedia(
-      {bool isMedia = false,
-      bool isVideo = false,
-      required double mediaMaxMBSize}) async {
+  Future<void> _getMedia(double mediaMaxMBSize) async {
     final text = _controller.text;
     final selection = _controller.selection;
     final start = selection.start;
     final end = selection.end;
+
+    bool isVideo = false;
 
     final isThumbnail = start > 1 &&
         end + 1 < text.length &&
@@ -276,8 +277,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
         text[end + 1] == r'[';
 
     final XFile? pickedFile = await showImagePicker(
-      isMedia: isThumbnail ? false : isMedia,
-      isVideo: isThumbnail ? false : isVideo,
+      isImage: isThumbnail,
       maxWidth: postImageMaxWidth,
       imageQuality: postImageQuality,
       mediaMaxMBSize: mediaMaxMBSize,
@@ -296,11 +296,35 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     if (pickedFile != null) {
       setState(
         () {
-          final mediaType = lookupMimeType(pickedFile.path);
-          // dev.log('mediaType: $mediaType');
+          String? mediaType = pickedFile.mimeType;
+
+          debugPrint('mt: $mediaType');
+
           if (mediaType == null) {
-            isVideo = isVideo;
+            final fileExt = pickedFile.name.split('.').last.toLowerCase();
+            debugPrint('ext: $fileExt');
+            debugPrint('is this video: ${videoExts.contains(fileExt)}');
+            if (videoExts.contains(fileExt)) {
+              mediaType = Format.extToMimeType(fileExt);
+              isVideo = true;
+            } else if (imageExts.contains(fileExt)) {
+              mediaType = Format.extToMimeType(fileExt);
+              isVideo = false;
+            } else {
+              debugPrint('ext is unsupported mediaType');
+              return;
+            }
           } else {
+            if (imageContentTypes.contains(mediaType)) {
+              isVideo = false;
+            } else if (videoConetntTypes.contains(mediaType)) {
+              isVideo = true;
+            } else {
+              debugPrint('mediaType is unsupported mediaType');
+              return;
+            }
+
+            /*
             isVideo = mediaType == contentTypeMp4 ||
                 mediaType == contentTypeM4v ||
                 mediaType == contentTypeWebm ||
@@ -309,6 +333,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                 pickedFile.path.endsWith('.mp4') ||
                 pickedFile.path.endsWith('.mp3') ||
                 pickedFile.path.endsWith('.mov');
+            */
           }
 
           /*
@@ -317,11 +342,14 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
               : '\n[localImage][${pickedFile.path}][]\n';
           */
 
+          final filePath =
+              '${pickedFile.path}?${Format.mimeTypeToExt(mediaType)}';
+
           final inserted = isThumbnail
-              ? pickedFile.path
+              ? filePath
               : isVideo
-                  ? '\n[localVideo][][${pickedFile.path}]\n'
-                  : '\n[localImage][${pickedFile.path}][]\n';
+                  ? '\n[localVideo][][$filePath]\n'
+                  : '\n[localImage][$filePath][]\n';
 
           final newText = text.replaceRange(
             start,

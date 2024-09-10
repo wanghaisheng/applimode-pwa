@@ -22,8 +22,8 @@ class AdminSettingsService {
 
   final Ref _ref;
 
-  SharedPreferences get sharedPreferences =>
-      _ref.read(sharedPreferencesProvider);
+  SharedPreferencesWithCache get sharedPreferences =>
+      _ref.read(prefsWithCacheProvider).requireValue;
   AdminSettingsRepository get adminSettingsRepository =>
       _ref.read(adminSettingsRepositoryProvider);
 
@@ -34,6 +34,7 @@ class AdminSettingsService {
     required Color mainColor,
     required List<MainCategory> mainCategory,
     XFile? xFile,
+    String? mediaType,
     required bool showAppStyleOption,
     required PostsListType postsListType,
     required BoxColorType boxColorType,
@@ -52,15 +53,17 @@ class AdminSettingsService {
     required bool showUserLikeCount,
     required bool showUserDislikeCount,
     required bool showUserSumCount,
+    required bool isMaintenance,
   }) async {
     String homeBarImageUrl = homeBarTitleImageUrl;
     if (xFile != null) {
-      homeBarImageUrl =
-          await _ref.read(firebaseStorageRepositoryProvider).uploadXFile(
-                file: xFile,
-                storagePathname: appBarTitlePath,
-                filename: 'app-bar-logo',
-              );
+      homeBarImageUrl = await _ref
+          .read(firebaseStorageRepositoryProvider)
+          .uploadXFile(
+              file: xFile,
+              storagePathname: appBarTitlePath,
+              filename: 'app-bar-logo',
+              contentType: mediaType ?? contentTypeJpeg);
     }
     await _ref.read(adminSettingsRepositoryProvider).createAdminSettings(
           homeBarTitle: homeBarTitle,
@@ -86,6 +89,7 @@ class AdminSettingsService {
           showUserLikeCount: showUserLikeCount,
           showUserDislikeCount: showUserDislikeCount,
           showUserSumCount: showUserSumCount,
+          isMaintenance: isMaintenance,
         );
   }
 
@@ -161,6 +165,8 @@ class AdminSettingsService {
               showUserDislikeCountKey, adminSettings.showUserDislikeCount);
           sharedPreferences.setBool(
               showUserSumCountKey, adminSettings.showUserSumCount);
+          sharedPreferences.setBool(
+              isMaintenanceKey, adminSettings.isMaintenance);
           sharedPreferences.setInt(adminSettingsModifiedTimeKey,
               DateTime.now().millisecondsSinceEpoch);
         } else {
@@ -207,7 +213,7 @@ AdminSettingsService adminSettingsService(AdminSettingsServiceRef ref) {
 
 @riverpod
 AdminSettings adminSettings(AdminSettingsRef ref) {
-  final sharedPreferences = ref.watch(sharedPreferencesProvider);
+  final sharedPreferences = ref.watch(prefsWithCacheProvider).requireValue;
   return AdminSettings(
     homeBarTitle:
         sharedPreferences.getString(homeBarTitleKey) ?? spareHomeBarTitle,
@@ -256,5 +262,6 @@ AdminSettings adminSettings(AdminSettingsRef ref) {
         spareShowUserDislikeCount,
     showUserSumCount:
         sharedPreferences.getBool(showUserSumCountKey) ?? spareShowUserSumCount,
+    isMaintenance: sharedPreferences.getBool(isMaintenanceKey) ?? false,
   );
 }

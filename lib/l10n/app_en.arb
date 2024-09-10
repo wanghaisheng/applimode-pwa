@@ -203,5 +203,9 @@
   "argeeStart": "By continuing, you agree to ",
   "argeeMiddle": "and acknowledge you have read our",
   "argeeEnd": ".",
+  "maintenanceTitle": "System Maintenance",
+  "maintenanceMessage": "The system is currently under maintenance.",
+  "maintenanceAccess": "Administrator access only.",
+  "systemMaintenanceMode": "System maintenance mode",
   "unknown": "Unknown"
 }

@@ -6,6 +6,7 @@ import 'package:applimode_app/src/features/comments/data/post_comment_likes_repo
 import 'package:applimode_app/src/features/comments/data/post_comments_repository.dart';
 import 'package:applimode_app/src/features/firebase_storage/firebase_storage_repository.dart';
 import 'package:applimode_app/src/features/posts/data/posts_repository.dart';
+import 'package:applimode_app/src/utils/format.dart';
 import 'package:applimode_app/src/utils/nanoid.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,6 +26,7 @@ class PostCommentsService {
     required bool isReply,
     String? content,
     XFile? xFile,
+    String? mediaType,
   }) async {
     await ref
         .read(postsRepositoryProvider)
@@ -38,11 +40,14 @@ class PostCommentsService {
 
     String? remoteImageUrl;
     if (xFile != null) {
+      final fileExt =
+          mediaType == null ? '.jpeg' : Format.mimeTypeToExtWithDot(mediaType);
       remoteImageUrl =
           await ref.read(firebaseStorageRepositoryProvider).uploadXFile(
                 file: xFile,
                 storagePathname: '$commentsPath/$postId',
-                filename: nanoid(),
+                filename: '${nanoid()}$fileExt',
+                contentType: mediaType ?? contentTypeJpeg,
               );
     }
 

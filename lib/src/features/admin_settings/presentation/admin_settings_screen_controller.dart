@@ -26,6 +26,7 @@ class AdminSettingsScreenController extends _$AdminSettingsScreenController {
     required Color mainColor,
     required List<MainCategory> mainCategory,
     XFile? xFile,
+    String? mediaType,
     required bool showAppStyleOption,
     required PostsListType postsListType,
     required BoxColorType boxColorType,
@@ -44,6 +45,7 @@ class AdminSettingsScreenController extends _$AdminSettingsScreenController {
     required bool showUserLikeCount,
     required bool showUserDislikeCount,
     required bool showUserSumCount,
+    required bool isMaintenance,
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
@@ -68,6 +70,7 @@ class AdminSettingsScreenController extends _$AdminSettingsScreenController {
             mainColor: mainColor,
             mainCategory: mainCategory,
             xFile: xFile,
+            mediaType: mediaType,
             showAppStyleOption: showAppStyleOption,
             postsListType: postsListType,
             boxColorType: boxColorType,
@@ -86,6 +89,7 @@ class AdminSettingsScreenController extends _$AdminSettingsScreenController {
             showUserLikeCount: showUserLikeCount,
             showUserDislikeCount: showUserDislikeCount,
             showUserSumCount: showUserSumCount,
+            isMaintenance: isMaintenance,
           ),
     );
 

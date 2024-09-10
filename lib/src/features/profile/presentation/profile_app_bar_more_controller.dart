@@ -21,7 +21,10 @@ class ProfileAppBarMoreController extends _$ProfileAppBarMoreController {
     ref.onDispose(() => key = null);
   }
 
-  Future<void> changeProfileImage(XFile? xFile) async {
+  Future<void> changeProfileImage({
+    XFile? xFile,
+    String? mediaType,
+  }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
       state = AsyncError(Exception('Login is required.'), StackTrace.current);
@@ -30,8 +33,12 @@ class ProfileAppBarMoreController extends _$ProfileAppBarMoreController {
 
     state = const AsyncLoading();
     final key = this.key;
-    final newState = await AsyncValue.guard(() =>
-        ProfileService(ref).changeProfileImage(uid: user.uid, xFile: xFile));
+    final newState =
+        await AsyncValue.guard(() => ProfileService(ref).changeProfileImage(
+              uid: user.uid,
+              xFile: xFile,
+              mediaType: mediaType,
+            ));
 
     if (key == this.key) {
       state = newState;
@@ -42,7 +49,10 @@ class ProfileAppBarMoreController extends _$ProfileAppBarMoreController {
     ref.invalidate(uploadProgressStateProvider);
   }
 
-  Future<void> changeStoryImage(XFile? xFile) async {
+  Future<void> changeStoryImage({
+    XFile? xFile,
+    String? mediaType,
+  }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
       state = AsyncError(Exception('Login is required.'), StackTrace.current);
@@ -51,8 +61,12 @@ class ProfileAppBarMoreController extends _$ProfileAppBarMoreController {
 
     state = const AsyncLoading();
     final key = this.key;
-    final newState = await AsyncValue.guard(() =>
-        ProfileService(ref).changeStoryImage(uid: user.uid, xFile: xFile));
+    final newState =
+        await AsyncValue.guard(() => ProfileService(ref).changeStoryImage(
+              uid: user.uid,
+              xFile: xFile,
+              mediaType: mediaType,
+            ));
 
     if (key == this.key) {
       state = newState;

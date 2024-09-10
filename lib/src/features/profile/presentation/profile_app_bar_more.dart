@@ -1,9 +1,11 @@
+import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/profile/presentation/profile_app_bar_more_controller.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/async_value_ui.dart';
+import 'package:applimode_app/src/utils/format.dart';
 import 'package:applimode_app/src/utils/show_image_picker.dart';
 import 'package:applimode_app/src/utils/show_selection_dialog.dart';
 import 'package:applimode_app/custom_settings.dart';
@@ -77,20 +79,41 @@ class ProfileAppBarMore extends ConsumerWidget {
                       context.pop();
                       await ref
                           .read(profileAppBarMoreControllerProvider.notifier)
-                          .changeProfileImage(null);
+                          .changeProfileImage();
                     },
                     secondTitle: context.loc.chooseFromGallery,
                     secondTap: () async {
                       context.pop();
-                      final xFile = await showImagePicker(
+                      final pickedFile = await showImagePicker(
+                        isImage: true,
                         maxWidth: profileMaxWidth,
                         maxHeight: profileMaxHeight,
                         mediaMaxMBSize: mediaMaxMBSize,
                       );
-                      if (xFile != null) {
+                      if (pickedFile != null) {
+                        String? mediaType = pickedFile.mimeType;
+
+                        if (mediaType == null) {
+                          final fileExt =
+                              pickedFile.name.split('.').last.toLowerCase();
+                          if (imageExts.contains(fileExt)) {
+                            mediaType = Format.extToMimeType(fileExt);
+                          } else {
+                            debugPrint('ext is unsupported mediaType');
+                            return;
+                          }
+                        } else {
+                          if (!imageContentTypes.contains(mediaType)) {
+                            debugPrint('mediaType is unsupported mediaType');
+                            return;
+                          }
+                        }
                         await ref
                             .read(profileAppBarMoreControllerProvider.notifier)
-                            .changeProfileImage(xFile);
+                            .changeProfileImage(
+                              xFile: pickedFile,
+                              mediaType: mediaType,
+                            );
                       }
                     },
                   );
@@ -107,21 +130,42 @@ class ProfileAppBarMore extends ConsumerWidget {
                         context.pop();
                         await ref
                             .read(profileAppBarMoreControllerProvider.notifier)
-                            .changeStoryImage(null);
+                            .changeStoryImage();
                       },
                       secondTitle: context.loc.chooseFromGallery,
                       secondTap: () async {
                         context.pop();
-                        final xFile = await showImagePicker(
+                        final pickedFile = await showImagePicker(
+                          isImage: true,
                           maxWidth: storyMaxWidth,
                           maxHeight: storyMaxHeight,
                           mediaMaxMBSize: mediaMaxMBSize,
                         );
-                        if (xFile != null) {
+                        if (pickedFile != null) {
+                          String? mediaType = pickedFile.mimeType;
+
+                          if (mediaType == null) {
+                            final fileExt =
+                                pickedFile.name.split('.').last.toLowerCase();
+                            if (imageExts.contains(fileExt)) {
+                              mediaType = Format.extToMimeType(fileExt);
+                            } else {
+                              debugPrint('ext is unsupported mediaType');
+                              return;
+                            }
+                          } else {
+                            if (!imageContentTypes.contains(mediaType)) {
+                              debugPrint('mediaType is unsupported mediaType');
+                              return;
+                            }
+                          }
                           await ref
                               .read(
                                   profileAppBarMoreControllerProvider.notifier)
-                              .changeStoryImage(xFile);
+                              .changeStoryImage(
+                                xFile: pickedFile,
+                                mediaType: mediaType,
+                              );
                         }
                       },
                     );

@@ -3,6 +3,12 @@
 ### New Features and Improvements
 ### Bug Fixes
 -->
+## Version 0.1.6 (September 04, 2024)
+- Added maintenance screen.
+- Improved app initialization process.
+- Changed SharedPreference to SharedPreferencesWithCache
+- Improved file upload (content type related)
+
 ## Version 0.1.5 (August 24, 2024)
 - Added round card type and mixed type to app style
 - Improved overall design.
