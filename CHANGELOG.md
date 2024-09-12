@@ -3,6 +3,9 @@
 ### New Features and Improvements
 ### Bug Fixes
 -->
+## Version 0.1.7 (September 12, 2024)
+- Improved push notification feature.
+
 ## Version 0.1.6 (September 04, 2024)
 - Added maintenance screen.
 - Improved app initialization process.

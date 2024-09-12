@@ -20,5 +20,20 @@ final fcmServiceProvider = AutoDisposeProvider<FCMService>.internal(
 );
 
 typedef FcmServiceRef = AutoDisposeProviderRef<FCMService>;
+String _$authorizedByUserHash() => r'2c75f0c9afa25fcc7fa98be1e5756a176b51f7a6';
+
+/// See also [authorizedByUser].
+@ProviderFor(authorizedByUser)
+final authorizedByUserProvider = AutoDisposeFutureProvider<bool>.internal(
+  authorizedByUser,
+  name: r'authorizedByUserProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$authorizedByUserHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef AuthorizedByUserRef = AutoDisposeFutureProviderRef<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

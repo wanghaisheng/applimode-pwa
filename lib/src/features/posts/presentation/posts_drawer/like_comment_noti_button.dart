@@ -1,5 +1,6 @@
-import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
+import 'package:applimode_app/src/features/posts/presentation/posts_drawer/like_comment_noti_button_controller.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:applimode_app/src/utils/fcm_service.dart';
@@ -17,22 +18,47 @@ class _LikeCommentNotiButtonState extends ConsumerState<LikeCommentNotiButton> {
   @override
   Widget build(BuildContext context) {
     final sharedPreferences = ref.watch(prefsWithCacheProvider).requireValue;
-    return ListTile(
-      leading: const Icon(Icons.notifications_outlined),
-      title: Text(context.loc.likeCommentNoti),
-      trailing: Switch(
-          value: sharedPreferences.getBool('likeCommentNoti') ?? true,
-          onChanged: (value) {
-            sharedPreferences.setBool('likeCommentNoti', value);
-            if (!value) {
-              final user = ref.read(authRepositoryProvider).currentUser;
-              if (user != null) {
-                ref.read(fcmServiceProvider).tokenToEmpty(user.uid);
-              }
-            }
-            setState(() {});
-          }),
-      leadingAndTrailingTextStyle: Theme.of(context).textTheme.labelLarge,
+    final authorized = ref.watch(authorizedByUserProvider);
+    final isActivated = sharedPreferences.getBool('likeCommentNoti') != null;
+
+    final isLoading =
+        ref.watch(likeCommentNotiButtonControllerProvider).isLoading;
+
+    return authorized.when(
+      data: (authorized) => authorized && isActivated
+          ? ListTile(
+              leading: const Icon(Icons.notifications_outlined),
+              title: Text(context.loc.likeCommentNoti),
+              trailing: isLoading
+                  ? const CupertinoActivityIndicator()
+                  : Switch(
+                      value: sharedPreferences.getBool('likeCommentNoti')!,
+                      onChanged: (value) async {
+                        if (value) {
+                          final success = await ref
+                              .read(likeCommentNotiButtonControllerProvider
+                                  .notifier)
+                              .updateToken();
+                          if (success) {
+                            sharedPreferences.setBool('likeCommentNoti', value);
+                          }
+                        } else {
+                          final success = await ref
+                              .read(likeCommentNotiButtonControllerProvider
+                                  .notifier)
+                              .tokenToEmpty();
+                          if (success) {
+                            sharedPreferences.setBool('likeCommentNoti', value);
+                          }
+                        }
+                        setState(() {});
+                      }),
+              leadingAndTrailingTextStyle:
+                  Theme.of(context).textTheme.labelLarge,
+            )
+          : const SizedBox.shrink(),
+      error: (error, stackTrace) => const SizedBox.shrink(),
+      loading: () => const SizedBox.shrink(),
     );
   }
 }

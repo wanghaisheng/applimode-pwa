@@ -48,25 +48,25 @@ class FcmFunctions {
     callable.call(<String, dynamic>{"payload": payload});
   }
 
-  static void callSubscribeToTopic({
+  static Future<void> callSubscribeToTopic({
     required String token,
     required String topic,
-  }) {
+  }) async {
     final callable =
         FirebaseFunctions.instance.httpsCallable('subscribeToTopic');
 
-    callable
+    await callable
         .call(<String, String>{"registrationTokens": token, "topic": topic});
   }
 
-  static void callUnsubscribeFromTopic({
+  static Future<void> callUnsubscribeFromTopic({
     required String token,
     required String topic,
-  }) {
+  }) async {
     final callable =
         FirebaseFunctions.instance.httpsCallable('unsubscribeFromTopic');
 
-    callable
+    await callable
         .call(<String, String>{"registrationTokens": token, "topic": topic});
   }
 }

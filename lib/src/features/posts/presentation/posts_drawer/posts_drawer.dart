@@ -129,7 +129,8 @@ class PostsDrawer extends ConsumerWidget {
             const AppLocaleButton(),
             if (isUsableFcm()) ...[
               const NewPostNotiButton(),
-              if (user != null) const LikeCommentNotiButton(),
+              if (user != null && appUser != null)
+                const LikeCommentNotiButton(),
             ],
             divider24,
             if (appUser != null && appUser.isAdmin)

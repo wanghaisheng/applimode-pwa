@@ -16,19 +16,13 @@ part 'fcm_service.g.dart';
 bool isUsableFcm() {
   if (useFcmMessage) {
     // for web app like pwa
-    // Currently not available in Safari on iOS and MacOS
-    if (kIsWeb &&
-        fcmVapidKey.trim().isNotEmpty &&
-        !(defaultTargetPlatform == TargetPlatform.iOS ||
-            defaultTargetPlatform == TargetPlatform.macOS)) {
+    if (kIsWeb && fcmVapidKey.trim().isNotEmpty) {
       return true;
     }
-
     // for Android
     if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
       return true;
     }
-
     // for iOS
     if (useApns && !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
       return true;
@@ -50,20 +44,56 @@ class FCMService {
   final Ref _ref;
   final FirebaseMessaging _fcm;
 
+  Future<String?> get fcmToken =>
+      kIsWeb ? _fcm.getToken(vapidKey: fcmVapidKey) : _fcm.getToken();
+
+  Future<bool> authorizedByUser() async {
+    /// To show the push notification settings button only when authorized
+    /// authorized 된 상태에서만 푸쉬알림 설정 버튼을 보여주기 위해
+    final settings = await _fcm.getNotificationSettings();
+
+    /// authorized, denied, notDetermined, provisional
+    /// notDetermined -> The app user has not yet chosen whether to allow the application to create notifications. Usually this status is returned prior to the first call of requestPermission.
+    /// provisional -> The app is currently authorized to post non-interrupting user notifications.
+    dev.log('authorizationStatus: ${settings.authorizationStatus}');
+    return settings.authorizationStatus == AuthorizationStatus.authorized;
+  }
+
   Future<void> setupToken() async {
     try {
+      /// Safari doesn't show permission request dialog if user doesn't respond (like pressing a button)
+      /// Delayed for 5 seconds to give the user time to press the button.
+      /// If the user does not set up notifications, the app will automatically check when starting up.
+      /// safari는 사용자가 반응하지 않은 경우 (버튼 누름 같은) 퍼미션 요청창을 보여주지 않음
+      /// 사용자가 버튼을 누를 시간을 확보하기 위해 5초 동안 딜레이시켰음
+      /// 만약 사용자가 알림설정을 하지 않을 경우 자동으로 앱 시작 시 항상 체크할 것임
+      if (kIsWeb &&
+          (defaultTargetPlatform == TargetPlatform.iOS ||
+              defaultTargetPlatform == TargetPlatform.macOS)) {
+        await Future.delayed(const Duration(seconds: 5));
+      }
+
       await _fcm.requestPermission();
 
       final settings = await _fcm.getNotificationSettings();
+      debugPrint('authorizationStatus: settings.authorizationStatus');
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        /// After the user approves the notification, the function will be executed the next time the app starts.
+        /// 사용자가 알림 승인을 한 후 다음 앱 시작시 해당 함수가 수행됨.
         debugPrint('User granted permission');
-        final token = kIsWeb
-            ? await _fcm.getToken(vapidKey: fcmVapidKey)
-            : await _fcm.getToken();
+
+        /// Check and update token every time app starts
+        /// 앱 시작할 때마다 토큰을 체크하고 업데이트
+        final token = await fcmToken;
         if (token == null) {
+          debugPrint('token is null');
           return;
         }
-        setupSub(token);
+
+        /// call the function new post subscription.
+        /// 새글 구독 함수 호출
+        await setupSub(token);
+
         final user = _ref.read(authRepositoryProvider).currentUser;
         if (user == null) {
           return;
@@ -72,76 +102,62 @@ class FCMService {
         final sharedPreferences =
             _ref.read(prefsWithCacheProvider).requireValue;
         final isLikeComment = sharedPreferences.getBool('likeCommentNoti');
-        if (appUser == null ||
-            (appUser.fcmToken != null && appUser.fcmToken == token) ||
-            (isLikeComment != null && !isLikeComment)) {
-          return;
+
+        /// Login is required. If notifications have not been set yet, or if notifications have been set but the token is missing or different
+        /// 로그인 된 상태에서 아직 알림 설정이 되지 않은 경우, 알림 설정이 됐지만 토큰이 없거나 다른 경우
+        if (appUser != null &&
+            (isLikeComment == null ||
+                (isLikeComment &&
+                    (appUser.fcmToken == null ||
+                        appUser.fcmToken!.isEmpty ||
+                        appUser.fcmToken != token)))) {
+          dev.log('token refresh');
+          try {
+            await _ref.read(appUserRepositoryProvider).updateFcmToken(
+                  uid: user.uid,
+                  token: token,
+                );
+            await _ref
+                .read(prefsWithCacheProvider)
+                .requireValue
+                .setBool('likeCommentNoti', true);
+            _ref.invalidate(appUserFutureProvider);
+          } catch (e) {
+            debugPrint('likeCommentNotiInitError: ${e.toString()}');
+          }
         }
-        _ref.read(appUserRepositoryProvider).updateFcmToken(
-              uid: user.uid,
-              token: token,
-            );
       }
     } catch (e) {
       debugPrint('setupTokenError: ${e.toString()}');
     }
   }
 
+  /// Function to automatically trigger subscriptions to new posts
+  /// 새 글에 대한 구독을 자동으로 실행하는 함수
   Future<void> setupSub(String token) async {
-    try {
-      if (_ref
-              .read(prefsWithCacheProvider)
-              .requireValue
-              .getBool('newPostNoti') ??
-          true) {
-        debugPrint('subscribe');
+    final isNewPostNoti =
+        _ref.read(prefsWithCacheProvider).requireValue.getBool('newPostNoti');
+    if (isNewPostNoti == null) {
+      try {
         if (kIsWeb) {
-          FcmFunctions.callSubscribeToTopic(token: token, topic: 'newPost');
+          await FcmFunctions.callSubscribeToTopic(
+              token: token, topic: 'newPost');
         } else {
           await _fcm.subscribeToTopic('newPost');
         }
-      } else {
-        debugPrint('unsubscribe');
-        if (kIsWeb) {
-          FcmFunctions.callUnsubscribeFromTopic(token: token, topic: 'newPost');
-        } else {
-          await _fcm.unsubscribeFromTopic('newPost');
-        }
+        await _ref
+            .read(prefsWithCacheProvider)
+            .requireValue
+            .setBool('newPostNoti', true);
+      } catch (e) {
+        debugPrint('setupSubError: ${e.toString()}');
       }
-    } catch (e) {
-      debugPrint('setupSubError: ${e.toString()}');
     }
   }
 
-  Future<void> turnOnSub(String topic) async {
-    try {
-      if (kIsWeb) {
-        final token = await _fcm.getToken(vapidKey: fcmVapidKey);
-        if (token != null) {
-          FcmFunctions.callSubscribeToTopic(token: token, topic: 'newPost');
-        }
-      } else {
-        _fcm.subscribeToTopic(topic);
-      }
-    } catch (e) {
-      debugPrint('turnOnSubError: ${e.toString()}');
-    }
-  }
+  Future<void> subToTopic(String topic) => _fcm.subscribeToTopic(topic);
 
-  Future<void> turnOffSub(String topic) async {
-    try {
-      if (kIsWeb) {
-        final token = await _fcm.getToken(vapidKey: fcmVapidKey);
-        if (token != null) {
-          FcmFunctions.callUnsubscribeFromTopic(token: token, topic: 'newPost');
-        }
-      } else {
-        _fcm.unsubscribeFromTopic(topic);
-      }
-    } catch (e) {
-      debugPrint('turnOffSubError: ${e.toString()}');
-    }
-  }
+  Future<void> unsubFromTopic(String topic) => _fcm.unsubscribeFromTopic(topic);
 
   Future<void> tokenToEmpty(String uid) =>
       _ref.read(appUserRepositoryProvider).updateFcmToken(
@@ -182,4 +198,10 @@ class FCMService {
 @riverpod
 FCMService fcmService(FcmServiceRef ref) {
   return FCMService(ref, FirebaseMessaging.instance);
+}
+
+@riverpod
+FutureOr<bool> authorizedByUser(AuthorizedByUserRef ref) {
+  final fcmService = ref.watch(fcmServiceProvider);
+  return fcmService.authorizedByUser();
 }
