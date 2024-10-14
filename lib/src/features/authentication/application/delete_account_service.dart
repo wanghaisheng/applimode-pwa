@@ -10,6 +10,7 @@ import 'package:applimode_app/src/features/posts/data/post_contents_repository.d
 import 'package:applimode_app/src/features/posts/data/post_likes_repository.dart';
 import 'package:applimode_app/src/features/posts/data/posts_repository.dart';
 import 'package:applimode_app/src/features/profile/data/app_leavers_repository.dart';
+import 'package:applimode_app/src/features/prompts/data/user_prompts_repository.dart';
 import 'package:applimode_app/src/features/r_two_storage/r_two_storage_repository.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -93,6 +94,13 @@ class DeleteAccountService {
       await _ref
           .read(postCommentLikesRepositoryProvider)
           .deletePostCommentLike(postCommentLikeId);
+    }
+
+    // delete user's prompts
+    try {
+      await _ref.read(userPromptsRepositoryProvider).deleteUserPrompt(uid);
+    } catch (e) {
+      dev.log('deleteUserPrompts error: $e');
     }
 
     // delete app user and assets

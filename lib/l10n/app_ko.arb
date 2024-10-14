@@ -207,5 +207,14 @@
   "maintenanceMessage": "현재 시스템 점검 중입니다.",
   "maintenanceAccess": "관리자만 접근이 가능합니다.",
   "systemMaintenanceMode": "시스템 점검 모드",
+  "withAiButton": "생성형 AI",
+  "withAiTitle": "생성형 AI (제미나이)",
+  "generating": "생성중...",
+  "formatIsMarkdown": "글 형식은 마크다운입니다.",
+  "prompt": "메시지",
+  "previousPrompts": "이전 메시지들",
+  "promptHint": "메시지를 입력하세요.",
+  "predefinedPrompt": "사전 정의 메시지",
+  "predefinedPromptHint": "반복적으로 적용되는 메시지를 입력하세요",
   "unknown": "무명"
 }

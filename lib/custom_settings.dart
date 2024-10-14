@@ -15,7 +15,7 @@ const String firebaseProjectName = 'my-applimode';
 const String appCreator = 'JongsukOh';
 const String appEmail = 'yourEmail@email.com';
 const String appEffectiveDate = '2024-08-06';
-const String appVersion = '0.1.7+1';
+const String appVersion = '0.1.8+1';
 
 // spare values when admin settings is not set
 const String spareHomeBarTitle = 'My Applimode';
@@ -91,6 +91,17 @@ const String fcmVapidKey = '';
 // and configure the settings for APNS
 // 설정을 해주는 것이 필요
 const bool useApns = false;
+
+// generate posts using Google Gemini when writing posts
+// need to enable Vertex AI in the firebase console
+// 포스트 작성할 때 구글 제미나이를 사용해 포스트 생성
+// 파이어베이스 콘솔에서 vertex ai 사용 설정해야 함
+const bool useAiAssistant = false;
+
+// Model type to use as AI assistant
+// ai assistant로 사용할 모델 타입
+// gemini-1.5-flash, gemini-1.5-pro
+const String aiModelType = 'gemini-1.5-pro';
 
 // Mute home screen video sound
 // 홈화면 영상 소리 뮤트

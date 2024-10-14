@@ -50,8 +50,9 @@ void registerErrorHandlers() {
   };
   // Show some error UI when any widget in the app fails to build
   ErrorWidget.builder = (FlutterErrorDetails details) {
-    return ErrorScaffold(
-      errorMessage: details.toString(),
+    return const ErrorScaffold(
+      errorMessage: 'Something is wrong. Please try later.',
+      isHome: true,
     );
   };
 }

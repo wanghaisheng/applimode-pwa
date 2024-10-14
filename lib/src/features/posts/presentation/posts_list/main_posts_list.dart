@@ -49,7 +49,7 @@ class _MainPostsListState extends ConsumerState<MainPostsList> {
   Widget build(BuildContext context) {
     final query = ref.watch(postsRepositoryProvider).defaultPostsQuery();
     final mainQuery = ref.watch(postsRepositoryProvider).mainPostsQuery();
-    // final recentDocQuery = ref.watch(postsRepositoryProvider).recentPostQuery();
+    final recentDocQuery = ref.watch(postsRepositoryProvider).recentPostQuery();
     final updatedPostQuery = ref.watch(postsRepositoryProvider).postsRef();
     final resetUpdatedDocIds =
         ref.watch(updatedPostIdsListProvider.notifier).removeAll;
@@ -71,7 +71,7 @@ class _MainPostsListState extends ConsumerState<MainPostsList> {
         // small type
         PostsListType.small => SimplePageListView<Post>(
             query: query,
-            // recentDocQuery: recentDocQuery,
+            recentDocQuery: recentDocQuery,
             showMain: true,
             mainQuery: mainQuery,
             listState: postsListStateProvider,
@@ -99,7 +99,7 @@ class _MainPostsListState extends ConsumerState<MainPostsList> {
         // square type
         PostsListType.square => SimplePageListView<Post>(
             query: query,
-            // recentDocQuery: recentDocQuery,
+            recentDocQuery: recentDocQuery,
             showMain: true,
             mainQuery: mainQuery,
             listState: postsListStateProvider,
@@ -122,7 +122,7 @@ class _MainPostsListState extends ConsumerState<MainPostsList> {
         PostsListType.page => SimplePageListView<Post>(
             query: query,
             isPage: true,
-            // recentDocQuery: recentDocQuery,
+            recentDocQuery: recentDocQuery,
             showMain: true,
             allowImplicitScrolling: true,
             mainQuery: mainQuery,
@@ -148,7 +148,7 @@ class _MainPostsListState extends ConsumerState<MainPostsList> {
           ),
         PostsListType.round => SimplePageListView<Post>(
             query: query,
-            // recentDocQuery: recentDocQuery,
+            recentDocQuery: recentDocQuery,
             showMain: true,
             mainQuery: mainQuery,
             listState: postsListStateProvider,
@@ -170,7 +170,7 @@ class _MainPostsListState extends ConsumerState<MainPostsList> {
           ),
         PostsListType.mixed => SimplePageListView<Post>(
             query: query,
-            // recentDocQuery: recentDocQuery,
+            recentDocQuery: recentDocQuery,
             showMain: true,
             mainQuery: mainQuery,
             listState: postsListStateProvider,

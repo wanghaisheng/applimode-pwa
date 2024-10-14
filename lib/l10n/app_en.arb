@@ -207,5 +207,14 @@
   "maintenanceMessage": "The system is currently under maintenance.",
   "maintenanceAccess": "Administrator access only.",
   "systemMaintenanceMode": "System maintenance mode",
+  "withAiButton": "With AI",
+  "withAiTitle": "With AI (Gemini)",
+  "generating": "Generating...",
+  "formatIsMarkdown": "The format is Markdown.",
+  "prompt": "Prompt",
+  "previousPrompts": "Previous Prompts",
+  "promptHint": "Enter a prompt",
+  "predefinedPrompt": "Predefined Prompt",
+  "predefinedPromptHint": "Enter a prompt that is entered repeatedly",
   "unknown": "Unknown"
 }

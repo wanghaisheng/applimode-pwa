@@ -5,6 +5,8 @@ import 'package:applimode_app/src/features/admin_settings/application/admin_sett
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/comments/presentation/post_comment_controller.dart';
+import 'package:go_router/go_router.dart';
+import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/async_value_ui.dart';
 import 'package:applimode_app/src/utils/format.dart';
@@ -92,10 +94,10 @@ class _PostCommentsScreenBottomBarState
     final user = ref.watch(authStateChangesProvider).value;
     final isLoading = ref.watch(postCommentControllerProvider).isLoading;
     return InkWell(
-      onTap: user == null
-          ? () => showAdaptiveAlertDialog(
-              context: context, content: context.loc.needLogin)
-          : () {},
+      /// If the user is not signed in, go to the sign in screen
+      /// 로그인하지 않았을 경우 로그인창으로
+      onTap:
+          user == null ? () => context.push(ScreenPaths.firebaseSignIn) : () {},
       child: IgnorePointer(
         ignoring: user == null || isLoading,
         child: Container(
