@@ -33,7 +33,7 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'My Applimode',
+      title: fullAppName,
       routerConfig: goRouter,
       localizationsDelegates: [
         AppLocalizations.delegate,

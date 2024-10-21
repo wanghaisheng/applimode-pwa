@@ -127,6 +127,10 @@ firebase-exports
 coverage/lcov.info
 
 # customAdd
+# Firebase config
+.firebaserc
+
+# customAdd
 # Firebase CLI config
 # .firebaserc
 # myCustom

@@ -42,7 +42,7 @@ class FcmFunctions {
       },
       // when gettinng a noti on web, if tap the noti it will open the link
       "webpush": {
-        "fcm_options": {"link": "https://$firebaseProjectName.web.app/"}
+        "fcm_options": {"link": "https://$firebaseProjectId.web.app/"}
       },
     };
     callable.call(<String, dynamic>{"payload": payload});

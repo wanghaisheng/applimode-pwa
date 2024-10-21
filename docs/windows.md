@@ -15,17 +15,19 @@
 * [Configure Firebase](#configure-firebase)
 * [Install Node.js and the Firebase CLI and the Futterfire CLI](#install-nodejs-and-the-firebase-cli-and-the-futterfire-cli)
 * [Configure your project](#configure-your-project)
+* [Change the images for the app icon and the launch screen](#change-the-images-for-the-app-icon-and-the-launch-screen)
+* [Change the app's main color](#change-the-apps-main-color)
 * [Build your Applimode app](#build-your-applimode-app)
 * [Add administrator](#add-administrator)
 * [Admin settings and custom settings](#admin-settings-and-custom-settings)
-* [Build an APK for Android](#build-an-apk-for-android)
 * [Build and release a web app](#build-and-release-a-web-app)
+* [Build an APK for Android](#build-an-apk-for-android)
+* [Configure push notification (Optional)](#configure-push-notification-optional)
 * [Configure Cloudflare R2 (Optional)](#configure-cloudflare-r2-optional)
 * [Configure Cloudflare D1 (Optional)](#configure-cloudflare-d1-optional)
 * [Configure Cloudflare CDN (Optional)](#configure-cloudflare-cdn-optional)
 * [Configure Youtube image proxy (Optional)](#configure-youtube-image-proxy-optional)
 * [Configure Youtube video proxy (Optional)](#configure-youtube-video-proxy-optional)
-* [Configure push notification (Optional)](#configure-push-notification-optional)
 * [Use your custom domain (Optional)](#use-your-custom-domain-optional)
 * [Upgrade your project with the new Applimode version](#upgrade-your-project-with-the-new-applimode-version)
 * [Configure Cloud Firestore Security Rules](#configure-cloud-firestore-security-rules)
@@ -93,7 +95,13 @@ flutter doctor
 * Click [Go to console](https://console.firebase.google.com).
 * Click **Add project**.
 * Enter a project name and click **Continue**.
-* Disable **Google Analytics** and click **Create project**. (You can change this setting later.)
+* Enable **Google Analytics for your project** then click **Continue**.
+* Select your Google Analytics account or select **Default Account for Firebase**. Click **Create Project**.
+<!--* Disable **Google Analytics** and click **Create project**. (You can change this setting later.)-->
+* Click **Upgrade** on the bottom of the left sidebar.
+* Click **Select plan** to choose Blaze plan.
+> [!NOTE]
+> To use complete services like - Cloud Storage, Cloud Functions to trigger push notifications etc, Vertex AI in Firebase & to remove all limits, you must **Upgrade** the default **Spark plan** (Free Plan) to **Blaze plan** (Monthly Billed Paid Plan). However, Google will only Bill you monthly after your free quota gets exhausted depending upon the usage. You can also set [Billing Alerts](https://firebase.google.com/docs/projects/billing/avoid-surprise-bills#set-up-budget-alert-emails) when it crosses your mentioned amount every month. You may refer [Firebase official pricing page](https://firebase.google.com/pricing) to compare both plans.
 * Click **Build** (on the left sidebar) and click **Authentication**.
 * Click **Get started** and then click **Email/Password**.
 * Enable **Email/Password** and click **Save**.
@@ -102,6 +110,9 @@ flutter doctor
 * Click **Next** and then click **Create**.
 * Click **Build** (on the left sidebar) and then click **Storage**.
 * Click **Get started**, then click **Next**, and finally click **Done**.
+* Click **Build with Gemini** (on the left sidebar).
+* Click **Get started** on the **Vertex AI in Firebase** card.
+* Click **Enable APIs**, then click **Continue**.
 
 
 
@@ -146,80 +157,51 @@ dart pub global activate flutterfire_cli
 mkdir ~/projects; cd ~/projects;
 ```
 ```sh
-git clone https://github.com/mycalls/applimode-tool.git
-```
-```sh
 git clone https://github.com/mycalls/applimode.git
 ```
-* Close **PowerShell**.
-* Open **VSCode**
-* Click **File** (on the top menu of VSCode), select **Open Folder**, choose **applimode-tool** (in the **projects** folder) and click **Open**.
-* Click **View** (on the top menu of VSCode), then select **Terminal**.
-* Modify and run the following command.
 ```sh
-npm run init -- --project-name="project name" --full-name="App Full Name" --short-name="App Short Name" --organization-name="myhome" --firebase-name="firebaseProjectId" --worker-key="yourWorkerKey" --main-color="FCB126"
+cd applimode/applimode-tool/
 ```
-<!--Todos
-각 parameter에 대한 설명을 별도의 페이지로 만들어 직접 변경을 원하는 사람들에 대한 가이드도 제공할 것
--->
+```sh
+node index.js init
+```
+* Enter your project name, long app name, short app name, and organization name.
 > [!NOTE]
-> * If the project name, full name, and short name are all the same, you can enter only the project name.
-> * The project name can only contain alphabets, and a combination of two words is recommended.
-> * The project name and organization name are used to create each bundle ID for use in the App Store and Play Store. The bundle ID must be unique, so please decide carefully.
-> * To find the Firebase project ID, go to your Firebase project page -> click the settings button on the left -> select Project settings -> copy Project ID.
-> * The worker key is used to store media files using Cloudflare's R2. This is optional, and you can enter your desired password.
-> * The default media file storage is Firebase Cloud Storage, so no separate settings are required.
-> * You can set up Cloudflare R2 as your media file storage, by following [this guide](#configure-cloudflare-r2-optional).
-> * The full name, short name, worker key, main color ​​can be changed later.
-
-* Prepare images to be used for the app icon and launch screen.
-<!--Todos 피그마 공유 템플릿 파일 만들고 링크 제공할 것-->
-> [!NOTE]
-> * app-bar-logo.png - 128 * 128 (Margin of about 4 px, no background)
-> * app-icon-512.png - 512 * 512 (Use an image of 1024 px)
-> * app-icon-1024.png - 1024 * 1024 (Margin of about 160 px)
-> * app-logo-android12.png - 960 * 960 (Margin of about 240, no background)
-> * app-logo.png - 720 * 720 (Margin of about 8 px, no background)
-* Open File Explorer. (press ```Windows``` + ```E```)
-* Open your project folder (maybe in the projects folder), open the **assets** folder, and then open the **images** folder.
-* Replace the image files in the folder with the image files you prepared.
-* Go back to **VSCode**.
+> * The project name is used to create the project folder name and the bundle ID for the apps (web, Android, iOS).
+> * The long app name is mainly used for web apps.
+> * The short app name is mainly used for mobile apps (iOS, Android).
+> * The organization name, along with the project name, is used to create each bundle ID for use in the App Store and Play Store. The bundle ID must be unique, so please decide carefully.
+* Close **PowerShell**.
+* Open **VSCode**.
 * Click **File** (on the top menu of VSCode), select **Open Folder**, choose your project folder (maybe in the **projects** folder), and click **Open**.
 * Click **View** (on the top menu of VSCode), then select **Terminal**.
 * Run the following commands in order:
-<!--
-```sh
-flutter clean
-```
--->
 ```sh
 flutter pub get
-```
-```sh
-dart run flutter_native_splash:create
-```
-```sh
-flutter pub run flutter_launcher_icons
 ```
 ```sh
 dart run build_runner build -d
 ```
 ```sh
-flutterfire configure
+flutterfire configure --platforms=android,ios,web
 ```
 > when asked something, press **n** or **N**.
+```sh
+cd applimode-tool; node index.js firebaserc; cd ..
+```
 ```sh
 firebase deploy --only firestore
 ```
 ```sh
 firebase deploy --only storage
 ```
-<!--
-* If you want to enter commands all at once, run the following command:
-```sh
-flutter pub get; dart run flutter_native_splash:create; flutter pub run flutter_launcher_icons; dart run build_runner build -d; flutterfire configure; firebase deploy --only firestore; firebase deploy --only storage;
-```
--->
+
+> [!NOTE]
+> * If you want to enter commands all at once, run the following command:
+> ```sh
+> flutter pub get; dart run build_runner build -d; flutterfire configure --platforms=android,ios,web; cd applimode-tool; node index.js firebaserc; cd ..; firebase deploy --only firestore; firebase deploy --only storage;
+> ```
+
 * Open [Google Cloud console](https://console.cloud.google.com/) in your web browser.
 * Sign up or log in.
 * Select your project on the top left.
@@ -256,7 +238,44 @@ exit
 
 
 
-## Build your Applimode app.
+## Change the images for the app icon and the launch screen
+* If you have prepared images for the app icon and launch screen of your project, follow the steps below. If you don't have them yet, you can skip this step and set them later.
+<!--Todos 피그마 공유 템플릿 파일 만들고 링크 제공할 것-->
+> [!NOTE]
+> * app-bar-logo.png - 128 * 128 (Margin of about 4 px, no background)
+> * app-icon-512.png - 512 * 512 (Use an image of 1024 px)
+> * app-icon-1024.png - 1024 * 1024 (Margin of about 160 px)
+> * app-logo-android12.png - 960 * 960 (Margin of about 240, no background)
+> * app-logo.png - 720 * 720 (Margin of about 8 px, no background)
+* Open File Explorer. (press ```Windows``` + ```E```)
+* Open your project folder, open the **assets** folder, and then open the **images** folder.
+* Replace the image files in the folder with the image files you prepared.
+* Go to or open your Applimode project in **VSCode**.
+* Click **View** (on the top menu of VSCode), then select **Terminal**.
+* Run the following commands in order:
+```sh
+dart run flutter_native_splash:create
+```
+```sh
+flutter pub run flutter_launcher_icons
+```
+
+
+
+## Change the app's main color
+* Go to or open your Applimode project in **VSCode**.
+* Click **View** (on the top menu of VSCode), then select **Terminal**.
+* Run the following command.
+```sh
+cd applimode-tool; node index.js color; cd ..
+```
+* Type the color code in hex format (e.g., fcb126, f37d76).
+> [!NOTE]
+> You can also change the main color in the **Admin Settings** after launching the app. For more detailed instructions, refer to the [following chapter](#admin-settings-and-custom-settings).
+
+
+
+## Build your Applimode app
 > [!IMPORTANT]
 > * Do this chapter after your Firestore indexing is complete. (about 5 minutes) You can check your Firestore indexing here: [Firebase console](https://console.firebase.google.com/) > your project > Firestore Database > Indexes.
 > * To install your Applimode app on an iOS device, you need a device with macOS installed. For more details, visit [Configure Applimode for macOS](https://github.com/mycalls/applimode/blob/main/docs/macos.md).
@@ -354,25 +373,6 @@ exit
 
 
 
-## Build an APK for Android
-* Go to or open your Applimode project in **VSCode**.
-<!--
-* Click **File** (on the top menu of VSCode) and select **Open Folder**.
-* Select your project folder and click **Open**.
--->
-* Click **View** (on the top menu of VSCode) and select **Terminal**.
-* Run the following command:
-```sh
-flutter build apk --release --target-platform=android-arm64
-```
-> [!IMPORTANT]
-> If you change the custom settings file, you need to re-run the command to update your app.
-* You can find your apk file here: 
-**\<your-project-folder\>\build\app\outputs\apk\release** or **\<your-project-folder\>\build\app\outputs\flutter-apk\app-release.apk**
-> For more details, visit [this link](https://docs.flutter.dev/deployment/android#build-the-app-for-release).
-
-
-
 ## Build and release a web app
 <!--
 // build/web
@@ -406,6 +406,66 @@ firebase deploy --only hosting
 * If you want to use your custom domain, read [this chapter](#use-your-custom-domain-optional).
 * Please visit [this page](https://github.com/mycalls/applimode/blob/main/docs/pwa.md) for how to install a PWA(Progressive Web App) on your phone and computer.
 <!--todos pwa 설치 방법 페이지 만들고 링크 추가-->
+
+
+
+## Build an APK for Android
+* Go to or open your Applimode project in **VSCode**.
+<!--
+* Click **File** (on the top menu of VSCode) and select **Open Folder**.
+* Select your project folder and click **Open**.
+-->
+* Click **View** (on the top menu of VSCode) and select **Terminal**.
+* Run the following command:
+```sh
+flutter build apk --release --target-platform=android-arm64
+```
+> [!IMPORTANT]
+> If you change the custom settings file, you need to re-run the command to update your app.
+* You can find your apk file here: 
+**\<your-project-folder\>\build\app\outputs\apk\release** or **\<your-project-folder\>\build\app\outputs\flutter-apk\app-release.apk**
+> For more details, visit [this link](https://docs.flutter.dev/deployment/android#build-the-app-for-release).
+
+
+
+## Configure push notification (Optional)
+> [!NOTE]
+> * To use APNs (Apple Push Notification service), you must register for [Apple Developer Program](https://developer.apple.com/programs/). (99 USD)
+> * To use APNs, you need a device with macOS installed. For more details, visit [Configure Applimode for macOS]().
+* Go to or open **VSCode**.
+* Click **File** (on the top menu of VSCode) and select **Open Folder** and select your project folder (maybe in the **projects** folder) and click **Open**.
+* Click **View** (on the top menu of VSCode) and select **Terminal**.
+* Run the following commands.
+```sh
+cd applimode-tool; node index.js fcm; cd ..
+```
+> [!NOTE]
+> * To find the vapid key, open or go to your [Firebase console](https://console.firebase.google.com/).
+> * Click your project.
+> * Click the settings button on the top of the left sidebar.
+> * Click **Project settings**.
+![fb-project-settings](https://github.com/mycalls/applimode-examples/blob/main/assets/fb-project-settings.png?raw=true)
+> * Click Cloud Messaging on the top tab menu and scroll to the bottom.
+> * Click **Generate key pair**.
+> * Copy Key pair of Web Push certificates.
+![fb-cloud-message-web](https://github.com/mycalls/applimode-examples/blob/main/assets/fb-cloud-message-web.png?raw=true)
+<!--
+```
+firebase init functions
+```
+-->
+```
+cd functions
+```
+```
+npm install
+```
+```
+firebase deploy --only functions
+```
+```
+cd ..
+```
 
 
 
@@ -483,12 +543,24 @@ npx wrangler r2 bucket list
 npx wrangler secret put AUTH_KEY_SECRET
 ```
 <!--Enter a secret value:-->
-* Type your worker key that you entered in the [Configure your project](#configure-your-project) section.
+* Type a secret for your worker.
 ```
 npx wrangler deploy
 ```
 * Click **File** (on the top menu of VSCode) and select **Open Folder**.
 * Select your project folder (maybe in the **projects** folder) and click **Open**.
+* Click **View** (on the top menu of VSCode), then select **Terminal**.
+* Run the following commands in order.
+```sh
+cd applimode-tool; node index.js worker; cd ..
+```
+* Type your secret for your worker that you entered.
+```sh
+dart run build_runner clean
+```
+```sh
+dart run build_runner build --delete-conflicting-outputs
+```
 * Press ```Ctrl``` + ```P``` and type *custom_settings.dart*, then click.
 * Press ```Ctrl``` + ```F``` and type *useRTwoStorage*.
 * Change the useRTwoStorage value from **false** to **true**.
@@ -701,100 +773,6 @@ npx wrangler deploy
 
 
 
-## Configure push notification (Optional)
-> [!NOTE]
-> * Firebase has two pricing plans: the Spark Plan (aka the free plan) and the Blaze Plan (aka the pay-as-you-go plan).
-> * To use push notifications, you must use Firebase's Blaze Plan.
-> * For more details, visit this [page](https://firebase.google.com/docs/projects/billing/firebase-pricing-plans).
-> * To use APNs (Apple Push Notification service), you must register for [Apple Developer Program](https://developer.apple.com/programs/). (99 USD)
-> * To use APNs, you need a device with macOS installed. For more details, visit [Configure Applimode for macOS]().
-> * Currently, Safari on iOS and macOS does not support push notifications. (web app and PWA on iOS and macOS)
-* Open or go to your [Firebase console](https://console.firebase.google.com/).
-* Click your project.
-* Click **Upgrade** on the bottom of the left sidebar.
-* Click **Select plan**.
-* Click the settings button on the top of the left sidebar.
-* Click **Project settings**.
-![fb-project-settings](https://github.com/mycalls/applimode-examples/blob/main/assets/fb-project-settings.png?raw=true)
-* Go to or open **VSCode**.
-* Click **File** (on the top menu of VSCode) and select **Open Folder** and select your project folder (maybe in the **projects** folder) and click **Open**.
-* Click **View** (on the top menu of VSCode) and select **Terminal**.
-* Run the following commands.
-<!--
-```
-firebase init functions
-```
--->
-```
-cd functions
-```
-```
-npm install
-```
-```
-firebase deploy --only functions
-```
-```
-cd ..
-```
-* Press ```Ctrl``` + ```P``` and type *index.html* and click.
-* Change lines 111 to 125 with the following content.
-```html
-<!--
-<script src="flutter_bootstrap.js" async=""></script>
--->
-<!--When using push notification for web app-->
-<script src="flutter_bootstrap.js" async="">
-  if ('serviceWorker' in navigator) {
-    // Service workers are supported. Use them.
-    window.addEventListener('load', function () {
-      // Register Firebase Messaging service worker.
-      navigator.serviceWorker.register('firebase-messaging-sw.js', {
-        scope: '/firebase-cloud-messaging-push-scope',
-      });
-    });
-  }
-</script>
-```
-* To save, press ```Ctrl``` + ```S```.
-* Press ```Ctrl``` + ```P``` and type *custom_settings.dart* and click.
-* Press ```Ctrl``` + ```F``` and type *useFcmMessage*.
-* Change the useFcmMessage value from **false** to **true**.
-> ex) const bool useFcmMessage = true;
-* Go to your web browser with the project settings page open.
-* Click Cloud Messaging on the top tab menu and scroll to the bottom.
-* Copy Key pair of Web Push certificates.
-![fb-cloud-message-web](https://github.com/mycalls/applimode-examples/blob/main/assets/fb-cloud-message-web.png?raw=true)
-* Go back to VSCode.
-* Paste the Key pair you copied in the fcmVapidKey value.
-> ex) const String fcmVapidKey = 'very-long-key-pair';
-* Press ```Ctrl``` + ```S```. (or **File** > **Save**)
-* Go to your web browser with the project settings page open.
-* Click General on the top tab menu and scroll down.
-* In the Your apps section, click the Web apps part.
-* Copy all content of the **firebaseConfig** part.
-```
-apiKey: "project-api-key",
-authDomain: "your-project.firebaseapp.com",
-projectId: "your-project-id",
-storageBucket: "your-project.appspot.com",
-messagingSenderId: "000000000000",
-appId: "0:000000000000:web:0000000000000000000000",
-measurementId: "0-0000000000"
-```
-<!--![fb-general-firebase-config](https://github.com/mycalls/applimode-examples/blob/main/assets/fb-general-firebase-config.png?raw=true)-->
-* Go back to VSCode.
-* Press ```Ctrl``` + ```P``` and type *firebase-messaging-sw.js* and click.
-* Select the content from apiKey to measurementId (maybe lines from 7 to 13) and paste the content you copied.
-* Press ```Ctrl``` + ```S```. (or **File** > **Save**)
-<!--
-iOS APNS 사용하기 위해서 링크 참고
-https://firebase.flutter.dev/docs/messaging/apple-integration
-custom_settings 에서 useApns 변경
--->
-
-
-
 ## Use your custom domain (Optional)
 * Open or go to your [Firebase console](https://console.firebase.google.com/) in your web browser. 
 * Click your project.
@@ -814,30 +792,56 @@ custom_settings 에서 useApns 변경
 * Open **PowerShell**.
 * Run the following commands.
 ```sh
-cd ~/projects;
+flutter upgrade
 ```
 ```sh
-git clone https://github.com/mycalls/applimode-tool.git
+cd ~/projects;
 ```
 ```sh
 git clone https://github.com/mycalls/applimode.git
 ```
 ```sh
-flutter upgrade
+cd applimode/applimode-tool/
 ```
+```sh
+node index.js upgrade
+```
+* Enter your existing project directory name.
 * Close **PowerShell**.
-* Open **VSCode**
-* Click **File** (on the top menu of VSCode) and select **Open Folder**.
-* Select **applimode-tool** (in the **projects** folder) and click **Open**.
-* Click **View** (on the top menu of VSCode) and select **Terminal**.
-* Modify and run the following command.
+* Open **VSCode**.
+* Click **File** (on the top menu of VSCode), select **Open Folder**, choose your new project folder (maybe in the **projects** folder), and click **Open**.
+* Click **View** (on the top menu of VSCode), then select **Terminal**.
+* Run the following commands in order:
 ```sh
-node index.js upgrade --directory-name="your_project_folder_name"
+flutter pub get
 ```
-> ex) node index.js upgrade --directory-name="my_applimode"
 ```sh
-flutter pub get; dart run flutter_native_splash:create; flutter pub run flutter_launcher_icons; dart run build_runner build -d; flutterfire configure;
+dart run flutter_native_splash:create
 ```
+```sh
+flutter pub run flutter_launcher_icons
+```
+```sh
+dart run build_runner build -d
+```
+```sh
+flutterfire configure --platforms=android,ios,web
+```
+> when asked something, press **n** or **N**.
+```sh
+cd applimode-tool; node index.js firebaserc; cd ..
+```
+```sh
+firebase deploy --only firestore
+```
+```sh
+firebase deploy --only storage
+```
+> [!NOTE]
+> * If you want to enter commands all at once, run the following command:
+> ```sh
+> flutter pub get; dart run flutter_native_splash:create; flutter pub run flutter_launcher_icons; dart run build_runner build -d; flutterfire configure --platforms=android,ios,web; cd applimode-tool; node index.js firebaserc; cd ..; firebase deploy --only firestore; firebase deploy --only storage;
+> ```
 * Delete your old project folder.
 
 

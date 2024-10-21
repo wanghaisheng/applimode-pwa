@@ -1,0 +1,21 @@
+{
+  "name": "applimode-tool",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "init": "node index.js init",
+    "upgrade": "node index.js upgrade",
+    "fullname": "node index.js fullname",
+    "shortname": "node index.js shortname",
+    "organization": "node index.js organization",
+    "firebaserc": "node index.js firebaserc",
+    "color": "node index.js color",
+    "worker": "node index.js worker",
+    "fcm": "node index.js fcm"  
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
