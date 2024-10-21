@@ -291,7 +291,7 @@ ruby -v
 ## Configure Firebase
 * Sign up or log in to [Firebase](https://firebase.google.com).
 * Click [Go to console](https://console.firebase.google.com).
-* Click **Add project**.
+* Click **Create a project**.
 * Enter a project name and click **Continue**.
 * Enable **Google Analytics for your project** then click **Continue**.
 * Select your Google Analytics account or select **Default Account for Firebase**. Click **Create Project**.
@@ -308,9 +308,13 @@ ruby -v
 * Click **Next** and then click **Create**.
 * Click **Build** (on the left sidebar) and then click **Storage**.
 * Click **Get started**, then click **Next**, and finally click **Done**.
+<!--todos
+Build with Gemini 따로 설정. flutterfire 후에 설정해야 함
 * Click **Build with Gemini** (on the left sidebar).
 * Click **Get started** on the **Vertex AI in Firebase** card.
 * Click **Enable APIs**, then click **Continue**.
+> Enable APIs, the Fultter icon, the close icon in new window, Continue
+-->
 
 
 

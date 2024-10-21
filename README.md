@@ -26,15 +26,15 @@ Applimode is a powerful, next-generation solution for building apps and websites
 
 * Download and install the following packages:
 **Git** (only [Windows](https://github.com/mycalls/applimode/blob/main/docs/windows.md#install-git)), **VSCode** · **Flutter SDK** ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#install-vscode-and-the-flutter-sdk), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#install-vscode-and-the-flutter-sdk)), **Android Studio** ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#install-android-studio), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#install-android-studio)), **Xcode** (only [macOS](https://github.com/mycalls/applimode/blob/main/docs/macos.md#install-and-configure-xcode)), **Rosetta 2** (only [macOS](https://github.com/mycalls/applimode/blob/main/docs/macos.md#install-rosetta-2)), **Homebrew** (only [macOS](https://github.com/mycalls/applimode/blob/main/docs/macos.md#install-homebrew)), **rbenv** · **Ruby** · **CocoaPods** (only [macOS](https://github.com/mycalls/applimode/blob/main/docs/macos.md#install-rbenv-ruby-and-cocoapods)), **Node.js** · **Firebase CLI** · **Flutterfire CLI** ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#install-nodejs-and-the-firebase-cli-and-the-futterfire-cli), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#install-nodejs-and-the-firebase-cli-and-the-futterfire))
-* Visit the [Firebase console](https://console.firebase.google.com/), create a new project, and enable [Authentication](https://console.firebase.google.com/project/_/authentication), [Firestore Database](https://console.firebase.google.com/project/_/firestore), [Storage](https://console.firebase.google.com/project/_/storage), and [Build with Gemini](https://console.firebase.google.com/project/_/genai).
+* Visit the [Firebase console](https://console.firebase.google.com/), create a new project, and enable [Authentication](https://console.firebase.google.com/project/_/authentication), [Firestore Database](https://console.firebase.google.com/project/_/firestore), and [Storage](https://console.firebase.google.com/project/_/storage).
 * Clone the Applimode repository and initialize it.
 ```sh
 git clone https://github.com/mycalls/applimode.git
 ```
 ```sh
-cd applimode/applimode-tool; node index.js init; cd ..;
+cd applimode/applimode-tool; node index.js init; cd ..; code .;
 ```
-* Open your initialized Applimode project in VS Code, and run the following command.
+* Once your initialized Applimode project is open in VS Code, type the following command.
 ```sh
 flutter pub get; dart run build_runner build -d; flutterfire configure --platforms=android,ios,web; cd applimode-tool; node index.js firebaserc; cd ..; firebase deploy --only firestore; firebase deploy --only storage;
 ```
