@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:applimode_app/src/features/prompts/domain/user_prompt.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'user_prompts_repository.g.dart';
@@ -50,12 +51,12 @@ class UserPromptsRepository {
 }
 
 @Riverpod(keepAlive: true)
-UserPromptsRepository userPromptsRepository(UserPromptsRepositoryRef ref) {
+UserPromptsRepository userPromptsRepository(Ref ref) {
   return UserPromptsRepository(FirebaseFirestore.instance);
 }
 
 @Riverpod(keepAlive: true)
-Stream<UserPrompt?> userPromptStream(UserPromptStreamRef ref, String id) {
+Stream<UserPrompt?> userPromptStream(Ref ref, String id) {
   final repository = ref.watch(userPromptsRepositoryProvider);
   return repository.watchUserPrompt(id);
 }

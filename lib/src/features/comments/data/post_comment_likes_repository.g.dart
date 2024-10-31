@@ -7,7 +7,7 @@ part of 'post_comment_likes_repository.dart';
 // **************************************************************************
 
 String _$postCommentLikesRepositoryHash() =>
-    r'64e743f1ca3de315b959fe853727110bdf3ac436';
+    r'e226677179c4f324f66e5d889909b3deda005bd3';
 
 /// See also [postCommentLikesRepository].
 @ProviderFor(postCommentLikesRepository)
@@ -22,9 +22,11 @@ final postCommentLikesRepositoryProvider =
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef PostCommentLikesRepositoryRef = ProviderRef<PostCommentLikesRepository>;
 String _$postCommentLikesQueryHash() =>
-    r'd0a21b6b86ddc785ff7e357239151ba1f4de1473';
+    r'b2ec68beb89170940d741b51b7d391c7c3a7cb51';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -184,6 +186,8 @@ class PostCommentLikesQueryProvider
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin PostCommentLikesQueryRef
     on AutoDisposeProviderRef<Query<PostCommentLike>> {
   /// The parameter `isDislike` of this provider.
@@ -210,7 +214,7 @@ class _PostCommentLikesQueryProviderElement
 }
 
 String _$postCommentLikesByUserFutureHash() =>
-    r'7529422c03b2b28158bfca930dd8fe3d84336fca';
+    r'419029430861c143d8a43caaa527cb92cdbc43e5';
 
 /// See also [postCommentLikesByUserFuture].
 @ProviderFor(postCommentLikesByUserFuture)
@@ -353,6 +357,8 @@ class PostCommentLikesByUserFutureProvider
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin PostCommentLikesByUserFutureRef
     on AutoDisposeFutureProviderRef<List<PostCommentLike>> {
   /// The parameter `uid` of this provider.
@@ -380,4 +386,4 @@ class _PostCommentLikesByUserFutureProviderElement
       (origin as PostCommentLikesByUserFutureProvider).isDislike;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

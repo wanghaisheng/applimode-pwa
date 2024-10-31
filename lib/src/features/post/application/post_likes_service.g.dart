@@ -6,7 +6,7 @@ part of 'post_likes_service.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$postLikesServiceHash() => r'888180640925c092c0daf9e9d2a159e2a1b7233f';
+String _$postLikesServiceHash() => r'db6fc1dd61bd258701ec7caea49a6f6bd51380ef';
 
 /// See also [postLikesService].
 @ProviderFor(postLikesService)
@@ -20,6 +20,8 @@ final postLikesServiceProvider = AutoDisposeProvider<PostLikesService>.internal(
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef PostLikesServiceRef = AutoDisposeProviderRef<PostLikesService>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

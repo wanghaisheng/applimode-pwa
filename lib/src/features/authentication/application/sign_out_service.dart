@@ -24,6 +24,6 @@ class SignOutService {
 }
 
 @riverpod
-SignOutService signOutService(SignOutServiceRef ref) {
+SignOutService signOutService(Ref ref) {
   return SignOutService(ref);
 }

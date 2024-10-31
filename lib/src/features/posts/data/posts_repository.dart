@@ -2,6 +2,7 @@ import 'package:applimode_app/src/features/posts/domain/post.dart';
 import 'package:applimode_app/src/utils/format.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'posts_repository.g.dart';
@@ -309,22 +310,22 @@ class PostsRepository {
 }
 
 @Riverpod(keepAlive: true)
-PostsRepository postsRepository(PostsRepositoryRef ref) {
+PostsRepository postsRepository(Ref ref) {
   return PostsRepository(FirebaseFirestore.instance);
 }
 
 @riverpod
-FutureOr<Post?> postFuture(PostFutureRef ref, String id) {
+FutureOr<Post?> postFuture(Ref ref, String id) {
   return ref.watch(postsRepositoryProvider).fetchPost(id);
 }
 
 @riverpod
-Stream<Post> postStream(PostStreamRef ref, String id) {
+Stream<Post> postStream(Ref ref, String id) {
   return ref.watch(postsRepositoryProvider).watchPost(id);
 }
 
 @riverpod
-FutureOr<List<Post>> mainPostsFuture(MainPostsFutureRef ref) {
+FutureOr<List<Post>> mainPostsFuture(Ref ref) {
   final postsRepository = ref.watch(postsRepositoryProvider);
   return postsRepository.fetchMainPostsList();
 }

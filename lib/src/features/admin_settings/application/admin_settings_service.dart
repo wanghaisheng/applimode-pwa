@@ -207,12 +207,12 @@ class AdminSettingsService {
 }
 
 @riverpod
-AdminSettingsService adminSettingsService(AdminSettingsServiceRef ref) {
+AdminSettingsService adminSettingsService(Ref ref) {
   return AdminSettingsService(ref);
 }
 
 @riverpod
-AdminSettings adminSettings(AdminSettingsRef ref) {
+AdminSettings adminSettings(Ref ref) {
   final sharedPreferences = ref.watch(prefsWithCacheProvider).requireValue;
   return AdminSettings(
     homeBarTitle:

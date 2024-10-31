@@ -1,5 +1,6 @@
 import 'package:applimode_app/src/features/profile/domain/app_leaver.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_leavers_repository.g.dart';
@@ -45,6 +46,6 @@ class AppLeaversRepository {
 }
 
 @riverpod
-AppLeaversRepository appLeaversRepository(AppLeaversRepositoryRef ref) {
+AppLeaversRepository appLeaversRepository(Ref ref) {
   return AppLeaversRepository(FirebaseFirestore.instance);
 }

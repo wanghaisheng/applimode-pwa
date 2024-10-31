@@ -131,6 +131,6 @@ class DeleteAccountService {
 }
 
 @riverpod
-DeleteAccountService deleteAccountService(DeleteAccountServiceRef ref) {
+DeleteAccountService deleteAccountService(Ref ref) {
   return DeleteAccountService(ref);
 }

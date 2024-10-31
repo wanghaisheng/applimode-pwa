@@ -7,7 +7,7 @@ part of 'post_likes_repository.dart';
 // **************************************************************************
 
 String _$postLikesRepositoryHash() =>
-    r'd05b70e7b781a31e40b625b1a3508e37c6f312d5';
+    r'b9854bc07c192af94424bf1c5f35d204dcc97e53';
 
 /// See also [postLikesRepository].
 @ProviderFor(postLikesRepository)
@@ -21,8 +21,10 @@ final postLikesRepositoryProvider = Provider<PostLikesRepository>.internal(
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef PostLikesRepositoryRef = ProviderRef<PostLikesRepository>;
-String _$postLikesQueryHash() => r'022f98e20559ce9ac068c832349ee6676aa45123';
+String _$postLikesQueryHash() => r'00fc1424b640988cbab1ae2d493f1dda010fddc0';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -181,6 +183,8 @@ class PostLikesQueryProvider extends AutoDisposeProvider<Query<PostLike>> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin PostLikesQueryRef on AutoDisposeProviderRef<Query<PostLike>> {
   /// The parameter `isDislike` of this provider.
   bool? get isDislike;
@@ -205,7 +209,7 @@ class _PostLikesQueryProviderElement
 }
 
 String _$postLikesByUserFutureHash() =>
-    r'0aa496b85c0594147b8193d2224b73a526712f78';
+    r'bfbfb2a3c70fdf9693c41eaf454af71121c5dfc8';
 
 /// See also [postLikesByUserFuture].
 @ProviderFor(postLikesByUserFuture)
@@ -344,6 +348,8 @@ class PostLikesByUserFutureProvider
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin PostLikesByUserFutureRef on AutoDisposeFutureProviderRef<List<PostLike>> {
   /// The parameter `postId` of this provider.
   String get postId;
@@ -369,7 +375,7 @@ class _PostLikesByUserFutureProviderElement
 }
 
 String _$postLikesByUserStreamHash() =>
-    r'84f30afe39ff38c2f00b1845b75c51a99e647d9a';
+    r'6d9cecfd906b0b3054c74e5bbaf1e03307b7aa00';
 
 /// See also [postLikesByUserStream].
 @ProviderFor(postLikesByUserStream)
@@ -497,6 +503,8 @@ class PostLikesByUserStreamProvider
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin PostLikesByUserStreamRef on AutoDisposeStreamProviderRef<List<PostLike>> {
   /// The parameter `postId` of this provider.
   String get postId;
@@ -516,4 +524,4 @@ class _PostLikesByUserStreamProviderElement
   String get uid => (origin as PostLikesByUserStreamProvider).uid;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

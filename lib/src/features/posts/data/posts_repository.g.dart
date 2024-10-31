@@ -6,7 +6,7 @@ part of 'posts_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$postsRepositoryHash() => r'c178b29782c4e135b23d181003fa17c3eb85d02b';
+String _$postsRepositoryHash() => r'd68ea794e1d217eff7c1a7c7d30fd3504db41cca';
 
 /// See also [postsRepository].
 @ProviderFor(postsRepository)
@@ -20,8 +20,10 @@ final postsRepositoryProvider = Provider<PostsRepository>.internal(
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef PostsRepositoryRef = ProviderRef<PostsRepository>;
-String _$postFutureHash() => r'b48e7b0ec1eeb9523e0762fe81a6419adba42c6d';
+String _$postFutureHash() => r'925d2b9c27645134940ea9861890f8c86da5522c';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -157,6 +159,8 @@ class PostFutureProvider extends AutoDisposeFutureProvider<Post?> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin PostFutureRef on AutoDisposeFutureProviderRef<Post?> {
   /// The parameter `id` of this provider.
   String get id;
@@ -170,7 +174,7 @@ class _PostFutureProviderElement extends AutoDisposeFutureProviderElement<Post?>
   String get id => (origin as PostFutureProvider).id;
 }
 
-String _$postStreamHash() => r'04b0f98ccd533f5a7e988755354318ca9ea46610';
+String _$postStreamHash() => r'9e07dbf73eb1a2b81c51cc372c7903081a6bfd29';
 
 /// See also [postStream].
 @ProviderFor(postStream)
@@ -285,6 +289,8 @@ class PostStreamProvider extends AutoDisposeStreamProvider<Post> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin PostStreamRef on AutoDisposeStreamProviderRef<Post> {
   /// The parameter `id` of this provider.
   String get id;
@@ -298,7 +304,7 @@ class _PostStreamProviderElement extends AutoDisposeStreamProviderElement<Post>
   String get id => (origin as PostStreamProvider).id;
 }
 
-String _$mainPostsFutureHash() => r'd965cb08fa41e831a151bdd80bec09bad10ffb3b';
+String _$mainPostsFutureHash() => r'267ea740990d273e33cff59ab5ac8e521a8967a5';
 
 /// See also [mainPostsFuture].
 @ProviderFor(mainPostsFuture)
@@ -312,6 +318,8 @@ final mainPostsFutureProvider = AutoDisposeFutureProvider<List<Post>>.internal(
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef MainPostsFutureRef = AutoDisposeFutureProviderRef<List<Post>>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

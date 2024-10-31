@@ -74,6 +74,6 @@ class PostLikesService {
 }
 
 @riverpod
-PostLikesService postLikesService(PostLikesServiceRef ref) {
+PostLikesService postLikesService(Ref ref) {
   return PostLikesService(ref);
 }

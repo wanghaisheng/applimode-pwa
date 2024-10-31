@@ -61,6 +61,10 @@ Additionally, you can set or configure the following:
 * Use your custom domain ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#use-your-custom-domain-optional), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#use-your-custom-domain-optional))
 * Upgrade your project with the new Applimode version ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#upgrade-your-project-with-the-new-applimode-version), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#upgrade-your-project-with-the-new-applimode-version))
 * Configure Cloud Firestore Security Rules ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#configure-cloud-firestore-security-rules), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#configure-cloud-firestore-security-rules))
+* Configure writing access for admin users only ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#configure-writing-access-for-admin-users-only), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#configure-writing-access-for-admin-users-only))
+* Change the app's name ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#change-the-apps-name), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#change-the-apps-name))
+* Change the organization name for the app ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#change-the-organization-name-for-the-app), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#change-the-organization-name-for-the-app))
+* Set up the AI assistant ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#set-up-the-ai-assistant-google-gemini), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#set-up-the-ai-assistant-google-gemini))
 * Troubleshooting ([Win](https://github.com/mycalls/applimode/blob/main/docs/windows.md#troubleshooting), [mac](https://github.com/mycalls/applimode/blob/main/docs/macos.md#troubleshooting))
 
 

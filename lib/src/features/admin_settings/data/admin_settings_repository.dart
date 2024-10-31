@@ -6,6 +6,7 @@ import 'package:applimode_app/src/features/admin_settings/domain/app_main_catego
 import 'package:applimode_app/src/utils/format.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'admin_settings_repository.g.dart';
@@ -88,7 +89,6 @@ class AdminSettingsRepository {
 }
 
 @riverpod
-AdminSettingsRepository adminSettingsRepository(
-    AdminSettingsRepositoryRef ref) {
+AdminSettingsRepository adminSettingsRepository(Ref ref) {
   return AdminSettingsRepository(FirebaseFirestore.instance);
 }

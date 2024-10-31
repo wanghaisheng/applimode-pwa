@@ -13,7 +13,16 @@
     "firebaserc": "node index.js firebaserc",
     "color": "node index.js color",
     "worker": "node index.js worker",
-    "fcm": "node index.js fcm"  
+    "fcm": "node index.js fcm",
+    "ai": "node index.js ai",
+    "rtwo": "node index.js rtwo",
+    "cdn": "node index.js cdn",
+    "done": "node index.js done",
+    "rtwosecureget": "node index.js rtwosecureget",
+    "youtubeimage": "node index.js youtubeimage",
+    "youtubevideo": "node index.js youtubevideo",
+    "security": "node index.js security",
+    "write": "node index.js write"
   },
   "keywords": [],
   "author": "",

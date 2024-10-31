@@ -35,6 +35,10 @@
 * [Use your custom domain (Optional)](#use-your-custom-domain-optional)
 * [Upgrade your project with the new Applimode version](#upgrade-your-project-with-the-new-applimode-version)
 * [Configure Cloud Firestore Security Rules](#configure-cloud-firestore-security-rules)
+* [Configure writing access for admin users only](#configure-writing-access-for-admin-users-only)
+* [Change the app's name](#change-the-apps-name)
+* [Change the organization name for the app](#change-the-organization-name-for-the-app)
+* [Set up the AI assistant (Gemini)](#set-up-the-ai-assistant-google-gemini)
 * [Troubleshooting](#troubleshooting)
 
 
@@ -671,6 +675,18 @@ flutter clean; flutter pub get; cd ios; rm -rf Pods; rm -rf Podfile.lock; pod in
 > ex) return request.auth.uid in ["9a6sIEiAldOzFIZ9hO2SxaG6Db63", "adminUid"];
 ![fb-firestore-rules](https://github.com/mycalls/applimode-examples/blob/main/assets/fb-firestore-rules.png?raw=true)
 * Click **Publish**
+
+> [!NOTE]
+> To add a verified user, follow these steps:
+> Click **Firestore Database** (on the left sidebar).
+> * Click the users collection and select your uid.
+> * Click the **Edit field** button (pencil shape) next to the **verified** field. (Move your mouse cursor over the **verified** field to display the **Edid field** button)
+> * Change the value from **false** to **true** and click **Update**.
+> * Click **Rules** (on the top menu).
+> * Change the first word **verifiedUid** in line 8 (or near it) to your uid. (paste your uid)
+> ex) return request.auth.uid in ["9a6sIEiAldOzFIZ9hO2SxaG6Db63", "verifiedUid"];
+* Click **Publish**
+
 > [!CAUTION]
 > If you designate someone as an administrator, the user can change admin settings in the app, edit, delete or block all posts, and even block all posts from a specific user.
 
@@ -1262,6 +1278,30 @@ firebase deploy --only storage
 
 
 ## Configure Cloud Firestore Security Rules 
+* Go to or open your Applimode project in **VSCode**.
+* Click **View** (on the top menu of VSCode), then select **Terminal**.
+* Run the following command.
+```sh
+cd applimode-tool; node index.js security; cd ..
+```
+* Select the security rule you want. (a, s, v)
+* Run the following command.
+```sh
+firebase deploy --only firestore
+```
+* If you have added admin or verified user IDs to the previous Firestore rules, please follow these steps:
+* Open or go to your [Firebase console](https://console.firebase.google.com/) in your web browser.
+* Click your project.
+* Click **Firestore Database** (on the left sidebar).
+> [!NOTE]
+> To add a new admin or verified user, follow these steps first:
+> * Click the users collection and select the uid.
+> * Click the **Edit field** button (pencil shape) next to the **isAdmin** or **verified** field. (Move your mouse cursor over the **isAdmin** or **verified** field to display the **Edid field** button)
+> * Change the value from **false** to **true** and click **Update**.
+* Click **Rules** on the top.
+* Add admin IDs or verified IDs. If you have forgotten how to do this, please follow the [this page](#add-administrator).
+* Click **Publish**.
+<!--
 #### Access is restricted to logged-in users.
 * Go to or open your Applimode project in **VSCode**.
 * Press ```Command``` + ```P``` and type *custom_settings.dart*, then click.
@@ -1276,11 +1316,8 @@ firebase deploy --only storage
 * Paste the content you copied.
 * Add admin IDs. If you have forgotten how to do this, please follow the [this page](#add-administrator).
 * Click **Publish**.
-
 #### Access is restricted to verified users.
-<!--
 * To configure the rules so that only users you have authorized, not just logged-in users, can access the app, follow these instructions.
--->
 * Go to or open your Applimode project in **VSCode**.
 * Press ```Command``` + ```P``` and type *custom_settings.dart*, then click.
 * Press ```Command``` + ```F``` and type *isInitialSignIn*.
@@ -1296,6 +1333,70 @@ firebase deploy --only storage
 * Paste the content you copied into the Firestore Rules.
 * Add admin IDs and verified IDs.
 * Click **Publish**.
+--> 
+
+
+
+## Configure writing access for admin users only
+* To allow only users designated as admins to write, follow these steps.
+* Go to or open your Applimode project in **VSCode**.
+* Click **View** (on the top menu of VSCode), then select **Terminal**.
+* Run the following command.
+```sh
+cd applimode-tool; node index.js write; cd ..
+```
+* Type ```y``` and press ```Enter```.
+
+
+
+## Change the app's name
+>[!NOTE]
+> * The long app name is mainly used for web apps.
+> * The short app name is mainly used for mobile apps (iOS, Android).
+* To change the full or short name of your Applimode app, follow these steps.
+* Go to or open your Applimode project in **VSCode**.
+* Click **View** (on the top menu of VSCode), then select **Terminal**.
+* To change the full name, run the following command.
+```sh
+cd applimode-tool; node index.js fullname; cd ..
+```
+* To change the short name, run the following command.
+```sh
+cd applimode-tool; node index.js shortname; cd ..
+```
+* Enter the desired name and press Enter.
+
+
+
+## Change the organization name for the app
+> [!CAUTION]
+> It is recommended not to change the organization name unless absolutely necessary.
+* To change the organization name of your Applimode app, follow these steps.
+* Go to or open your Applimode project in **VSCode**.
+* Click **View** (on the top menu of VSCode), then select **Terminal**.
+* Run the following command.
+```sh
+cd applimode-tool; node index.js organization; cd ..
+```
+* Enter the desired organization name and press Enter.
+
+
+
+## Set up the AI assistant (Google Gemini)
+* To use the AI assistant when writing posts in your Applimode app, follow these steps.
+* Go to or open your Applimode project in **VSCode**.
+* Click **View** (on the top menu of VSCode), then select **Terminal**.
+* Run the following command.
+```sh
+cd applimode-tool; node index.js ai; cd ..
+```
+* Type ```y``` and press ```Enter```.
+* Choose between Flash and Pro (Flash is faster and more cost-effective, while Pro is more powerful but also more expensive).
+* Open or go to your [Firebase console](https://console.firebase.google.com/) in your web browser.
+* Click your project.
+* Click **Build with Gemini** (on the left sidebar).
+* Click **Get started** on the **Vertex AI in Firebase** card.
+* Click **Enable APIs**, then click **Continue**.
 
 
 

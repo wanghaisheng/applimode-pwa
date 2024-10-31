@@ -30,7 +30,7 @@ class EditorScreenAiController extends _$EditorScreenAiController {
     }
 
     state = const AsyncLoading();
-    final List<DataPart> imageParts = [];
+    final List<InlineDataPart> imageParts = [];
     String result = '';
     state = await AsyncValue.guard(() async {
       if (imagePaths != null && imagePaths.isNotEmpty) {
@@ -46,7 +46,7 @@ class EditorScreenAiController extends _$EditorScreenAiController {
             } catch (e) {
               continue;
             }
-            imageParts.add(DataPart(type, file));
+            imageParts.add(InlineDataPart(type, file));
           } else {
             continue;
           }

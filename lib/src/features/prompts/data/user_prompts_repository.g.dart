@@ -7,7 +7,7 @@ part of 'user_prompts_repository.dart';
 // **************************************************************************
 
 String _$userPromptsRepositoryHash() =>
-    r'b646821b5e89f1bfe790852c743677364f5322af';
+    r'a1989c8f8d04efbe2bdabb4bd1622bb7eb854102';
 
 /// See also [userPromptsRepository].
 @ProviderFor(userPromptsRepository)
@@ -21,8 +21,10 @@ final userPromptsRepositoryProvider = Provider<UserPromptsRepository>.internal(
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef UserPromptsRepositoryRef = ProviderRef<UserPromptsRepository>;
-String _$userPromptStreamHash() => r'52aded5d34ef230d772ceb5e9b9bfb7b89096b76';
+String _$userPromptStreamHash() => r'9d98fc6b6b46e18eed05f05a84dd55a48a37165e';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -158,6 +160,8 @@ class UserPromptStreamProvider extends StreamProvider<UserPrompt?> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin UserPromptStreamRef on StreamProviderRef<UserPrompt?> {
   /// The parameter `id` of this provider.
   String get id;
@@ -171,4 +175,4 @@ class _UserPromptStreamProviderElement
   String get id => (origin as UserPromptStreamProvider).id;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -1,5 +1,6 @@
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_user_repository.g.dart';
@@ -168,24 +169,24 @@ class AppUserRepository {
 }
 
 @Riverpod(keepAlive: true)
-AppUserRepository appUserRepository(AppUserRepositoryRef ref) {
+AppUserRepository appUserRepository(Ref ref) {
   return AppUserRepository(FirebaseFirestore.instance);
 }
 
 @Riverpod(keepAlive: true)
-FutureOr<AppUser?> appUserFuture(AppUserFutureRef ref, String uid) {
+FutureOr<AppUser?> appUserFuture(Ref ref, String uid) {
   final appUserRepository = ref.watch(appUserRepositoryProvider);
   return appUserRepository.fetchAppUser(uid);
 }
 
 @riverpod
-FutureOr<AppUser?> writerFuture(WriterFutureRef ref, String uid) {
+FutureOr<AppUser?> writerFuture(Ref ref, String uid) {
   final appUserRepository = ref.watch(appUserRepositoryProvider);
   return appUserRepository.fetchAppUser(uid);
 }
 
 @riverpod
-Stream<AppUser?> appUserStream(AppUserStreamRef ref, String uid) {
+Stream<AppUser?> appUserStream(Ref ref, String uid) {
   final appUserRepository = ref.watch(appUserRepositoryProvider);
   return appUserRepository.watchAppUser(uid);
 }

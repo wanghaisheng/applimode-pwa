@@ -7,7 +7,7 @@ part of 'post_contents_repository.dart';
 // **************************************************************************
 
 String _$postContentsRepositoryHash() =>
-    r'42daf0d8992ff5542e50d44bd9bd8e71fcc31a08';
+    r'5472e219b5fac101dce74c34cffab6005033cfd1';
 
 /// See also [postContentsRepository].
 @ProviderFor(postContentsRepository)
@@ -22,9 +22,11 @@ final postContentsRepositoryProvider =
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef PostContentsRepositoryRef
     = AutoDisposeProviderRef<PostContentsRepository>;
-String _$postContentFutureHash() => r'291d21d30785dcad9ff88c819be1c9aee75d0699';
+String _$postContentFutureHash() => r'785ee63f1e56ce00a6c4731b81551b741a1c82a4';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -161,6 +163,8 @@ class PostContentFutureProvider
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin PostContentFutureRef on AutoDisposeFutureProviderRef<PostContent?> {
   /// The parameter `id` of this provider.
   String get id;
@@ -175,4 +179,4 @@ class _PostContentFutureProviderElement
   String get id => (origin as PostContentFutureProvider).id;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

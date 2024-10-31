@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:applimode_app/src/features/posts/domain/post_content.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'post_contents_repository.g.dart';
@@ -56,11 +57,11 @@ class PostContentsRepository {
 }
 
 @riverpod
-PostContentsRepository postContentsRepository(PostContentsRepositoryRef ref) {
+PostContentsRepository postContentsRepository(Ref ref) {
   return PostContentsRepository(FirebaseFirestore.instance);
 }
 
 @riverpod
-FutureOr<PostContent?> postContentFuture(PostContentFutureRef ref, String id) {
+FutureOr<PostContent?> postContentFuture(Ref ref, String id) {
   return ref.watch(postContentsRepositoryProvider).fetchPostContent(id);
 }

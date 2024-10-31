@@ -6,7 +6,7 @@ part of 'app_user_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$appUserRepositoryHash() => r'16481fa140efbaf7c95cf86f6d80dd63c26ac4f1';
+String _$appUserRepositoryHash() => r'8890477e717c841288e37a53f4fdb58ff928d3d4';
 
 /// See also [appUserRepository].
 @ProviderFor(appUserRepository)
@@ -20,8 +20,10 @@ final appUserRepositoryProvider = Provider<AppUserRepository>.internal(
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef AppUserRepositoryRef = ProviderRef<AppUserRepository>;
-String _$appUserFutureHash() => r'ee9828a0ad470fe0c82d586feeed25cc63118bef';
+String _$appUserFutureHash() => r'a53ebafc72e0d77d5abfc30c35d90cabf9a0c7f4';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -157,6 +159,8 @@ class AppUserFutureProvider extends FutureProvider<AppUser?> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin AppUserFutureRef on FutureProviderRef<AppUser?> {
   /// The parameter `uid` of this provider.
   String get uid;
@@ -170,7 +174,7 @@ class _AppUserFutureProviderElement extends FutureProviderElement<AppUser?>
   String get uid => (origin as AppUserFutureProvider).uid;
 }
 
-String _$writerFutureHash() => r'64dad68db5a51fbf684a6af5354e3ea2893ee36f';
+String _$writerFutureHash() => r'43fdf78a9949dfda5bc7b24639cfab4228477604';
 
 /// See also [writerFuture].
 @ProviderFor(writerFuture)
@@ -285,6 +289,8 @@ class WriterFutureProvider extends AutoDisposeFutureProvider<AppUser?> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin WriterFutureRef on AutoDisposeFutureProviderRef<AppUser?> {
   /// The parameter `uid` of this provider.
   String get uid;
@@ -298,7 +304,7 @@ class _WriterFutureProviderElement
   String get uid => (origin as WriterFutureProvider).uid;
 }
 
-String _$appUserStreamHash() => r'eff042bbd2122caea480330ac40243e5acd7da06';
+String _$appUserStreamHash() => r'b9776fde9ee85618609922a08315ebf6ccae64ae';
 
 /// See also [appUserStream].
 @ProviderFor(appUserStream)
@@ -413,6 +419,8 @@ class AppUserStreamProvider extends AutoDisposeStreamProvider<AppUser?> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin AppUserStreamRef on AutoDisposeStreamProviderRef<AppUser?> {
   /// The parameter `uid` of this provider.
   String get uid;
@@ -426,4 +434,4 @@ class _AppUserStreamProviderElement
   String get uid => (origin as AppUserStreamProvider).uid;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

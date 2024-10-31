@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,7 +12,7 @@ SharedPreferences sharedPreferences(SharedPreferencesRef ref) {
 */
 
 @Riverpod(keepAlive: true)
-FutureOr<SharedPreferencesWithCache> prefsWithCache(PrefsWithCacheRef ref) =>
+FutureOr<SharedPreferencesWithCache> prefsWithCache(Ref ref) =>
     SharedPreferencesWithCache.create(
       cacheOptions: const SharedPreferencesWithCacheOptions(),
     );

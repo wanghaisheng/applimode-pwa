@@ -6,7 +6,7 @@ part of 'app_startup.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$appStartupHash() => r'2096a1811218db5dee5ec4a58e4234522577205f';
+String _$appStartupHash() => r'0cdcff390ff0201d566610f1bdaff14780409932';
 
 /// See also [appStartup].
 @ProviderFor(appStartup)
@@ -19,6 +19,8 @@ final appStartupProvider = FutureProvider<void>.internal(
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef AppStartupRef = FutureProviderRef<void>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

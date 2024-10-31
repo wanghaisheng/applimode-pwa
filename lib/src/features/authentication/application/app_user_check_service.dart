@@ -36,6 +36,6 @@ class AppUserCheckService {
 }
 
 @riverpod
-AppUserCheckService appUserCheckService(AppUserCheckServiceRef ref) {
+AppUserCheckService appUserCheckService(Ref ref) {
   return AppUserCheckService(ref);
 }

@@ -3,6 +3,7 @@ import 'dart:developer' as dev;
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -68,7 +69,6 @@ class FirebaseStorageRepository {
 }
 
 @riverpod
-FirebaseStorageRepository firebaseStorageRepository(
-    FirebaseStorageRepositoryRef ref) {
+FirebaseStorageRepository firebaseStorageRepository(Ref ref) {
   return FirebaseStorageRepository(FirebaseStorage.instance);
 }

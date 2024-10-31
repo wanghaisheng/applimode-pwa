@@ -30,6 +30,7 @@ import 'package:applimode_app/custom_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:applimode_app/src/utils/multi_images.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -86,7 +87,7 @@ class ScreenPaths {
 }
 
 @riverpod
-GoRouter goRouter(GoRouterRef ref) {
+GoRouter goRouter(Ref ref) {
   final authRepository = ref.watch(authRepositoryProvider);
   final adminSettings = ref.watch(adminSettingsProvider);
   final categories = adminSettings.mainCategory;

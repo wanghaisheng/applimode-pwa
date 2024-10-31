@@ -1,4 +1,5 @@
-/// internal v1
+/// internal v24103002
+/// Move this file inside the applimode project
 /// applimode 프로젝트 내부로 이동
 
 const fs = require('fs').promises;
@@ -8,45 +9,103 @@ const readline = require('readline').createInterface({
   output: process.stdout,
 });
 
+// Regular expressions for input validation
 const check_eng = /^[a-zA-Z]*$/;
+// Only letters allowed
+// 영어만 허용
 const check_projectName = /^[a-zA-Z_\- ]*$/;
+// Project name: letters, spaces, _, - allowed
+// 프로젝트 이름: 영어, 공백, _, - 허용
 const check_firebaseProjectId = /^[a-zA-Z0-9\-]*$/;
+// Firebase project ID: letters, numbers, - allowed
+// Firebase 프로젝트 ID: 영어, 숫자, - 허용
 const check_version = /([0-9]+)\.([0-9]+)\.([0-9]+)\+([0-9]+)/;
+// Version format
+// 버전 형식
 const check_spc = /[~!@#$%^&*()_+|<>?:{}]/;
+// Special characters
+// 특수 문자
 const check_hex_color = /^#?([a-f0-9]{6})$/i;
+// Hex color code
+// 헥스 색상 코드
 const check_password = /^(?=.*[a-zA-Z])[A-Za-z\d!@#$%^&*()_+]{4,}$/;
+// Password: at least 4 characters, including at least one letter
+// 비밀번호: 최소 4자, 최소 1개의 문자 포함
+const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+// Regular expression for URL validation
+// URL 유효성 검사를 위한 정규표현식
 
-// custom_settings 파일에서 값을 찾기 위한 regex
-const fullNameInCsRegex = /fullAppName = '(.*)';/
-const shortNameInCsRegex = /shortAppName = '(.*)';/
-const androidBundleIdInCsRegex = /androidBundleId = '(.*)';/
-const appleBundleIdInCsRegex = /appleBundleId = '(.*)';/
-const mainColorInCsRegex = /spareMainColor = '(.*)';/
+// Regex for finding values in custom_settings.dart
+// custom_settings.dart 파일에서 값을 찾기 위한 regex
+const fullNameRegex = /fullAppName =[\s\r\n]*'(.*)';/
+const shortNameRegex = /shortAppName =[\s\r\n]*'(.*)';/
+const androidBundleIdRegex = /androidBundleId =[\s\r\n]*'(.*)';/
+const appleBundleIdRegex = /appleBundleId =[\s\r\n]*'(.*)';/
+const mainColorRegex = /spareMainColor =[\s\r\n]*'(.*)';/
 const useFcmMessageRegex = /const bool useFcmMessage = (.*);/;
 const useApnsRegex = /const bool useApns = (.*);/;
-const fcmVapidKeyRegex = /const String fcmVapidKey = (.*);/;
-const firebaseIdInCsRegex = /const String firebaseProjectId = '(.*)';/
+const fcmVapidKeyRegex = /const String fcmVapidKey =[\s\r\n]*'(.*)';/;
+const firebaseIdRegex = /const String firebaseProjectId =[\s\r\n]*'(.*)';/
+const useAiAssistantRegex = /const bool useAiAssistant = (.*);/;
+const aiModelTypeRegex = /const String aiModelType =[\s\r\n]*'(.*)';/;
+const useRTwoStorageRegex = /const bool useRTwoStorage = (.*);/;
+const rTwoBaseUrlRegex = /const String rTwoBaseUrl =[\s\r\n]*'(.*)';/;
+const useRTwoSecureGetRegex = /const bool useRTwoSecureGet = (.*);/;
+const useCfCdnRegex = /const bool useCfCdn = (.*);/;
+const cfDomainUrlRegex = /const String cfDomainUrl =[\s\r\n]*'(.*)';/;
+const useDOneForSearchRegex = /const bool useDOneForSearch = (.*);/;
+const dOneBaseUrlRegex = /const String dOneBaseUrl =[\s\r\n]*'(.*)';/;
+const youtubeImageProxyUrlRegex = /const String youtubeImageProxyUrl =[\s\r\n]*'(.*)';/;
+const youtubeIframeProxyUrlRegex = /const String youtubeIframeProxyUrl =[\s\r\n]*'(.*)';/;
+const isInitialSignInRegex = /const bool isInitialSignIn = (.*);/;
+const verifiedOnlyWriteRegex = /const bool verifiedOnlyWrite = (.*);/;
+const adminOnlyWriteRegex = /const bool adminOnlyWrite = (.*);/;
 
-// 색상 코드 (예시)
-const bold = '\x1b[1m'; // 볼드
-const underline = '\x1b[4m'; // 밑줄
-const red = '\x1b[31m'; // 빨간색
-const green = '\x1b[32m'; // 초록색
-const yellow = '\x1b[33m'; // 노랑색
-const blue = '\x1b[34m'; // 파랑
-const redBold = '\x1b[31m\x1b[1m'; // 굵은빨간색
-const greenBold = '\x1b[32m\x1b[1m'; // 굵은초록색
-const yellowBold = '\x1b[33m\x1b[1m'; // 굵은노랑색
-const blueBold = '\x1b[34m\x1b[1m'; // 굵은파랑
+// Color codes
+// 색상 코드
+const bold = '\x1b[1m';
+// Bold
+// 볼드
+const underline = '\x1b[4m';
+// Underline
+// 밑줄
+const red = '\x1b[31m';
+// Red
+// 빨간색
+const green = '\x1b[32m';
+// Green
+// 초록색
+const yellow = '\x1b[33m';
+// Yellow
+// 노랑색
+const blue = '\x1b[34m';
+// Blue
+// 파랑
+const redBold = '\x1b[31m\x1b[1m';
+// Bold red
+// 굵은빨간색
+const greenBold = '\x1b[32m\x1b[1m';
+// Bold green
+// 굵은초록색
+const yellowBold = '\x1b[33m\x1b[1m';
+// Bold yellow
+// 굵은노랑색
+const blueBold = '\x1b[34m\x1b[1m';
+// Bold blue
+// 굵은파랑
+const reset = '\x1b[0m';
+// Reset color
+// 기본 색상으로 초기화
 
-const reset = '\x1b[0m'; // 기본 색상으로 초기화
-
+// Assuming this file is inside the applimode project. Use './../..' if it's standalone.
 // applimode 프로젝트 내에 있기 때문에, 단독으로 쓸일 경우 ./../
 const projectsPath = './../..';
 
 const currentProjectPath = './..';
 const currentLibPath = `${currentProjectPath}/lib`;
 
+// Settings class for storing values in custom_settings.dart
+// custom_settings.dart 파일의 값을 저장하는 Settings 클래스
 class Settings {
   constructor(comment, key, value) {
     this.comment = comment;
@@ -55,6 +114,8 @@ class Settings {
   }
 }
 
+// Function to ask a question in the console and return the user's answer
+// 콘솔에서 질문을 하고 사용자의 답변을 반환하는 함수
 function ask(question) {
   return new Promise(resolve => {
     readline.question(question, answer => {
@@ -63,6 +124,8 @@ function ask(question) {
   });
 }
 
+// Function to ask a required question and validate the answer
+// 필수 질문을 하고 답변을 검증하는 함수
 async function askRequired(question, validator, invalidMessage) {
   let answer;
   do {
@@ -74,14 +137,24 @@ async function askRequired(question, validator, invalidMessage) {
   return answer;
 }
 
+// Function to check if a value is empty
+// 값이 비어 있는지 확인하는 함수
 function isEmpty(value) {
   if (value == "" || value == null || value == undefined || value.trim() == "") {
     return true;
-  } else {
-    return false;
-  }
+  } else if (typeof value === 'string' && (value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+    // Remove quotes and trim if the value is enclosed in double or single quotes
+    // 큰따옴표 또는 작은따옴표로 둘러싸인 경우 따옴표 제거 후 trim() 실행
+    value = value.substring(1, value.length - 1).trim();
+    if (value == "") {
+      return true;
+    }
+  } 
+  return false;
 }
 
+// Function to check if a directory exists
+// 디렉토리가 존재하는지 확인하는 함수
 async function checkDirectoryExists(directoryPath) {
   try {
     await fs.access(directoryPath, fs.constants.F_OK);
@@ -91,6 +164,8 @@ async function checkDirectoryExists(directoryPath) {
   }
 }
 
+// Function to check if a value exceeds the maximum length
+// 값이 최대 길이를 초과하는지 확인하는 함수
 function overMax(value, max) {
   if (value.length > max) {
     return false;
@@ -99,7 +174,8 @@ function overMax(value, max) {
   }
 }
 
-// Function to replace phrase in a file
+// Function to replace a phrase in a file
+// 파일에서 문구를 바꾸는 함수
 async function replacePhrase(filePath, oldPhrase, newPhrase) {
   try {
     const data = await fs.readFile(filePath, 'utf8');
@@ -113,7 +189,8 @@ async function replacePhrase(filePath, oldPhrase, newPhrase) {
   }
 }
 
-// Function to process a directory
+// Function to recursively process a directory and replace phrases in files
+// 디렉토리를 재귀적으로 처리하고 파일에서 문구를 바꾸는 함수
 async function processDirectory(folderPath, oldPhrase, newPhrase) {
   const files = await fs.readdir(folderPath);
 
@@ -123,30 +200,37 @@ async function processDirectory(folderPath, oldPhrase, newPhrase) {
     const extname = path.extname(file);
 
     // Skip media files
+    // 미디어 파일은 건너뛰기
     if (['.jpg', '.jpeg', '.png', '.gif', '.mp3', '.mp4', '.svg', '.webp', '.apng', 'ico'].includes(extname.toLowerCase())) {
       // console.log(`is Media: ${filePath}`);
       continue;
     }
 
+    // Skip 'applimode-tool' folder
+    // 'applimode-tool' 폴더는 건너뛰기
     if (file.startsWith('applimode-tool')) {
       console.log(`${blue}Skipping "applimode-tool" folder: ${filePath}${reset}`);
       continue;
     }
 
-
     if (stats.isDirectory()) {
-      await processDirectory(filePath, oldPhrase, newPhrase)
+      await processDirectory(filePath, oldPhrase, newPhrase);
     } else if (stats.isFile()) {
       await replacePhrase(filePath, oldPhrase, newPhrase);
     }
   }
 }
 
-
+// Function to extract values from custom_settings.dart file
+// custom_settings.dart 파일에서 값을 추출하는 함수
 function getSettingsList(settingsFile) {
+  // Remove import statements and split the file by semicolons
+  // import 문을 제거하고 세미콜론으로 파일을 분할
   const settingsRawList = settingsFile.replace(new RegExp('import \'package:(.*);', 'g'), '').split(';');
   let settingsList = [];
   for (let i = 0; i < settingsRawList.length; i++) {
+    // Split each line by 'const' or '='
+    // 각 줄을 'const' 또는 '='로 분할
     const componants = settingsRawList[i].split(/const|=/);
     const comment = componants[0] == undefined ? '' : componants[0].trim();
     const key = componants[1] == undefined ? '' : componants[1].trim();
@@ -159,32 +243,46 @@ function getSettingsList(settingsFile) {
   return settingsList;
 }
 
+// Compare and merge the contents of the old and new custom_settings.dart files.
+// 이전과 새로운 custom_settings.dart파일의 컨텐츠를 비교하고 병합
 function getNewCumtomSettingsStr(importsList, newCustomSettingsList, userCustomSettingsList) {
   let newUserCustomSettingsStr = '';
 
+  // Add import statements
+  // import 문 추가
   for (let i = 0; i < importsList.length; i++) {
-    newUserCustomSettingsStr += `${importsList[i]}\n`
+    newUserCustomSettingsStr += `${importsList[i]}\n`;
   }
 
+  // Add custom settings, preserving user's existing settings
+  // 커스텀 설정 추가, 사용자의 기존 설정 유지
   for (let i = 0; i < newCustomSettingsList.length; i++) {
     for (let k = 0; k < userCustomSettingsList.length; k++) {
       if (newCustomSettingsList[i].key == userCustomSettingsList[k].key) {
-        newUserCustomSettingsStr += `\n\n${userCustomSettingsList[k].comment}\nconst ${userCustomSettingsList[k].key} = ${userCustomSettingsList[k].value};`
+        // If there is a value in the previous list, update it with the previous value.
+        // 이전 리스트에 값이 있을 경우 이전 값으로 업데이트 
+        newUserCustomSettingsStr += `\n\n${userCustomSettingsList[k].comment}\nconst ${userCustomSettingsList[k].key} = ${userCustomSettingsList[k].value};`;
         break;
       }
 
       if (k == userCustomSettingsList.length - 1 && newCustomSettingsList[i].key !== userCustomSettingsList[k].key) {
-        newUserCustomSettingsStr += `\n\n${newCustomSettingsList[i].comment}\nconst ${newCustomSettingsList[i].key} = ${newCustomSettingsList[i].value};`
+        // If there are no values ​​in the previous list until the last item in the list, update it.
+        // 리스트 마지막 항목까지 이전 리스트에 값이 없을 경우 새로 업데이트
+        newUserCustomSettingsStr += `\n\n${newCustomSettingsList[i].comment}\nconst ${newCustomSettingsList[i].key} = ${newCustomSettingsList[i].value};`;
         break;
       }
     }
   }
 
+  // Remove extra newlines
+  // 추가 줄 바꿈 제거
   newUserCustomSettingsStr = newUserCustomSettingsStr.replace(new RegExp('\n\n\n', 'g'), '\n\n');
 
   return newUserCustomSettingsStr;
 }
 
+// Function to copy files from a source directory to a destination directory
+// 소스 디렉토리에서 대상 디렉토리로 파일을 복사하는 함수
 async function copyFiles(sourceDir, destinationDir) {
   try {
     const files = await fs.readdir(sourceDir);
@@ -202,6 +300,7 @@ async function copyFiles(sourceDir, destinationDir) {
 }
 
 // Function to parse command line arguments
+// 명령줄 인수를 구문 분석하는 함수
 function parseArgs(args) {
   const options = {};
   // like --key=value
@@ -231,6 +330,8 @@ function parseArgs(args) {
   return options;
 }
 
+// Function to get the name of the main Applimode directory
+// 메인 Applimode 디렉토리의 이름을 가져오는 함수
 async function getAmMainDirectoryName() {
   const isAmMainDirectory = await checkDirectoryExists(`${projectsPath}/applimode-main`);
   if (isAmMainDirectory) {
@@ -240,6 +341,8 @@ async function getAmMainDirectoryName() {
   }
 }
 
+// Function to extract version information from a pubspec.yaml file
+// pubspec.yaml 파일에서 버전 정보를 추출하는 함수
 function getVersionMatch(pubspecFile) {
   const pubspecLines = pubspecFile.split('\n');
   for (let line of pubspecLines) {
@@ -250,6 +353,8 @@ function getVersionMatch(pubspecFile) {
   return '0.0.0+0'.match(check_version);
 }
 
+// Function to check if the current Applimode version is the latest
+// 현재 Applimode 버전이 최신 버전인지 확인하는 함수
 async function isLatestVersion(newPubspecPath, userPubspecPath) {
   const newPubspecFile = await fs.readFile(newPubspecPath, 'utf8');
   const userPubspecFile = await fs.readFile(userPubspecPath, 'utf8');
@@ -270,7 +375,8 @@ async function isLatestVersion(newPubspecPath, userPubspecPath) {
   }
 }
 
-// 파일안에서 특정 regex만 찾아내서 값을 출력하는 메서드
+// Function to extract a value from a file using a regular expression
+// 파일에서 정규 표현식을 사용하여 값을 추출하는 함수
 async function extractValueFromFile(filepath, filename, regex) {
   const filePath = path.join(filepath, filename);
 
@@ -279,7 +385,7 @@ async function extractValueFromFile(filepath, filename, regex) {
     const match = data.match(regex);
 
     if (match && match[1]) {
-      console.log(`${blue}current value: ${match[1]}${reset}`);
+      // console.log(`${blue}current value: ${match[1]}${reset}`);
       return match[1];
     } else {
       console.error(`${red}${regex} not found in ${filename}${reset}`);
@@ -291,6 +397,8 @@ async function extractValueFromFile(filepath, filename, regex) {
   }
 }
 
+// Function to remove quotes from a string
+// 문자열에서 따옴표를 제거하는 함수
 function removeQuotes(str) {
   if (str.startsWith('"') && str.endsWith('"') || str.startsWith("'") && str.endsWith("'")) {
     return str.slice(1, -1);
@@ -301,12 +409,15 @@ function removeQuotes(str) {
 
 // Get command-line arguments
 const command = process.argv.slice(2, 3);
-const args = process.argv.slice(3); // Skip first two arguments (node and script filename)
+// Skip first two arguments (node and script filename)
+// node와 스크립트 파일 이름인 처음 두 인수를 건너뜁니다.
+const args = process.argv.slice(3);
 
 // Parse arguments
 const options = parseArgs(args);
 
-// define defalut names
+// Define default names
+// 기본 이름 정의
 const amAndBundleId = 'applimode.my_applimode';
 const amIosBundleId = 'applimode.myApplimode'
 const amUniName = 'my_applimode';
@@ -319,6 +430,7 @@ const amWorkerKey = 'yourWorkerKey';
 const amMainColor = 'FCB126';
 
 // Extract arguments or use default values if not provided
+// 인수를 추출하거나 제공되지 않은 경우 기본값을 사용
 const oUserProjectName = options['project-name'] || options['p'];
 const oUserFullName = options['full-name'] || options['f'];
 const oUserShortName = options['short-name'] || options['s'] || oUserFullName;
@@ -335,17 +447,20 @@ const indexFile = 'index.html';
 const fbMessageFile = 'firebase-messaging-sw.js';
 const manifestFile = 'manifest.json';
 
-// init applimode
+// Initialize Applimode
+// Applimode 초기화
 async function initApplimode() {
   console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's get started.${reset}`);
 
-  /// applimode 또는 applimode-main 디렉토리가 있는지 확인
+  // Check if applimode or applimode-main directory exists
+  // applimode 또는 applimode-main 디렉토리가 있는지 확인
   const amMainDirName = await getAmMainDirectoryName();
   const amMainRootPath = `${projectsPath}/${amMainDirName}`;
   const kotlinOrganizationPath = `${amMainRootPath}/android/app/src/main/kotlin/com`
   const kotlinAndBundleIdPath = `${amMainRootPath}/android/app/src/main/kotlin/com/applimode`
 
-  // check the main directory exists
+  // Check if the main directory exists
+  // 메인 디렉토리가 존재하는지 확인
   const checkMainDirectory = await checkDirectoryExists(amMainRootPath);
   if (!checkMainDirectory) {
     console.log(`${red}The ${amMainDirName} directory does not exist.${reset}`);
@@ -354,11 +469,13 @@ async function initApplimode() {
 
   let userProjectName = '';
 
-  /// 프로젝트 이름을 파라미터로 받는 경우
+  // Get project name from parameter
+  // 프로젝트 이름을 파라미터로 받는 경우
   if (!isEmpty(oUserProjectName) && check_projectName.test(oUserProjectName)) {
     userProjectName = oUserProjectName
   } else {
-    /// 프로젝트 이름 파라미터 없을 경우, 유저 입력
+    // Get project name from user input
+    // 프로젝트 이름 파라미터 없을 경우, 유저 입력
     userProjectName = await askRequired(
       `(1/4) ${greenBold}Enter your project name (letters only, required): ${reset}`,
       answer => !isEmpty(answer) && check_projectName.test(answer),
@@ -379,7 +496,9 @@ async function initApplimode() {
   for (let i = 0; i < splits.length; i++) {
     let word = splits[i].toLowerCase().trim();
     if (word.length === 0) {
-      continue; // word의 길이가 0이면 다음 반복으로 넘어갑니다.
+      // Skip if word is empty
+      // word의 길이가 0이면 다음 반복으로 넘어갑니다.
+      continue; 
     }
     if (i == 0) {
       let firstChar = word.charAt(0);
@@ -402,29 +521,35 @@ async function initApplimode() {
     }
   }
 
-  /// 앱 풀네임 파라미터로 받는 경우
+  // Get app full name from parameter
+  // 앱 풀네임 파라미터로 받는 경우
   if (!isEmpty(oUserFullName)) {
     appFullName = oUserFullName;
   } else {
-    /// 풀네임 파라미터 없을 경우, 유저 입력 및 기본값 설정
+    // Get app full name from user input
+    // 풀네임 파라미터 없을 경우, 유저 입력 및 기본값 설정
     const inputAppFullName = await ask(`(2/4) ${greenBold}Enter your full app name (default: ${appFullName}): ${reset}`);
     appFullName = isEmpty(inputAppFullName) ? appFullName : inputAppFullName;
   }
 
-  /// 앱 숏네임 파라미터로 받는 경우
+  // Get app short name from parameter
+  // 앱 숏네임 파라미터로 받는 경우
   if (!isEmpty(oUserShortName)) {
     appShortName = oUserShortName;
   } else {
-    /// 숏네임 파라미터 없을 경우, 유저 입력 및 기본값 설정, 어디에서 사용되는지도 설명
+    // Get app short name from user input
+    // 숏네임 파라미터 없을 경우, 유저 입력 및 기본값 설정, 어디에서 사용되는지도 설명
     const inputAppShortName = await ask(`(3/4) ${greenBold}Enter your short app name (default: ${appShortName}): ${reset}`);
     appShortName = isEmpty(inputAppShortName) ? appShortName : inputAppShortName;
   }
 
-  /// 조직이름 파라메터로 받는 경우
+  // Get organization name from parameter
+  // 조직이름 파라메터로 받는 경우
   if (!isEmpty(oUserOrganizationName) && check_eng.test(oUserOrganizationName)) {
     appOrganizationName = oUserOrganizationName.trim().toLowerCase();
   } else {
-    /// 조직이름 파라미터 없을 경우, 유저 입력 및 기본값 설정
+    // Get organization name from user input
+    // 조직이름 파라미터 없을 경우, 유저 입력 및 기본값 설정
     const inputAppOrganizationName = await askRequired(
       `(4/4) ${greenBold}Enter your organization name (letters only, default: ${appOrganizationName}): ${reset}`,
       answer => check_eng.test(answer),
@@ -432,7 +557,6 @@ async function initApplimode() {
     );
     appOrganizationName = isEmpty(inputAppOrganizationName) ? appOrganizationName : inputAppOrganizationName.trim().toLowerCase();
   }
-
 
   andBundleId = `${appOrganizationName}.${underbarName}`;
   iosBundleId = `${appOrganizationName}.${camelName}`;
@@ -444,12 +568,14 @@ async function initApplimode() {
   await processDirectory(amMainRootPath, amFullName, appFullName);
   await processDirectory(amMainRootPath, amShortName, appShortName);
 
-  /// 파라미터로 워커키 전달할 경우
+  // If Cloudflare worker key is provided as a parameter
+  // 파라미터로 워커키 전달할 경우
   if (!isEmpty(oUserCloudflareWorkerKey)) {
     await processDirectory(amMainRootPath, amWorkerKey, oUserCloudflareWorkerKey);
   }
 
-  /// 파라미터로 메인컬러 전달할 경우
+  // If main color is provided as a parameter
+  // 파라미터로 메인컬러 전달할 경우
   if (!isEmpty(oUserMainColor)) {
     await processDirectory(amMainRootPath, amMainColor, oUserMainColor);
   }
@@ -461,7 +587,8 @@ async function initApplimode() {
   console.log(`${yellow}👋 Applimode initialization was successful.${reset}`);
 }
 
-// upgrade applimode
+// Upgrade Applimode
+// Applimode 업그레이드
 async function upgradeApplimode() {
   console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's get upgraded.${reset}`);
 
@@ -471,7 +598,8 @@ async function upgradeApplimode() {
   const kotlinOrganizationPath = `${amMainRootPath}/android/app/src/main/kotlin/com`
   const kotlinAndBundleIdPath = `${amMainRootPath}/android/app/src/main/kotlin/com/applimode`
 
-  // check the main directory exists
+  // Check if the main directory exists
+  // 메인 디렉토리가 존재하는지 확인
   const checkMainDirectory = await checkDirectoryExists(amMainRootPath);
   if (!checkMainDirectory) {
     console.log(`${red}The ${amMainDirName} directory does not exist.${reset}`);
@@ -480,11 +608,13 @@ async function upgradeApplimode() {
 
   let userProjectFolderName = '';
 
-  /// 프로젝트 폴더 이름을 파라미터로 받는 경우
+  // Get project folder name from parameter
+  // 프로젝트 폴더 이름을 파라미터로 받는 경우
   if (!isEmpty(oUserProjectFolderName)) {
     userProjectFolderName = oUserProjectFolderName
   } else {
-    /// 프로젝트 폴더 이름 파라미터 없을 경우, 유저 입력
+    // Get project folder name from user input
+    // 프로젝트 폴더 이름 파라미터 없을 경우, 유저 입력
     userProjectFolderName = await askRequired(
       `(1/1) ${greenBold}Enter your project folder name (required): ${reset}`,
       answer => !isEmpty(answer),
@@ -495,7 +625,8 @@ async function upgradeApplimode() {
   const newRootPath = amMainRootPath;
   const userRootPath = `${projectsPath}/${userProjectFolderName}`;
 
-  // check the project directory exists
+  // Check if the project directory exists
+  // 프로젝트 디렉토리가 존재하는지 확인
   const checkProjectDirectory = await checkDirectoryExists(userRootPath);
   if (!checkProjectDirectory) {
     console.log(`${red}Your project directory does not exist.${reset}`);
@@ -508,8 +639,6 @@ async function upgradeApplimode() {
   const userImagesPath = `${userRootPath}/assets/images`;
   const newWebPath = `${amMainRootPath}/web`;
   const userWebPath = `${userRootPath}/web`;
-
-
 
   const newPubspecPath = path.join(newRootPath, pubspecFile);
   const userPubspecPath = path.join(userRootPath, pubspecFile);
@@ -583,7 +712,7 @@ async function upgradeApplimode() {
 
   const organizationName = androidBundleId.replace(`.${underbarAppName}`, '').trim();
 
-  // change names in docs
+  // Change names in docs
   await processDirectory(amMainRootPath, amAndBundleId, androidBundleId);
   await processDirectory(amMainRootPath, amIosBundleId, appleBundleId);
   await processDirectory(amMainRootPath, amUniName, underbarAppName);
@@ -593,45 +722,55 @@ async function upgradeApplimode() {
   await processDirectory(amMainRootPath, amFbName, firebaseProjectName);
   await processDirectory(amMainRootPath, amMainColor, mainColor);
 
-  // applimode-main/android/app/src/main/kotlin/com/applimode/my_applimode/MainActivity.kt
+  // Rename MainActivity.kt
+  // MainActivity.kt 이름 변경
   await fs.rename(path.join(kotlinAndBundleIdPath, amUniName), path.join(kotlinAndBundleIdPath, underbarAppName));
+  // Rename organization directory
+  // 조직 디렉토리 이름 변경
   await fs.rename(path.join(kotlinOrganizationPath, amOrgnizationName), path.join(kotlinOrganizationPath, organizationName));
 
-  // generate custom_settings file
+  // Generate custom_settings.dart file
+  // custom_settings.dart 파일 생성
   const newUserCustomSettingsStr = getNewCumtomSettingsStr(importsList, newCustomSettingsList, userCustomSettingsList);
   await fs.writeFile(newCustomSettingsPath, newUserCustomSettingsStr, 'utf8');
 
-  // generate .env file
+  // Generate .env file
+  // .env 파일 생성
   await fs.writeFile(newEnvPath, userEnvFile, 'utf8');
 
-  // copy user's index.html file
+  // Copy user's index.html file
+  // 사용자의 index.html 파일 복사
   await fs.writeFile(newIndexPath, userIndexFile, 'utf8');
 
-  // copy user's firebase-messaging-sw.js file
+  // Copy user's firebase-messaging-sw.js file
+  // 사용자의 firebase-messaging-sw.js 파일 복사
   await fs.writeFile(newFbMessagePath, userFbMessageFile, 'utf8');
 
-  // copy user's mainfest.json file
+  // Copy user's manifest.json file
+  // 사용자의 manifest.json 파일 복사
   await fs.writeFile(newManifestPath, userManifestFile, 'utf8');
 
-  // move images
+  // Move images
+  // 이미지 이동
   await copyFiles(userImagesPath, newImagesPath);
 
-  // rename directories name
+  // Rename directories
+  // 디렉토리 이름 변경
   await fs.rename(path.join(projectsPath, userProjectFolderName), path.join(projectsPath, `${userProjectFolderName}_old`));
   await fs.rename(path.join(projectsPath, amMainDirName), path.join(projectsPath, userProjectFolderName));
 
   console.log(`${yellow}👋 Applimode upgrade was successful.${reset}`);
 }
 
-// set app full name
+// Set app full name
+// 앱 전체 이름 설정
 async function setAppFullName() {
   console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's set the app full name.${reset}`);
 
   let oldFullAppName = '';
   let newFullAppName = '';
 
-
-  oldFullAppName = await extractValueFromFile(currentLibPath, customSettingsFile, fullNameInCsRegex);
+  oldFullAppName = await extractValueFromFile(currentLibPath, customSettingsFile, fullNameRegex);
   if (isEmpty(oldFullAppName)) {
     console.log(`${red}fullname not found.${reset}`);
     return;
@@ -639,7 +778,7 @@ async function setAppFullName() {
 
   const singleArg = args.join(' ');
 
-  if (isEmpty(singleArg) || isEmpty(removeQuotes(singleArg))) {
+  if (isEmpty(singleArg)) {
     newFullAppName = await askRequired(
       `(1/1) ${greenBold}Enter a new full app name (required): ${reset}`,
       answer => !isEmpty(answer),
@@ -649,23 +788,54 @@ async function setAppFullName() {
     newFullAppName = removeQuotes(singleArg).trim();
   }
 
-  // console.log(`old: ${oldFullAppName}`);
-  // console.log(`new: ${newFullAppName}`);
+  // Target files for replacement
+  // 변경 대상 파일
+  const targetFiles = [
+    { path: 'linux/my_application.cc', regex: null },
+    { path: 'pubspec.yaml', regex: null },
+    { path: 'web/index.html', regex: null },
+    { path: 'lib/custom_settings.dart', regex: /(const String fullAppName =[\s\r\n]*').*(';)/ },
+    { path: 'lib/custom_settings.dart', regex: /(const String spareHomeBarTitle =[\s\r\n]*').*(';)/ },
+    { path: 'web/manifest.json', regex: /("name": ").*(",)/ },
+    { path: 'web/manifest.json', regex: /("description": ").*(",)/ },
+  ];
 
-  await processDirectory(currentProjectPath, oldFullAppName, newFullAppName);
+  for (const file of targetFiles) {
+    const filePath = path.join(currentProjectPath, file.path);
+
+    // Check if the file exists
+    // 파일 존재 여부 확인
+    const fileExists = await checkDirectoryExists(filePath);
+    if (!fileExists) {
+      console.warn(`${yellow}Warning: File not found: ${filePath}${reset}`);
+      continue;
+      // Skip to the next file if it doesn't exist
+      // 파일이 없으면 다음 파일로 넘어갑니다.
+    }
+
+    if (file.regex) {
+      // Replace using regex
+      // 정규표현식을 사용하여 특정 부분만 변경
+      await replacePhraseInFile(filePath, file.regex, `$1${newFullAppName}$2`);
+    } else {
+      // Replace entire file content
+      // 파일 전체에서 문구 변경
+      await replacePhrase(filePath, oldFullAppName, newFullAppName);
+    }
+  }
 
   console.log(`${yellow}👋 The operation was successful.${reset}`);
 }
 
-// set app short name
+// Set app short name
+// 앱 짧은 이름 설정
 async function setAppShortName() {
   console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's set the app short name.${reset}`);
 
   let oldShortAppName = '';
   let newShortAppName = '';
 
-
-  oldShortAppName = await extractValueFromFile(currentLibPath, customSettingsFile, shortNameInCsRegex);
+  oldShortAppName = await extractValueFromFile(currentLibPath, customSettingsFile, shortNameRegex);
   if (isEmpty(oldShortAppName)) {
     console.log(`${red}shortname not found.${reset}`);
     return;
@@ -673,7 +843,7 @@ async function setAppShortName() {
 
   const singleArg = args.join(' ');
 
-  if (isEmpty(singleArg) || isEmpty(removeQuotes(singleArg))) {
+  if (isEmpty(singleArg)) {
     newShortAppName = await askRequired(
       `(1/1) ${greenBold}Enter a new short app name (required): ${reset}`,
       answer => !isEmpty(answer),
@@ -686,21 +856,52 @@ async function setAppShortName() {
   // console.log(`old: ${oldShortAppName}`);
   // console.log(`new: ${newShortAppName}`);
 
-  await processDirectory(currentProjectPath, oldShortAppName, newShortAppName);
+  // Target files for replacement
+  // 변경 대상 파일
+  const targetFiles = [
+    { path: 'android/app/src/main/AndroidManifest.xml', regex: null },
+    { path: 'ios/Runner/Info.plist', regex: null },
+    { path: 'lib/custom_settings.dart', regex: /(const String shortAppName =[\s\r\n]*').*(';)/ },
+    { path: 'web/manifest.json', regex: /("short_name": ").*(",)/ },
+  ];
+
+  for (const file of targetFiles) {
+    const filePath = path.join(currentProjectPath, file.path);
+
+    // Check if the file exists
+    // 파일 존재 여부 확인
+    const fileExists = await checkDirectoryExists(filePath);
+    if (!fileExists) {
+      console.warn(`${yellow}Warning: File not found: ${filePath}${reset}`);
+      continue;
+      // Skip to the next file if it doesn't exist
+      // 파일이 없으면 다음 파일로 넘어갑니다.
+    }
+
+    if (file.regex) {
+      // Replace using regex
+      // 정규표현식을 사용하여 특정 부분만 변경
+      await replacePhraseInFile(filePath, file.regex, `$1${newShortAppName}$2`);
+    } else {
+      // Replace entire file content
+      // 파일 전체에서 문구 변경
+      await replacePhrase(filePath, oldShortAppName, newShortAppName);
+    }
+  }
 
   console.log(`${yellow}👋 The operation was successful.${reset}`);
 }
 
-// set app organization name
+// Set app organization name
+// 앱 조직 이름 설정
 async function setAppOrganizationName() {
-  console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's set the app short name.${reset}`);
+  console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's set the app organization name.${reset}`);
 
   let oldOrganizationName = '';
   let newOrganizationName = '';
 
-
-  const androidBundleId = await extractValueFromFile(currentLibPath, customSettingsFile, androidBundleIdInCsRegex);
-  const appleBundleId = await extractValueFromFile(currentLibPath, customSettingsFile, appleBundleIdInCsRegex);
+  const androidBundleId = await extractValueFromFile(currentLibPath, customSettingsFile, androidBundleIdRegex);
+  const appleBundleId = await extractValueFromFile(currentLibPath, customSettingsFile, appleBundleIdRegex);
   if (isEmpty(androidBundleId) || isEmpty(appleBundleId) || !androidBundleId.includes('.') || !appleBundleId.includes('.')) {
     console.log(`${red}organization not found.${reset}`);
     return;
@@ -712,8 +913,8 @@ async function setAppOrganizationName() {
 
   const singleArg = args.join(' ');
 
-  if (isEmpty(singleArg) || isEmpty(removeQuotes(singleArg)) || !check_eng.test(singleArg)) {
-    if (!check_eng.test(singleArg)) {
+  if (isEmpty(singleArg) || !check_eng.test(singleArg)) {
+    if (!isEmpty(singleArg) && !check_eng.test(singleArg)) {
       console.log(`${red}Can only contain letters${reset}`);
     }
     newOrganizationName = await askRequired(
@@ -741,25 +942,32 @@ async function setAppOrganizationName() {
   console.log(`${yellow}👋 The operation was successful.${reset}`);
 }
 
+// Generate .firebaserc file
+// .firebaserc 파일 생성
 async function generateFirebaserc() {
   try {
     const firebaseJson = JSON.parse(await fs.readFile(`${currentProjectPath}/firebase.json`, 'utf8'));
 
+    // Extract projectId
     // projectId 추출
     let projectId = firebaseJson.flutter?.platforms?.android?.default?.projectId;
 
     if (!projectId) {
       const firebaseOptionsContent = await fs.readFile(`${currentProjectPath}/lib/firebase_options.dart`, 'utf8');
-      const regex = /projectId:\s*'([^']+)'/; // projectId 추출을 위한 정규 표현식
+      const regex = /projectId:\s*'([^']+)'/; 
+      // Regex for extracting projectId
+      // projectId 추출을 위한 정규 표현식
       const match = firebaseOptionsContent.match(regex);
       projectId = match ? match[1] : null;
     }
 
+    // Throw error if projectId is not found
     // projectId를 찾지 못하면 오류 발생
     if (!projectId) {
       throw new Error(`${red}error: We can't find your Firebase project id. Run${reset} ${blueBold}firebase init firestore${reset}${red}, then type n to all questions.${reset}`);
     }
 
+    // Create .firebaserc file content
     // .firebaserc 파일 내용 생성
     const firebasercContent = {
       "projects": {
@@ -767,12 +975,14 @@ async function generateFirebaserc() {
       }
     };
 
+    // Write .firebaserc file asynchronously
     // .firebaserc 파일 작성 (비동기)
     await fs.writeFile(`${currentProjectPath}/.firebaserc`, JSON.stringify(firebasercContent, null, 2) + '\n');
+    // Update firebaseProjectId in custom_settings.dart
     // custom_settings.dart 의 firebaseProjectId 값 변경
     await replacePhraseInFile(
       `${currentLibPath}/${customSettingsFile}`,
-      firebaseIdInCsRegex,
+      firebaseIdRegex,
       `const String firebaseProjectId = '${projectId}';`
     );
 
@@ -782,15 +992,15 @@ async function generateFirebaserc() {
   }
 }
 
-// set app main color
+// Set app main color
+// 앱 메인 색상 설정
 async function setAppMainColor() {
   console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's set the app main color.${reset}`);
 
   let oldMainColor = '';
   let newMainColor = '';
 
-
-  oldMainColor = await extractValueFromFile(currentLibPath, customSettingsFile, mainColorInCsRegex);
+  oldMainColor = await extractValueFromFile(currentLibPath, customSettingsFile, mainColorRegex);
   if (isEmpty(oldMainColor)) {
     console.log(`${red}main color not found.${reset}`);
     return;
@@ -798,7 +1008,7 @@ async function setAppMainColor() {
 
   const singleArg = args.join(' ');
 
-  if (isEmpty(singleArg) || isEmpty(removeQuotes(singleArg)) || !check_hex_color.test(removeQuotes(singleArg))) {
+  if (isEmpty(singleArg) || !check_hex_color.test(removeQuotes(singleArg))) {
     if (!isEmpty(singleArg) && !check_hex_color.test(removeQuotes(singleArg))) {
       console.log(`${red}Please enter a valid 6-digit hexadecimal color code.${reset}`);
     }
@@ -813,15 +1023,49 @@ async function setAppMainColor() {
 
   newMainColor = newMainColor.replace(/^#/, '');
 
-  // console.log(`old: ${oldShortAppName}`);
-  // console.log(`new: ${newShortAppName}`);
+  // console.log(`old: ${oldMainColor}`);
+  // console.log(`new: ${newMainColor}`);
 
-  await processDirectory(currentProjectPath, oldMainColor, newMainColor);
+  // Target files for replacement
+  // 변경 대상 파일
+  const targetFiles = [
+    { path: 'flutter_launcher_icons.yaml', regex: /(theme_color: "#).*(")/ },
+    { path: 'lib/custom_settings.dart', regex: /(const String spareMainColor =[\s\r\n]*').*(';)/ },
+    { path: 'lib/src/app_settings/app_settings_controller.dart', regex: null },
+    { path: 'lib/src/features/admin_settings/domain/app_main_category.dart', regex: null },
+    { path: 'lib/src/utils/format.dart', regex: null },
+    { path: 'web/manifest.json', regex: /("theme_color": "#).*(",)/ },
+  ];
+
+  for (const file of targetFiles) {
+    const filePath = path.join(currentProjectPath, file.path);
+
+    // Check if the file exists
+    // 파일 존재 여부 확인
+    const fileExists = await checkDirectoryExists(filePath);
+    if (!fileExists) {
+      console.warn(`${yellow}Warning: File not found: ${filePath}${reset}`);
+      continue;
+      // Skip to the next file if it doesn't exist
+      // 파일이 없으면 다음 파일로 넘어갑니다.
+    }
+
+    if (file.regex) {
+      // Replace using regex
+      // 정규표현식을 사용하여 특정 부분만 변경
+      await replacePhraseInFile(filePath, file.regex, `$1${newMainColor}$2`);
+    } else {
+      // Replace entire file content
+      // 파일 전체에서 문구 변경
+      await replacePhrase(filePath, oldMainColor, newMainColor);
+    }
+  }
 
   console.log(`${yellow}👋 The operation was successful.${reset}`);
 }
 
-// set app main color
+// Set app worker key
+// 앱 worker 키 설정
 async function setWorkerKey() {
   console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's set the Worker key.${reset}`);
 
@@ -829,7 +1073,7 @@ async function setWorkerKey() {
 
   const singleArg = args.join(' ');
 
-  if (isEmpty(singleArg) || isEmpty(removeQuotes(singleArg)) || !check_password.test(removeQuotes(singleArg))) {
+  if (isEmpty(singleArg) || !check_password.test(removeQuotes(singleArg))) {
     if (!isEmpty(singleArg) && !check_password.test(removeQuotes(singleArg))) {
       console.log(`${red}Please enter a password of at least 4 characters, including at least one letter.${reset}`);
     }
@@ -849,6 +1093,8 @@ async function setWorkerKey() {
   console.log(`${yellow}👋 The operation was successful.${reset}`);
 }
 
+// Set Firebase Cloud Messaging settings
+// Firebase 클라우드 메시징 설정
 async function setFcm() {
   console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's set the Firebase Cloud Messaging.${reset}`);
 
@@ -872,13 +1118,14 @@ async function setFcm() {
 
   let vapidKey = '';
   if (/^(y|yes)$/i.test(useFcmForWeb)) {
-    vapidKey = await askRequired( // askRequired 함수로 변경
+    vapidKey = await askRequired(
       `(4/4) ${greenBold}Enter your VAPID key for Web (required, You can check your vapid here. Firebase Console > your project > Project settings > Cloud Messaging - Web Push certificates.): ${reset}`,
       answer => !isEmpty(answer),
       `${red}Please enter your VAPID key.${reset}`
     );
   }
 
+  // Update custom_settings.dart
   // custom_settings.dart 파일 수정
   await replacePhraseInFile(
     `${currentLibPath}/${customSettingsFile}`,
@@ -898,19 +1145,24 @@ async function setFcm() {
     `const String fcmVapidKey = '${vapidKey}';`
   );
 
-
+  // Extract values from firebase_options.dart and update firebase-messaging-sw.js and index.html
   // firebase_options.dart 파일에서 값 추출 및 firebase-messaging-sw.js, index.html에 입력
   if (/^(y|yes)$/i.test(useFcmForWeb)) {
     await updateFirebaseMessagingSw();
-    await updateIndexHtml(true); // FCM for Web 활성화 시 index.html 수정
+    // Update index.html if FCM for Web is enabled
+    // FCM for Web 활성화 시 index.html 수정
+    await updateIndexHtml(true); 
   } else {
-    await updateIndexHtml(false); // FCM for Web 비활성화 시 index.html 수정
+    // Update index.html if FCM for Web is disabled
+    // FCM for Web 비활성화 시 index.html 수정
+    await updateIndexHtml(false); 
   }
 
   console.log(`${yellow}👋 Firebase Cloud Messaging settings have been updated.${reset}`);
 }
 
-// 파일에서 특정 regex를 찾아 newPhrase로 변경하는 함수
+// Function to replace a phrase in a file using regex
+// 정규식을 사용하여 파일에서 특정 구문을 바꾸는 함수
 async function replacePhraseInFile(filePath, regex, newPhrase) {
   try {
     const data = await fs.readFile(filePath, 'utf8');
@@ -922,7 +1174,8 @@ async function replacePhraseInFile(filePath, regex, newPhrase) {
   }
 }
 
-
+// Update firebase-messaging-sw.js with values from firebase_options.dart
+// firebase_options.dart의 값으로 firebase-messaging-sw.js 업데이트
 async function updateFirebaseMessagingSw() {
   const firebaseOptionsPath = `${currentLibPath}/firebase_options.dart`;
   const firebaseMessagingSwPath = `${currentProjectPath}/web/firebase-messaging-sw.js`;
@@ -930,7 +1183,8 @@ async function updateFirebaseMessagingSw() {
   try {
     const firebaseOptionsContent = await fs.readFile(firebaseOptionsPath, 'utf8');
 
-    // web 옵션 부분 추출
+    // Extract web options
+    // 웹 옵션 부분 추출
     const webOptionsMatch = firebaseOptionsContent.match(/static const FirebaseOptions web = FirebaseOptions\(([\s\S]*?)\);/);
     if (!webOptionsMatch) {
       throw new Error(`${red}Error: Could not find FirebaseOptions for web in ${firebaseOptionsPath}${reset}`);
@@ -947,6 +1201,7 @@ async function updateFirebaseMessagingSw() {
 
     let newContent = await fs.readFile(firebaseMessagingSwPath, 'utf8');
 
+    // Find firebase.initializeApp section
     // firebase.initializeApp 부분 찾기
     const appInitMatch = newContent.match(/firebase\.initializeApp\(\{([\s\S]*?)\}\);/);
     if (!appInitMatch) {
@@ -954,6 +1209,7 @@ async function updateFirebaseMessagingSw() {
     }
     const appInitContent = appInitMatch[1];
 
+    // Replace values
     // 각 값을 새로운 값으로 치환
     let updatedAppInitContent = appInitContent
       .replace(/apiKey:\s*"[^"]*"/, `apiKey: "${apiKey}"`)
@@ -962,8 +1218,12 @@ async function updateFirebaseMessagingSw() {
       .replace(/storageBucket:\s*"[^"]*"/, `storageBucket: "${storageBucket}"`)
       .replace(/messagingSenderId:\s*"[^"]*"/, `messagingSenderId: "${messagingSenderId}"`)
       .replace(/appId:\s*"[^"]*"/, `appId: "${appId}"`)
-      .replace(/measurementId:\s*"[^"]*"/, measurementId ? `measurementId: "${measurementId}"` : `// measurementId: "..."`); // measurementId가 없으면 주석 처리
+      .replace(/measurementId:\s*"[^"]*"/, measurementId ? `measurementId: "${measurementId}"` : `// measurementId: "..."`);
+      // measurementId가 없으면 주석 처리
+      // Comment out measurementId if it doesn't exist
 
+
+    // Update file content
     // 새로운 내용으로 파일 업데이트
     newContent = newContent.replace(appInitMatch[0], `firebase.initializeApp({\n${updatedAppInitContent}\n});`);
 
@@ -975,18 +1235,22 @@ async function updateFirebaseMessagingSw() {
   }
 }
 
-
+// Function to extract a value from firebase options content using regex
+// firebase options 내용에서 정규식을 사용하여 값을 추출하는 함수
 function extractValueFromFirebaseOptions(content, regex) {
   const match = content.match(regex);
   return match ? match[1] : null;
 }
 
+// Update index.html based on FCM for Web setting
+// FCM for Web 설정에 따라 index.html 업데이트
 async function updateIndexHtml(enableFcmForWeb) {
   const indexHtmlPath = `${currentProjectPath}/web/index.html`;
 
   try {
     let indexHtmlContent = await fs.readFile(indexHtmlPath, 'utf8');
 
+    // Find flutter_bootstrap.js section
     // flutter_bootstrap.js 부분 찾기
     const flutterBootstrapMatch = indexHtmlContent.match(/<!--flutter_bootstrap.js starts-->([\s\S]*?)<!--flutter_bootstrap.js ends-->/);
     if (!flutterBootstrapMatch) {
@@ -996,6 +1260,7 @@ async function updateIndexHtml(enableFcmForWeb) {
     let updatedFlutterBootstrapContent;
 
     if (enableFcmForWeb) {
+      // Update for FCM enabled
       // FCM 활성화 시: 정해진 문구로 변경
       updatedFlutterBootstrapContent = `
   <!--
@@ -1015,6 +1280,7 @@ async function updateIndexHtml(enableFcmForWeb) {
   </script>
   `;
     } else {
+      // Update for FCM disabled
       // FCM 비활성화 시: 정해진 문구로 변경
       updatedFlutterBootstrapContent = `
   <script src="flutter_bootstrap.js" async=""></script>
@@ -1035,6 +1301,7 @@ async function updateIndexHtml(enableFcmForWeb) {
   `;
     }
 
+    // Update file content
     // 새로운 내용으로 파일 업데이트
     indexHtmlContent = indexHtmlContent.replace(flutterBootstrapMatch[0], `<!--flutter_bootstrap.js starts-->${updatedFlutterBootstrapContent}<!--flutter_bootstrap.js ends-->`);
 
@@ -1045,7 +1312,456 @@ async function updateIndexHtml(enableFcmForWeb) {
   }
 }
 
-// Check if the folder exists
+// Configure AI settings in custom_settings.dart
+// custom_settings.dart 파일의 ai 설정 변경
+async function setAi() {
+  console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's set the AI settings.${reset}`);
+
+  const useAi = await askRequired(
+    `(1/2) ${greenBold}Enable AI Assistant? (y/n or yes/no): ${reset}`,
+    answer => /^(y|yes|n|no)$/i.test(answer),
+    `${red}Please enter y, yes, n, or no.${reset}`
+  );
+
+  if (/^(n|no)$/i.test(useAi)) {
+    // Disable AI Assistant
+    // AI 사용 안 함
+    await replacePhraseInFile(
+      `${currentLibPath}/${customSettingsFile}`,
+      useAiAssistantRegex,
+      `const bool useAiAssistant = false;`
+    );
+    console.log(`${yellow}👋 AI Assistant has been disabled.${reset}`);
+    return;
+  }
+
+  // Select AI model
+  // AI 모델 선택
+  const aiModel = await askRequired(
+    `(2/2) ${greenBold}Select AI Model (p/f or pro/flash): ${reset}`,
+    answer => /^(p|pro|f|flash)$/i.test(answer),
+    `${red}Please enter p, pro, f, or flash.${reset}`
+  );
+
+  const aiModelType = /^(p|pro)$/i.test(aiModel) ? 'gemini-1.5-pro' : 'gemini-1.5-flash';
+
+  // Update custom_settings.dart
+  // custom_settings.dart 파일 수정
+  await replacePhraseInFile(
+    `${currentLibPath}/${customSettingsFile}`,
+    useAiAssistantRegex,
+    `const bool useAiAssistant = true;`
+  );
+  await replacePhraseInFile(
+    `${currentLibPath}/${customSettingsFile}`,
+    aiModelTypeRegex,
+    `const String aiModelType = '${aiModelType}';`
+  );
+
+  console.log(`${yellow}👋 AI Assistant has been enabled with ${aiModelType} model.${reset}`);
+  console.log(`${yellow}Please go to ${blueBold}https://console.firebase.google.com/project/_/genai${reset} ${yellow}and enable APIs.${reset}`);
+}
+
+// Configure R2 Storage settings in custom_settings.dart
+// custom_settings.dart 파일의 rtwo 설정
+async function setRTwoStorage() {
+  console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's set the R2 Storage settings.${reset}`);
+
+  let useRTwo;
+  let rTwoBaseUrl;
+
+  // If URL is provided as a parameter
+  // 파라미터로 URL 전달된 경우
+  if (args.length > 0 && urlRegex.test(args[0])) {
+    useRTwo = 'yes';
+    rTwoBaseUrl = args[0];
+  } else {
+    // Ask for R2 Storage enable/disable
+    // 파라미터가 없거나 URL 형식이 아닌 경우 질문 시작
+    useRTwo = await askRequired(
+      `(1/2) ${greenBold}Enable R2 Storage? (y/n or yes/no): ${reset}`,
+      answer => /^(y|yes|n|no)$/i.test(answer),
+      `${red}Please enter y, yes, n, or no.${reset}`
+    );
+
+    if (/^(n|no)$/i.test(useRTwo)) {
+      // Disable R2 Storage
+      // R2 Storage 사용 안 함
+      await replacePhraseInFile(
+        `${currentLibPath}/${customSettingsFile}`,
+        useRTwoStorageRegex,
+        `const bool useRTwoStorage = false;`
+      );
+      console.log(`${yellow}👋 R2 Storage has been disabled.${reset}`);
+      return;
+    }
+
+    // Get R2 base URL
+    // R2 Base URL 입력
+    rTwoBaseUrl = await askRequired(
+      `(2/2) ${greenBold}Enter your R2 worker URL (e.g., https://your-worker.your-id.workers.dev): ${reset}`,
+      answer => urlRegex.test(answer),
+      `${red}Please enter a valid URL.${reset}`
+    );
+  }
+
+  // Update custom_settings.dart
+  // custom_settings.dart 파일 수정
+  await replacePhraseInFile(
+    `${currentLibPath}/${customSettingsFile}`,
+    useRTwoStorageRegex,
+    `const bool useRTwoStorage = true;`
+  );
+  await replacePhraseInFile(
+    `${currentLibPath}/${customSettingsFile}`,
+    rTwoBaseUrlRegex,
+    `const String rTwoBaseUrl = '${rTwoBaseUrl}';`
+  );
+
+  console.log(`${yellow}👋 R2 Storage has been enabled with your R2 worker URL: ${rTwoBaseUrl}${reset}`);
+}
+
+// Configure Cloudflare CDN settings in custom_settings.dart
+// custom_settings.dart 파일의 cfcdn 설정
+async function setCfCdn() {
+  console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's set the Cloudflare CDN settings.${reset}`);
+
+  let useCfCdn;
+  let cfDomainUrl;
+
+  // If URL is provided as a parameter
+  // 파라미터로 URL 전달된 경우
+  if (args.length > 0 && urlRegex.test(args[0])) {
+    useCfCdn = 'yes';
+    cfDomainUrl = args[0];
+  } else {
+    // Ask for Cloudflare CDN enable/disable
+    // 파라미터가 없거나 URL 형식이 아닌 경우 질문 시작
+    useCfCdn = await askRequired(
+      `(1/2) ${greenBold}Enable Cloudflare CDN? (y/n or yes/no): ${reset}`,
+      answer => /^(y|yes|n|no)$/i.test(answer),
+      `${red}Please enter y, yes, n, or no.${reset}`
+    );
+
+    if (/^(n|no)$/i.test(useCfCdn)) {
+      // Disable Cloudflare CDN
+      // CF CDN 사용 안 함
+      await replacePhraseInFile(
+        `${currentLibPath}/${customSettingsFile}`,
+        useCfCdnRegex,
+        `const bool useCfCdn = false;`
+      );
+      console.log(`${yellow}👋 Cloudflare CDN has been disabled.${reset}`);
+      return;
+    }
+
+    // Get Cloudflare custom domain URL
+    // CF CDN URL 입력
+    cfDomainUrl = await askRequired(
+      `(2/2) ${greenBold}Enter your Cloudflare custom domain URL (e.g., https://your-domain.com): ${reset}`,
+      answer => urlRegex.test(answer),
+      `${red}Please enter a valid URL.${reset}`
+    );
+  }
+
+  // Update custom_settings.dart
+  // custom_settings.dart 파일 수정
+  await replacePhraseInFile(
+    `${currentLibPath}/${customSettingsFile}`,
+    useCfCdnRegex,
+    `const bool useCfCdn = true;`
+  );
+  await replacePhraseInFile(
+    `${currentLibPath}/${customSettingsFile}`,
+    cfDomainUrlRegex,
+    `const String cfDomainUrl = '${cfDomainUrl}';`
+  );
+
+  console.log(`${yellow}👋 Cloudflare CDN has been enabled with base URL: ${cfDomainUrl}${reset}`);
+}
+
+// Configure D1 database settings in custom_settings.dart
+// custom_settings.dart 파일의 done 설정
+async function setDOne() {
+  console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's set the D1 settings.${reset}`);
+
+  let useDOne;
+  let dOneBaseUrl;
+
+  // If URL is provided as parameter
+  // 파라미터로 URL 전달된 경우
+  if (args.length > 0 && urlRegex.test(args[0])) {
+    useDOne = 'yes';
+    dOneBaseUrl = args[0];
+  } else {
+    // Ask for D1 database enable/disable
+    // 파라미터가 없거나 URL 형식이 아닌 경우 질문 시작
+    useDOne = await askRequired(
+      `(1/2) ${greenBold}Enable D1 database? (y/n or yes/no): ${reset}`,
+      answer => /^(y|yes|n|no)$/i.test(answer),
+      `${red}Please enter y, yes, n, or no.${reset}`
+    );
+
+    if (/^(n|no)$/i.test(useDOne)) {
+      // Disable D1 database
+      // D1 사용 안 함
+      await replacePhraseInFile(
+        `${currentLibPath}/${customSettingsFile}`,
+        useDOneForSearchRegex,
+        `const bool useDOneForSearch = false;`
+      );
+      console.log(`${yellow}👋 D1 database has been disabled.${reset}`);
+      return;
+    }
+
+    // Get D1 base URL
+    // D1 Base URL 입력
+    dOneBaseUrl = await askRequired(
+      `(2/2) ${greenBold}Enter your D1 worker URL (e.g., https://your-worker.your-id.workers.dev): ${reset}`,
+      answer => urlRegex.test(answer),
+      `${red}Please enter a valid URL.${reset}`
+    );
+  }
+
+  // Update custom_settings.dart
+  // custom_settings.dart 파일 수정
+  await replacePhraseInFile(
+    `${currentLibPath}/${customSettingsFile}`,
+    useDOneForSearchRegex,
+    `const bool useDOneForSearch = true;`
+  );
+  await replacePhraseInFile(
+    `${currentLibPath}/${customSettingsFile}`,
+    dOneBaseUrlRegex,
+    `const String dOneBaseUrl = '${dOneBaseUrl}';`
+  );
+
+  console.log(`${yellow}👋 D1 database has been enabled with your D1 worker URL: ${dOneBaseUrl}${reset}`);
+}
+
+
+// Configure R2 Secure Get settings in custom_settings.dart
+// custom_settings.dart 파일의 rtwo secure get 설정
+async function setRTwoSecureGet() {
+  console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's set the R2SecureGet settings.${reset}`);
+
+  // Ask for R2 Secure Get enable/disable
+  const useRTwoSecureGet = await askRequired(
+    `(1/1) ${greenBold}Enable R2SecureGet? (y/n or yes/no): ${reset}`,
+    answer => /^(y|yes|n|no)$/i.test(answer),
+    `${red}Please enter y, yes, n, or no.${reset}`
+  );
+
+  if (/^(n|no)$/i.test(useRTwoSecureGet)) {
+    // Disable R2 Secure Get
+    // R2 secure get 사용 안 함
+    await replacePhraseInFile(
+      `${currentLibPath}/${customSettingsFile}`,
+      useRTwoSecureGetRegex,
+      `const bool useRTwoSecureGet = false;`
+    );
+    console.log(`${yellow}👋 R2SecurGet has been disabled.${reset}`);
+    return;
+  }
+
+  // Enable R2 Secure Get
+  // custom_settings.dart 파일 수정
+  await replacePhraseInFile(
+    `${currentLibPath}/${customSettingsFile}`,
+    useRTwoSecureGetRegex,
+    `const bool useRTwoSecureGet = true;`
+  );
+  
+  console.log(`${yellow}👋 R2SecureGet has been enabled.${reset}`);
+}
+
+// Set youtubeImageProxyUrl in custom_settings.dart
+// custom_settings.dart 파일의 youtubeImageProxyUrl 설정
+async function setYoutubeImageProxyUrl() {
+  console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's set the youtubeImageProxyUrl settings.${reset}`);
+
+  let youtubeImageProxyUrl;
+
+  // If URL is provided as parameter
+  // 파라미터로 URL 전달된 경우
+  if (args.length > 0 && urlRegex.test(args[0])) {
+    youtubeImageProxyUrl = args[0];
+  } else {
+    // Get youtubeImageProxyUrl from user input
+    // youtubeImageProxyUrl 입력
+    youtubeImageProxyUrl = await askRequired(
+      `(1/1) ${greenBold}Enter your youtubeImageProxyUrl (e.g., https://your-worker.your-id.workers.dev): ${reset}`,
+      answer => urlRegex.test(answer),
+      `${red}Please enter a valid URL.${reset}`
+    );
+  }
+
+  // Update custom_settings.dart
+  // custom_settings.dart 파일 수정
+  await replacePhraseInFile(
+    `${currentLibPath}/${customSettingsFile}`,
+    youtubeImageProxyUrlRegex,
+    `const String youtubeImageProxyUrl = '${youtubeImageProxyUrl}';`
+  );
+
+  console.log(`${yellow}👋 youtubeImageProxyUrl has been updated with this URL: ${youtubeImageProxyUrl}${reset}`);
+}
+
+// Set youtubeIframeProxyUrl in custom_settings.dart
+// custom_settings.dart 파일의 youtubeIframeProxyUrl 설정
+async function setYoutubeIframeProxyUrl() {
+  console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's set the youtubeIframeProxyUrl settings.${reset}`);
+
+  let youtubeIframeProxyUrl;
+
+  // If URL is provided as a parameter
+  // 파라미터로 URL 전달된 경우
+  if (args.length > 0 && urlRegex.test(args[0])) {
+    youtubeIframeProxyUrl = args[0];
+  } else {
+    // Get youtubeIframeProxyUrl from user input
+    // youtubeIframeProxyUrl 입력
+    youtubeIframeProxyUrl = await askRequired(
+      `(1/1) ${greenBold}Enter your youtubeIframeProxyUrl (e.g., https://your-worker.your-id.workers.dev): ${reset}`,
+      answer => urlRegex.test(answer),
+      `${red}Please enter a valid URL.${reset}`
+    );
+  }
+
+  // Update custom_settings.dart
+  // custom_settings.dart 파일 수정
+  await replacePhraseInFile(
+    `${currentLibPath}/${customSettingsFile}`,
+    youtubeIframeProxyUrlRegex,
+    `const String youtubeIframeProxyUrl = '${youtubeIframeProxyUrl}';`
+  );
+
+  console.log(`${yellow}👋 youtubeIframeProxyUrl has been updated with this URL: ${youtubeIframeProxyUrl}${reset}`);
+}
+
+// Change Firestore security rules
+// firestore의 security rule 변경
+async function setSecurity() {
+  console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's set the security settings.${reset}`);
+
+  // Display security settings options
+  console.log(`${greenBold}Security Settings Options:${reset}`);
+  console.log(`* ${blueBold}a (all users)${reset} - Access is granted to all users, regardless of authentication status.`);
+  // 모든 사용자에게 액세스 권한이 부여됩니다. 인증 상태와 관계없습니다.
+  console.log(`* ${blueBold}s (signed-in users)${reset} - Access is restricted to users who have signed in to the application.`);
+  // 애플리케이션에 로그인한 사용자로 액세스가 제한됩니다.
+  console.log(`* ${blueBold}v (verified users)${reset} - Access is restricted to users who have been verified by an administrator.`);
+  // 관리자가 확인한 사용자로 액세스가 제한됩니다.
+
+
+  // Get user input for security setting
+  const securitySetting = await askRequired(
+    `${greenBold}Select a security setting (a/s/v): ${reset}`,
+    answer => /^(a|s|v)$/i.test(answer),
+    `${red}Please enter a, s, or v.${reset}`
+  );
+
+  // Update custom_settings.dart and firestore.rules based on user input
+  let firestoreRulesContent;
+  switch (securitySetting.toLowerCase()) {
+    case 'a':
+      // All users
+      // 모든 사용자
+      await replacePhraseInFile(
+        `${currentLibPath}/${customSettingsFile}`,
+        isInitialSignInRegex,
+        `const bool isInitialSignIn = false;`
+      );
+      await replacePhraseInFile(
+        `${currentLibPath}/${customSettingsFile}`,
+        verifiedOnlyWriteRegex,
+        `const bool verifiedOnlyWrite = false;`
+      );
+      firestoreRulesContent = await fs.readFile(path.join(currentProjectPath, 'presettings/fs_open.firestore.rules'), 'utf8');
+      break;
+    case 's':
+      // Signed-in users
+      // 로그인한 사용자
+      await replacePhraseInFile(
+        `${currentLibPath}/${customSettingsFile}`,
+        isInitialSignInRegex,
+        `const bool isInitialSignIn = true;`
+      );
+      await replacePhraseInFile(
+        `${currentLibPath}/${customSettingsFile}`,
+        verifiedOnlyWriteRegex,
+        `const bool verifiedOnlyWrite = false;`
+      );
+      firestoreRulesContent = await fs.readFile(path.join(currentProjectPath, 'presettings/fs_authed.firestore.rules'), 'utf8');
+      break;
+    case 'v':
+      // Verified users
+      // 인증된 사용자
+      await replacePhraseInFile(
+        `${currentLibPath}/${customSettingsFile}`,
+        isInitialSignInRegex,
+        `const bool isInitialSignIn = true;`
+      );
+      await replacePhraseInFile(
+        `${currentLibPath}/${customSettingsFile}`,
+        verifiedOnlyWriteRegex,
+        `const bool verifiedOnlyWrite = true;`
+      );
+      firestoreRulesContent = await fs.readFile(path.join(currentProjectPath, 'presettings/fs_verified.firestore.rules'), 'utf8');
+      break;
+  }
+
+  // Update firestore.rules file
+  try {
+    const destinationPath = path.join(currentProjectPath, 'firestore.rules');
+    await fs.writeFile(destinationPath, firestoreRulesContent, 'utf8');
+    console.log(`Updated ${blue}firestore.rules${reset} with new security settings.`);
+  } catch (err) {
+    console.error(`${red}Error updating firestore.rules: ${err.message}${reset}`);
+  }
+
+  console.log(`${yellow}👋 Security settings have been updated.${reset}`);
+  console.log(`${yellow}To apply the new rules, run the following command:${reset}`);
+  console.log(`${blueBold}firebase deploy --only firestore${reset}`);
+}
+
+// Configure adminOnlyWrite setting in custom_settings.dart
+// custom_settings.dart 파일의 adminOnlyWrite 설정 변경
+async function setAdminOnlyWrite() {
+  console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's set the adminOnlyWrite settings.${reset}`);
+
+  // Ask for adminOnlyWrite enable/disable
+  const adminOnlyWrite = await askRequired(
+    `(1/1) ${greenBold}Enable adminOnlyWrite? (y/n or yes/no): ${reset}`,
+    answer => /^(y|yes|n|no)$/i.test(answer),
+    `${red}Please enter y, yes, n, or no.${reset}`
+  );
+
+  if (/^(n|no)$/i.test(adminOnlyWrite)) {
+    // Disable adminOnlyWrite
+    // adminOnlyWrite 사용 안 함
+    await replacePhraseInFile(
+      `${currentLibPath}/${customSettingsFile}`,
+      adminOnlyWriteRegex,
+      `const bool adminOnlyWrite = false;`
+    );
+    console.log(`${yellow}👋 adminOnlyWrite has been disabled.${reset}`);
+    return;
+  }
+  
+  // Enable adminOnlyWrite
+  // custom_settings.dart 파일 수정
+  await replacePhraseInFile(
+    `${currentLibPath}/${customSettingsFile}`,
+    adminOnlyWriteRegex,
+    `const bool adminOnlyWrite = true;`
+  );
+  
+  console.log(`${yellow}👋 adminOnlyWrite has been enabled.${reset}`);
+}
+
+// Check if the folder exists and execute the command
+// 폴더가 존재하는지 확인하고 명령어 실행
 fs.access(projectsPath)
   .then(async () => {
     if (command[0].trim() == 'init') {
@@ -1066,8 +1782,26 @@ fs.access(projectsPath)
       await setWorkerKey();
     } else if (command[0].trim() == 'fcm') {
       await setFcm();
+    } else if (command[0].trim() == 'ai') {
+      await setAi();
+    } else if (command[0].trim() == 'rtwo') {
+      await setRTwoStorage();
+    } else if (command[0].trim() == 'cdn') {
+      await setCfCdn();
+    } else if (command[0].trim() == 'done') {
+      await setDOne();
+    } else if (command[0].trim() == 'rtwosecureget') {
+      await setRTwoSecureGet();
+    } else if (command[0].trim() == 'youtubeimage') {
+      await setYoutubeImageProxyUrl();
+    } else if (command[0].trim() == 'youtubevideo') {
+      await setYoutubeIframeProxyUrl();
+    } else if (command[0].trim() == 'security') {
+      await setSecurity();
+    } else if (command[0].trim() == 'write') {
+      await setAdminOnlyWrite();
     } else {
-      console.error(`${red}Error:', 'The command must start with init or upgrade.${reset}`);
+      console.error(`${red}Error:', 'The command must start with init, upgrade, fullname, shortname, organization, firebaserc, color, worker, fcm, ai, rtwo, cdn, done, rtwosecureget, youtubeimage, youtube video, security, write.${reset}`);
       process.exit(1);
     }
     readline.close();

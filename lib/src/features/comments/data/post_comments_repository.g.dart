@@ -7,7 +7,7 @@ part of 'post_comments_repository.dart';
 // **************************************************************************
 
 String _$postCommentsRepositoryHash() =>
-    r'55d4166b981415dd98bfd623d36ed4e9bea7d511';
+    r'aca9b137f292cd12b64f83e4041068bb92201254';
 
 /// See also [postCommentsRepository].
 @ProviderFor(postCommentsRepository)
@@ -22,8 +22,10 @@ final postCommentsRepositoryProvider =
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef PostCommentsRepositoryRef = ProviderRef<PostCommentsRepository>;
-String _$postCommentsQueryHash() => r'1fc60ee4268c196ab14a69da3dd89c6e48871a52';
+String _$postCommentsQueryHash() => r'c7510a1d9c4f3baffb556eb709cb5a7abaa5083a';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -260,6 +262,8 @@ class PostCommentsQueryProvider
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin PostCommentsQueryRef on AutoDisposeProviderRef<Query<PostComment>> {
   /// The parameter `postId` of this provider.
   String? get postId;
@@ -322,7 +326,7 @@ class _PostCommentsQueryProviderElement
 }
 
 String _$postCommentRepliesQueryHash() =>
-    r'2fce93d6931925551441c1acecf01326db1972f8';
+    r'91d5e9bf958e8a9c1e10f0851545e2f82eefac42';
 
 /// See also [postCommentRepliesQuery].
 @ProviderFor(postCommentRepliesQuery)
@@ -439,6 +443,8 @@ class PostCommentRepliesQueryProvider
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin PostCommentRepliesQueryRef on AutoDisposeProviderRef<Query<PostComment>> {
   /// The parameter `parentCommentId` of this provider.
   String get parentCommentId;
@@ -454,7 +460,7 @@ class _PostCommentRepliesQueryProviderElement
       (origin as PostCommentRepliesQueryProvider).parentCommentId;
 }
 
-String _$postCommentFutureHash() => r'60b28eacf8a58919ba5dc1fb0009371eea523e65';
+String _$postCommentFutureHash() => r'70a5cb82ced9192471f2dff7b0a2030c205d8bba';
 
 /// See also [postCommentFuture].
 @ProviderFor(postCommentFuture)
@@ -570,6 +576,8 @@ class PostCommentFutureProvider
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin PostCommentFutureRef on AutoDisposeFutureProviderRef<PostComment?> {
   /// The parameter `id` of this provider.
   String get id;
@@ -585,7 +593,7 @@ class _PostCommentFutureProviderElement
 }
 
 String _$bestPostCommentsFutureHash() =>
-    r'7df33921b040b061bc9d4d38ad51d4cc359813df';
+    r'09648ad4e9ed49e42dd9da0c23dc913e83d4f3b1';
 
 /// See also [bestPostCommentsFuture].
 @ProviderFor(bestPostCommentsFuture)
@@ -703,6 +711,8 @@ class BestPostCommentsFutureProvider
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin BestPostCommentsFutureRef
     on AutoDisposeFutureProviderRef<List<PostComment>> {
   /// The parameter `postId` of this provider.
@@ -718,4 +728,4 @@ class _BestPostCommentsFutureProviderElement
   String get postId => (origin as BestPostCommentsFutureProvider).postId;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

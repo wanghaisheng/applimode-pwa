@@ -103,6 +103,6 @@ class RTwoStorageRepository {
 }
 
 @riverpod
-RTwoStorageRepository rTwoStorageRepository(RTwoStorageRepositoryRef ref) {
+RTwoStorageRepository rTwoStorageRepository(Ref ref) {
   return RTwoStorageRepository(ref);
 }

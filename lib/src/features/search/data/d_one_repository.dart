@@ -5,6 +5,7 @@ import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/utils/custom_headers.dart';
 import 'package:applimode_app/src/utils/string_converter.dart';
 import 'package:applimode_app/src/utils/url_converter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:http/http.dart' as http;
 
@@ -98,6 +99,6 @@ class DOneRepository {
 }
 
 @riverpod
-DOneRepository dOneRepository(DOneRepositoryRef ref) {
+DOneRepository dOneRepository(Ref ref) {
   return const DOneRepository();
 }

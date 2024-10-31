@@ -196,12 +196,12 @@ class FCMService {
 }
 
 @riverpod
-FCMService fcmService(FcmServiceRef ref) {
+FCMService fcmService(Ref ref) {
   return FCMService(ref, FirebaseMessaging.instance);
 }
 
 @riverpod
-FutureOr<bool> authorizedByUser(AuthorizedByUserRef ref) {
+FutureOr<bool> authorizedByUser(Ref ref) {
   final fcmService = ref.watch(fcmServiceProvider);
   return fcmService.authorizedByUser();
 }

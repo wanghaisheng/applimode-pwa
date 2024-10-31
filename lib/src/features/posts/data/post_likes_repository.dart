@@ -1,6 +1,7 @@
 import 'package:applimode_app/src/features/posts/domain/post_like.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'post_likes_repository.g.dart';
@@ -145,13 +146,13 @@ class PostLikesRepository {
 }
 
 @Riverpod(keepAlive: true)
-PostLikesRepository postLikesRepository(PostLikesRepositoryRef ref) {
+PostLikesRepository postLikesRepository(Ref ref) {
   return PostLikesRepository(FirebaseFirestore.instance);
 }
 
 @riverpod
 Query<PostLike> postLikesQuery(
-  PostLikesQueryRef ref, {
+  Ref ref, {
   bool? isDislike,
   String? uid,
   String? postId,
@@ -166,7 +167,7 @@ Query<PostLike> postLikesQuery(
 
 @riverpod
 FutureOr<List<PostLike>> postLikesByUserFuture(
-  PostLikesByUserFutureRef ref, {
+  Ref ref, {
   required String postId,
   required String uid,
   bool isDislike = false,
@@ -180,7 +181,7 @@ FutureOr<List<PostLike>> postLikesByUserFuture(
 
 @riverpod
 Stream<List<PostLike>> postLikesByUserStream(
-  PostLikesByUserStreamRef ref, {
+  Ref ref, {
   required String postId,
   required String uid,
 }) {

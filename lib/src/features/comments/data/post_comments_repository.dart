@@ -2,6 +2,7 @@ import 'package:applimode_app/src/features/comments/domain/post_comment.dart';
 import 'package:applimode_app/src/utils/format.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'post_comments_repository.g.dart';
@@ -227,13 +228,13 @@ class PostCommentsRepository {
 }
 
 @Riverpod(keepAlive: true)
-PostCommentsRepository postCommentsRepository(PostCommentsRepositoryRef ref) {
+PostCommentsRepository postCommentsRepository(Ref ref) {
   return PostCommentsRepository(FirebaseFirestore.instance);
 }
 
 @riverpod
 Query<PostComment> postCommentsQuery(
-  PostCommentsQueryRef ref, {
+  Ref ref, {
   String? postId,
   String? uid,
   bool byCreatedAt = true,
@@ -261,21 +262,19 @@ Query<PostComment> postCommentsQuery(
 }
 
 @riverpod
-Query<PostComment> postCommentRepliesQuery(
-    PostCommentRepliesQueryRef ref, String parentCommentId) {
+Query<PostComment> postCommentRepliesQuery(Ref ref, String parentCommentId) {
   return ref
       .watch(postCommentsRepositoryProvider)
       .postCommentRepliesRef(parentCommentId);
 }
 
 @riverpod
-FutureOr<PostComment?> postCommentFuture(PostCommentFutureRef ref, String id) {
+FutureOr<PostComment?> postCommentFuture(Ref ref, String id) {
   return ref.watch(postCommentsRepositoryProvider).fetchPostComment(id);
 }
 
 @riverpod
-FutureOr<List<PostComment>> bestPostCommentsFuture(
-    BestPostCommentsFutureRef ref, String postId) {
+FutureOr<List<PostComment>> bestPostCommentsFuture(Ref ref, String postId) {
   return ref
       .watch(postCommentsRepositoryProvider)
       .fetchBestPostCommentsList(postId);

@@ -6,6 +6,7 @@
 ## Version 0.1.8 (October 17, 2024)
 - Added AI assistant (Gemini) feature when writing posts.
 - Added applimode-tool for configuring Applimode projects.
+- Fixed Ref subclasses in Riverpod.
 - Improved some docs.
 
 ## Version 0.1.7 (September 12, 2024)

@@ -15,7 +15,7 @@ const String firebaseProjectId = 'my-applimode';
 const String appCreator = 'JongsukOh';
 const String appEmail = 'yourEmail@email.com';
 const String appEffectiveDate = '2024-08-06';
-const String appVersion = '0.1.8+2';
+const String appVersion = '0.1.8+3';
 
 // spare values when admin settings is not set
 const String spareHomeBarTitle = 'My Applimode';
@@ -101,7 +101,7 @@ const bool useAiAssistant = false;
 // Model type to use as AI assistant
 // ai assistant로 사용할 모델 타입
 // gemini-1.5-flash, gemini-1.5-pro
-const String aiModelType = 'gemini-1.5-pro';
+const String aiModelType = 'gemini-1.5-flash';
 
 // Mute home screen video sound
 // 홈화면 영상 소리 뮤트
