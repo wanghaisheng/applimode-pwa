@@ -255,6 +255,7 @@ class StringConverter {
         .replaceAll(noTitleTag, '')
         .replaceAll(noWriterTag, '')
         .replaceAll(Regex.remoteRegex, '')
+        .replaceAll(Regex.markDownImageRegex, '')
         .replaceAll(Regex.iframeRegex, '')
         .replaceAll(Regex.urlWithHttp, '')
         .replaceAll(Regex.urlWithoutHttp, '')
@@ -267,7 +268,10 @@ class StringConverter {
   static String toSearch(String content) {
     String searchString = '';
     final preProcess = content
+        .replaceAll(noTitleTag, '')
+        .replaceAll(noWriterTag, '')
         .replaceAll(Regex.remoteRegex, '')
+        .replaceAll(Regex.markDownImageRegex, '')
         .replaceAll(Regex.iframeRegex, '')
         .replaceAll(Regex.urlWithHttp, '')
         .replaceAll(Regex.urlWithoutHttp, '')
