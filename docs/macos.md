@@ -1229,7 +1229,7 @@ cd ~/projects;
 git clone https://github.com/mycalls/applimode.git
 ```
 ```sh
-cp -r ./applimode/applimode-tool ./; node ./applimode-tool/index.js init; rm -r ./applimode-tool
+cp -r ./applimode/applimode-tool ./; node ./applimode-tool/index.js upgrade; rm -r ./applimode-tool
 ```
 * Enter your existing project directory name.
 * Close **Terminal**.
