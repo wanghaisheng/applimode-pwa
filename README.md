@@ -32,11 +32,11 @@ Applimode is a powerful, next-generation solution for building apps and websites
 git clone https://github.com/mycalls/applimode.git
 ```
 ```sh
-cd applimode/applimode-tool; node index.js init; cd ..; code .;
+cp -r ./applimode/applimode-tool ./; node ./applimode-tool/index.js init; rm -r ./applimode-tool
 ```
-* Once your initialized Applimode project is open in VS Code, type the following command.
+* Open your initialized Applimode project in VS Code, and run the following command.
 ```sh
-flutter pub get; dart run build_runner build -d; flutterfire configure --platforms=android,ios,web; cd applimode-tool; node index.js firebaserc; cd ..; firebase deploy --only firestore; firebase deploy --only storage;
+flutter pub get; dart run build_runner build -d; flutterfire configure --platforms=android,ios,web; node ./applimode-tool/index.js firebaserc; firebase deploy --only firestore; firebase deploy --only storage;
 ```
 > [!NOTE]
 > when asked something, press **n** or **N**.

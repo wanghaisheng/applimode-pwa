@@ -171,10 +171,7 @@ mkdir ~/projects; cd ~/projects;
 git clone https://github.com/mycalls/applimode.git
 ```
 ```sh
-cd applimode/applimode-tool/
-```
-```sh
-node index.js init
+cp -r ./applimode/applimode-tool ./; node ./applimode-tool/index.js init; rm -r ./applimode-tool
 ```
 * Enter your project name, long app name, short app name, and organization name.
 > [!NOTE]
@@ -198,7 +195,7 @@ flutterfire configure --platforms=android,ios,web
 ```
 > when asked something, press **n** or **N**.
 ```sh
-cd applimode-tool; node index.js firebaserc; cd ..
+node ./applimode-tool/index.js firebaserc
 ```
 ```sh
 firebase deploy --only firestore
@@ -210,7 +207,7 @@ firebase deploy --only storage
 > [!NOTE]
 > * If you want to enter commands all at once, run the following command:
 > ```sh
-> flutter pub get; dart run build_runner build -d; flutterfire configure --platforms=android,ios,web; cd applimode-tool; node index.js firebaserc; cd ..; firebase deploy --only firestore; firebase deploy --only storage;
+> flutter pub get; dart run build_runner build -d; flutterfire configure --platforms=android,ios,web; node ./applimode-tool/index.js firebaserc; firebase deploy --only firestore; firebase deploy --only storage;
 > ```
 
 * Open [Google Cloud console](https://console.cloud.google.com/) in your web browser.
@@ -278,7 +275,7 @@ flutter pub run flutter_launcher_icons
 * Click **View** (on the top menu of VSCode), then select **Terminal**.
 * Run the following command.
 ```sh
-cd applimode-tool; node index.js color; cd ..
+node ./applimode-tool/index.js color
 ```
 * Type the color code in hex format (e.g., fcb126, f37d76).
 > [!NOTE]
@@ -460,7 +457,7 @@ flutter build apk --release --target-platform=android-arm64
 * Click **View** (on the top menu of VSCode) and select **Terminal**.
 * Run the following commands.
 ```sh
-cd applimode-tool; node index.js fcm; cd ..
+node ./applimode-tool/index.js fcm
 ```
 > [!NOTE]
 > * To find the vapid key, open or go to your [Firebase console](https://console.firebase.google.com/).
@@ -575,7 +572,7 @@ npx wrangler deploy
 * Click **View** (on the top menu of VSCode), then select **Terminal**.
 * Run the following commands in order.
 ```sh
-cd applimode-tool; node index.js worker; cd ..
+node ./applimode-tool/index.js worker
 ```
 * Type your secret for your worker that you entered.
 ```sh
@@ -824,10 +821,7 @@ cd ~/projects;
 git clone https://github.com/mycalls/applimode.git
 ```
 ```sh
-cd applimode/applimode-tool/
-```
-```sh
-node index.js upgrade
+cp -r ./applimode/applimode-tool ./; node ./applimode-tool/index.js upgrade; rm -r ./applimode-tool
 ```
 * Enter your existing project directory name.
 * Close **PowerShell**.
@@ -852,7 +846,7 @@ flutterfire configure --platforms=android,ios,web
 ```
 > when asked something, press **n** or **N**.
 ```sh
-cd applimode-tool; node index.js firebaserc; cd ..
+node ./applimode-tool/index.js firebaserc
 ```
 ```sh
 firebase deploy --only firestore
@@ -863,7 +857,7 @@ firebase deploy --only storage
 > [!NOTE]
 > * If you want to enter commands all at once, run the following command:
 > ```sh
-> flutter pub get; dart run flutter_native_splash:create; flutter pub run flutter_launcher_icons; dart run build_runner build -d; flutterfire configure --platforms=android,ios,web; cd applimode-tool; node index.js firebaserc; cd ..; firebase deploy --only firestore; firebase deploy --only storage;
+> flutter pub get; dart run flutter_native_splash:create; flutter pub run flutter_launcher_icons; dart run build_runner build -d; flutterfire configure --platforms=android,ios,web; node ./applimode-tool/index.js firebaserc; firebase deploy --only firestore; firebase deploy --only storage;
 > ```
 * Delete your old project folder.
 
@@ -874,7 +868,7 @@ firebase deploy --only storage
 * Click **View** (on the top menu of VSCode), then select **Terminal**.
 * Run the following command.
 ```sh
-cd applimode-tool; node index.js security; cd ..
+node ./applimode-tool/index.js security
 ```
 * Select the security rule you want. (a, s, v)
 * Run the following command.
@@ -935,7 +929,7 @@ firebase deploy --only firestore
 * Click **View** (on the top menu of VSCode), then select **Terminal**.
 * Run the following command.
 ```sh
-cd applimode-tool; node index.js write; cd ..
+node ./applimode-tool/index.js write
 ```
 * Type ```y``` and press ```Enter```.
 
@@ -950,11 +944,11 @@ cd applimode-tool; node index.js write; cd ..
 * Click **View** (on the top menu of VSCode), then select **Terminal**.
 * To change the full name, run the following command.
 ```sh
-cd applimode-tool; node index.js fullname; cd ..
+node ./applimode-tool/index.js fullname
 ```
 * To change the short name, run the following command.
 ```sh
-cd applimode-tool; node index.js shortname; cd ..
+node ./applimode-tool/index.js shortname
 ```
 * Enter the desired name and press Enter.
 
@@ -968,7 +962,7 @@ cd applimode-tool; node index.js shortname; cd ..
 * Click **View** (on the top menu of VSCode), then select **Terminal**.
 * Run the following command.
 ```sh
-cd applimode-tool; node index.js organization; cd ..
+node ./applimode-tool/index.js organization
 ```
 * Enter the desired organization name and press Enter.
 
@@ -980,7 +974,7 @@ cd applimode-tool; node index.js organization; cd ..
 * Click **View** (on the top menu of VSCode), then select **Terminal**.
 * Run the following command.
 ```sh
-cd applimode-tool; node index.js ai; cd ..
+node ./applimode-tool/index.js ai
 ```
 * Type ```y``` and press ```Enter```.
 * Choose between Flash and Pro (Flash is faster and more cost-effective, while Pro is more powerful but also more expensive).

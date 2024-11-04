@@ -3,6 +3,10 @@
 ### New Features and Improvements
 ### Bug Fixes
 -->
+## Version 0.1.9 (November 4, 2024)
+- Fixed init and upgrade in applimode-tool.
+- Improved some docs.
+
 ## Version 0.1.8 (October 17, 2024)
 - Added AI assistant (Gemini) feature when writing posts.
 - Added applimode-tool for configuring Applimode projects.

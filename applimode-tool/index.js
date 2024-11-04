@@ -99,16 +99,21 @@ const reset = '\x1b[0m';
 
 // Assuming this file is inside the applimode project. Use './../..' if it's standalone.
 // applimode 프로젝트 내에 있기 때문에, 단독으로 쓸일 경우 ./../
-const projectsPath = './../..';
+// const projectsPath = './../..';
+// const currentProjectPath = './..';
+// const currentProjectPath = getCurrentDirectoryName() == 'applimode-tool' ? './..' : '.';
+// const projectsPath = `${currentProjectPath}/..`
+const currentProjectPath = path.dirname(__dirname);
+const projectsPath = path.dirname(path.dirname(__dirname));;
 
-const currentProjectPath = './..';
 const currentLibPath = `${currentProjectPath}/lib`;
 
 // Settings class for storing values in custom_settings.dart
 // custom_settings.dart 파일의 값을 저장하는 Settings 클래스
 class Settings {
-  constructor(comment, key, value) {
+  constructor(comment, type, key, value) {
     this.comment = comment;
+    this.type = type;
     this.key = key;
     this.value = value;
   }
@@ -162,6 +167,36 @@ async function checkDirectoryExists(directoryPath) {
   } catch (err) {
     return false;
   }
+}
+
+// Get parent folder of Applimode project folder
+// Applimode 프로젝트 폴더의 상위 폴더 가져오기
+async function getProjectsPath() {
+  const amMainDirName = await getAmMainDirectoryName();
+  const isExTool = await checkDirectoryExists(path.join(currentProjectPath, amMainDirName));
+  if (path.basename(currentProjectPath) == amMainDirName) {
+    return projectsPath;
+  } else if (isExTool) {
+    return currentProjectPath;
+  } else {
+    return '';
+  }
+}
+
+// Extract current directory name
+// 현재 디렉토리 이름 추출
+function getCurrentDirectoryName() {
+  return path.basename(process.cwd());
+}
+
+// Extract parent directory name
+// 상위 프로젝트 이름 추출
+function getAncestorDirectoryName(levelsUp = 1) {
+  let currentPath = process.cwd();
+  for (let i = 0; i < levelsUp; i++) {
+      currentPath = path.dirname(currentPath);
+  }
+  return path.basename(currentPath);
 }
 
 // Function to check if a value exceeds the maximum length
@@ -233,10 +268,12 @@ function getSettingsList(settingsFile) {
     // 각 줄을 'const' 또는 '='로 분할
     const componants = settingsRawList[i].split(/const|=/);
     const comment = componants[0] == undefined ? '' : componants[0].trim();
-    const key = componants[1] == undefined ? '' : componants[1].trim();
+    const typeKey = componants[1] == undefined ? '' : componants[1].trim().split(' ');
+    const type = typeKey[0] == undefined ? '' : typeKey[0].trim();
+    const key = typeKey[1] == undefined ? '' : typeKey[1].trim();
     const value = componants[2] == undefined ? '' : componants[2].trim();
     if (key !== '' && value !== '') {
-      settingsList.push(new Settings(comment, key, value));
+      settingsList.push(new Settings(comment, type, key, value));
     }
 
   }
@@ -261,14 +298,14 @@ function getNewCumtomSettingsStr(importsList, newCustomSettingsList, userCustomS
       if (newCustomSettingsList[i].key == userCustomSettingsList[k].key) {
         // If there is a value in the previous list, update it with the previous value.
         // 이전 리스트에 값이 있을 경우 이전 값으로 업데이트 
-        newUserCustomSettingsStr += `\n\n${userCustomSettingsList[k].comment}\nconst ${userCustomSettingsList[k].key} = ${userCustomSettingsList[k].value};`;
+        newUserCustomSettingsStr += `\n\n${userCustomSettingsList[k].comment}\nconst ${userCustomSettingsList[k].type} ${userCustomSettingsList[k].key} = ${userCustomSettingsList[k].value};`;
         break;
       }
 
       if (k == userCustomSettingsList.length - 1 && newCustomSettingsList[i].key !== userCustomSettingsList[k].key) {
         // If there are no values ​​in the previous list until the last item in the list, update it.
         // 리스트 마지막 항목까지 이전 리스트에 값이 없을 경우 새로 업데이트
-        newUserCustomSettingsStr += `\n\n${newCustomSettingsList[i].comment}\nconst ${newCustomSettingsList[i].key} = ${newCustomSettingsList[i].value};`;
+        newUserCustomSettingsStr += `\n\n${newCustomSettingsList[i].comment}\nconst ${userCustomSettingsList[i].type} ${newCustomSettingsList[i].key} = ${newCustomSettingsList[i].value};`;
         break;
       }
     }
@@ -333,9 +370,11 @@ function parseArgs(args) {
 // Function to get the name of the main Applimode directory
 // 메인 Applimode 디렉토리의 이름을 가져오는 함수
 async function getAmMainDirectoryName() {
-  const isAmMainDirectory = await checkDirectoryExists(`${projectsPath}/applimode-main`);
+  const applimodeMain = 'applimode-main';
+  const isAmMainDirectory = await checkDirectoryExists(path.join(projectsPath, applimodeMain)) || await checkDirectoryExists(path.join(currentProjectPath, applimodeMain));
+  // console.log(`isAmMainDirectory: ${isAmMainDirectory}`);
   if (isAmMainDirectory) {
-    return 'applimode-main';
+    return applimodeMain;
   } else {
     return 'applimode';
   }
@@ -455,7 +494,16 @@ async function initApplimode() {
   // Check if applimode or applimode-main directory exists
   // applimode 또는 applimode-main 디렉토리가 있는지 확인
   const amMainDirName = await getAmMainDirectoryName();
-  const amMainRootPath = `${projectsPath}/${amMainDirName}`;
+
+  // Check if applimode-tool is outside the project folder
+  // applimode-tool이 프로젝트 폴더 외부에 있을 경우 확인
+  const initProjectsPath = await getProjectsPath();
+  if (isEmpty(initProjectsPath)) {
+    console.log(`${red}The ${amMainDirName} directory does not exist.${reset}`);
+    return;
+  }
+  
+  const amMainRootPath = `${initProjectsPath}/${amMainDirName}`;
   const kotlinOrganizationPath = `${amMainRootPath}/android/app/src/main/kotlin/com`
   const kotlinAndBundleIdPath = `${amMainRootPath}/android/app/src/main/kotlin/com/applimode`
 
@@ -582,7 +630,7 @@ async function initApplimode() {
 
   await fs.rename(path.join(kotlinAndBundleIdPath, amUniName), path.join(kotlinAndBundleIdPath, underbarName));
   await fs.rename(path.join(kotlinOrganizationPath, amOrgnizationName), path.join(kotlinOrganizationPath, appOrganizationName));
-  await fs.rename(path.join(projectsPath, amMainDirName), path.join(projectsPath, underbarName));
+  await fs.rename(path.join(initProjectsPath, amMainDirName), path.join(initProjectsPath, underbarName));
 
   console.log(`${yellow}👋 Applimode initialization was successful.${reset}`);
 }
@@ -593,7 +641,16 @@ async function upgradeApplimode() {
   console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's get upgraded.${reset}`);
 
   const amMainDirName = await getAmMainDirectoryName();
-  const amMainRootPath = `${projectsPath}/${amMainDirName}`;
+
+  // Check if applimode-tool is outside the project folder
+  // applimode-tool이 프로젝트 폴더 외부에 있을 경우 확인
+  const initProjectsPath = await getProjectsPath();
+  if (isEmpty(initProjectsPath)) {
+    console.log(`${red}The ${amMainDirName} directory does not exist.${reset}`);
+    return;
+  }
+
+  const amMainRootPath = `${initProjectsPath}/${amMainDirName}`;
   const amMainLibPath = `${amMainRootPath}/lib`
   const kotlinOrganizationPath = `${amMainRootPath}/android/app/src/main/kotlin/com`
   const kotlinAndBundleIdPath = `${amMainRootPath}/android/app/src/main/kotlin/com/applimode`
@@ -623,7 +680,7 @@ async function upgradeApplimode() {
   }
 
   const newRootPath = amMainRootPath;
-  const userRootPath = `${projectsPath}/${userProjectFolderName}`;
+  const userRootPath = `${initProjectsPath}/${userProjectFolderName}`;
 
   // Check if the project directory exists
   // 프로젝트 디렉토리가 존재하는지 확인
@@ -675,7 +732,7 @@ async function upgradeApplimode() {
   let camelAppName = '';
   let androidBundleId = '';
   let appleBundleId = '';
-  let firebaseProjectName = '';
+  // let firebaseProjectName = '';
   let mainColor = '';
 
   const importsList = newCustomSettingsFile.match(new RegExp('import \'package:(.*);', 'g'));
@@ -702,9 +759,9 @@ async function upgradeApplimode() {
     if (userCustomSettingsList[i].key == 'appleBundleId') {
       appleBundleId = userCustomSettingsList[i].value.replace(new RegExp(/['"]/, 'g'), '').trim();
     }
-    if (userCustomSettingsList[i].key == 'firebaseProjectName') {
-      firebaseProjectName = userCustomSettingsList[i].value.replace(new RegExp(/['"]/, 'g'), '').trim();
-    }
+    // if (userCustomSettingsList[i].key == 'firebaseProjectId') {
+    //   firebaseProjectName = userCustomSettingsList[i].value.replace(new RegExp(/['"]/, 'g'), '').trim();
+    // }
     if (userCustomSettingsList[i].key == 'spareMainColor') {
       mainColor = userCustomSettingsList[i].value.replace(new RegExp(/['"]/, 'g'), '').trim();
     }
@@ -719,7 +776,7 @@ async function upgradeApplimode() {
   await processDirectory(amMainRootPath, amCamelName, camelAppName);
   await processDirectory(amMainRootPath, amFullName, fullAppName);
   await processDirectory(amMainRootPath, amShortName, shortAppName);
-  await processDirectory(amMainRootPath, amFbName, firebaseProjectName);
+  // await processDirectory(amMainRootPath, amFbName, firebaseProjectName);
   await processDirectory(amMainRootPath, amMainColor, mainColor);
 
   // Rename MainActivity.kt
@@ -756,8 +813,8 @@ async function upgradeApplimode() {
 
   // Rename directories
   // 디렉토리 이름 변경
-  await fs.rename(path.join(projectsPath, userProjectFolderName), path.join(projectsPath, `${userProjectFolderName}_old`));
-  await fs.rename(path.join(projectsPath, amMainDirName), path.join(projectsPath, userProjectFolderName));
+  await fs.rename(path.join(initProjectsPath, userProjectFolderName), path.join(initProjectsPath, `${userProjectFolderName}_old`));
+  await fs.rename(path.join(initProjectsPath, amMainDirName), path.join(initProjectsPath, userProjectFolderName));
 
   console.log(`${yellow}👋 Applimode upgrade was successful.${reset}`);
 }
