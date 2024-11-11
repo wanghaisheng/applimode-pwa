@@ -1,6 +1,5 @@
 import 'package:applimode_app/src/common_widgets/center_circular_indicator.dart';
 import 'package:applimode_app/src/common_widgets/error_widgets/error_message_button.dart';
-import 'package:applimode_app/src/common_widgets/lazy_loading_widget.dart';
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/post/presentation/post_app_bar.dart';
@@ -93,12 +92,6 @@ class _PostScreenState extends ConsumerState<PostScreen> {
         : 16.0;
 
     return Scaffold(
-      appBar: PostAppBar(
-        postId: widget.postId,
-        // postAndWriter: widget.postAndWriter,
-        postAsync: postAsync,
-        writerAsync: writerAsync,
-      ),
       body: postAsync.when(
         data: (post) {
           if (post == null) {
@@ -115,44 +108,41 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                   content: postContent?.content ?? '',
                   postId: widget.postId,
                 );
-                return Column(
-                  children: [
-                    Expanded(
-                      child: SafeArea(
-                        // for iOS
-                        top: false,
-                        bottom: false,
-                        child: LazyLoadingWidget(
-                          // lazyDuration: 200,
-                          loadingWidget: const Center(
-                            child: CupertinoActivityIndicator(),
-                          ),
-                          child: ListView.builder(
-                            // shrinkWrap: true,
-                            addAutomaticKeepAlives: false,
-                            addRepaintBoundaries: false,
-                            padding: kIsWeb
-                                ? EdgeInsets.only(
-                                    left: sidePadding,
-                                    right: sidePadding,
-                                    bottom: 16)
-                                : const EdgeInsets.only(
-                                    left: 16,
-                                    right: 16,
-                                    bottom: 16,
-                                  ),
-                            itemCount: itemsList.length,
-                            itemBuilder: (context, index) {
-                              return itemsList[index];
-                            },
-                            //children: itemsList,
-                          ),
+                // LazyLoadingWidget
+                // loadingWidget: const Center(child: CupertinoActivityIndicator(),),
+                return CustomScrollView(
+                  slivers: [
+                    PostAppBar(
+                      post: post,
+                      writerAsync: writerAsync,
+                    ),
+                    SliverSafeArea(
+                      // for iOS
+                      top: false,
+                      bottom: false,
+                      sliver: SliverPadding(
+                        padding: kIsWeb
+                            ? EdgeInsets.only(
+                                left: sidePadding,
+                                right: sidePadding,
+                                bottom: 16)
+                            : const EdgeInsets.only(
+                                left: 16,
+                                right: 16,
+                                bottom: 16,
+                              ),
+                        sliver: SliverList.builder(
+                          // shrinkWrap: true,
+                          addAutomaticKeepAlives: false,
+                          addRepaintBoundaries: false,
+
+                          itemCount: itemsList.length,
+                          itemBuilder: (context, index) {
+                            return itemsList[index];
+                          },
+                          //children: itemsList,
                         ),
                       ),
-                    ),
-                    PostScreenBottomBar(
-                      post: post,
-                      postWriter: writerAsync.value,
                     ),
                   ],
                 );
@@ -167,17 +157,30 @@ class _PostScreenState extends ConsumerState<PostScreen> {
             content: post.content,
             postId: widget.postId,
           );
-          return Column(
-            children: [
-              Expanded(
-                child: SafeArea(
-                  // for iOS
-                  top: false,
-                  bottom: false,
-                  child: ListView.builder(
+          return CustomScrollView(
+            slivers: [
+              PostAppBar(
+                post: post,
+                writerAsync: writerAsync,
+              ),
+              SliverSafeArea(
+                // for iOS
+                top: false,
+                bottom: false,
+                sliver: SliverPadding(
+                  padding: kIsWeb
+                      ? EdgeInsets.only(
+                          left: sidePadding, right: sidePadding, bottom: 16)
+                      : const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          bottom: 16,
+                        ),
+                  sliver: SliverList.builder(
                     // shrinkWrap: true,
                     addAutomaticKeepAlives: false,
                     addRepaintBoundaries: false,
+                    /*
                     padding: kIsWeb
                         ? EdgeInsets.only(
                             left: sidePadding, right: sidePadding, bottom: 16)
@@ -186,6 +189,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                             right: 16,
                             bottom: 16,
                           ),
+                          */
                     itemCount: itemsList.length,
                     itemBuilder: (context, index) {
                       return itemsList[index];
@@ -193,10 +197,6 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                     // children: itemsList,
                   ),
                 ),
-              ),
-              PostScreenBottomBar(
-                post: post,
-                postWriter: writerAsync.value,
               ),
             ],
           );
@@ -207,6 +207,19 @@ class _PostScreenState extends ConsumerState<PostScreen> {
         loading: () => const Center(child: CupertinoActivityIndicator()),
       ),
       floatingActionButton: isLoading ? const CenterCircularIndicator() : null,
+      bottomNavigationBar: postAsync.when(
+        data: (post) {
+          if (post == null) {
+            return SizedBox.shrink();
+          }
+          return PostScreenBottomBar(
+            post: post,
+            postWriter: writerAsync.value,
+          );
+        },
+        error: (error, stackTrace) => SizedBox.shrink(),
+        loading: () => SizedBox.shrink(),
+      ),
     );
   }
 }

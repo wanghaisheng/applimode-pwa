@@ -25,12 +25,48 @@ class ProfileCommentsScreen extends ConsumerWidget {
         ref.watch(updatedCommentIdsListProvider.notifier).removeAll;
 
     return Scaffold(
+      /*
       appBar: AppBar(
         automaticallyImplyLeading: kIsWeb ? false : true,
         leading: kIsWeb ? const WebBackButton() : null,
         title: Text(context.loc.comments),
       ),
+      */
       // body: ProfileCommentsList(uid: uid),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            floating: true,
+            automaticallyImplyLeading: kIsWeb ? false : true,
+            leading: kIsWeb ? const WebBackButton() : null,
+            title: Text(context.loc.comments),
+          ),
+          SliverSafeArea(
+            top: false,
+            bottom: false,
+            sliver: SimplePageListView(
+              isSliver: true,
+              query: commentsQuery,
+              listState: commentsListStateProvider,
+              isNoGridView: true,
+              itemBuilder: (context, index, doc) {
+                final comment = doc.data();
+                return PostCommentsItem(
+                  comment: comment,
+                  isProfile: true,
+                  onPressed: () =>
+                      context.push(ScreenPaths.post(comment.postId)),
+                );
+              },
+              refreshUpdatedDocs: true,
+              updatedDocQuery: updatedCommentQuery,
+              resetUpdatedDocIds: resetUpdatedDocIds,
+              updatedDocsState: updatedCommentIdsListProvider,
+            ),
+          ),
+        ],
+      ),
+      /*
       body: SafeArea(
         top: false,
         bottom: false,
@@ -52,6 +88,7 @@ class ProfileCommentsScreen extends ConsumerWidget {
           updatedDocsState: updatedCommentIdsListProvider,
         ),
       ),
+      */
     );
   }
 }

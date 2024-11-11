@@ -1,3 +1,4 @@
+import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/features/comments/data/post_comments_repository.dart';
 import 'package:applimode_app/src/features/comments/presentation/post_comments_item.dart';
 import 'package:applimode_app/src/features/comments/presentation/post_comments_list_state.dart';
@@ -33,6 +34,7 @@ class PostCommentsListWithFS extends ConsumerWidget {
         : ref.watch(postCommentRepliesQueryProvider(parentCommentId!));
     return FirestoreListView(
       query: commentsQuery,
+      pageSize: firebaseListFetchLimit,
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       emptyBuilder: (context) => Center(
         child: Text(emptyString != null ? emptyString! : context.loc.noComment),

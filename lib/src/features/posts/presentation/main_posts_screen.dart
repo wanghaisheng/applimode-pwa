@@ -17,65 +17,22 @@ class MainPostsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    switch (type) {
-      case PostsListType.small:
-        return const Scaffold(
-          appBar: PostsAppBar(),
-          body: MainPostsList(type: PostsListType.small),
-          floatingActionButton: PostsFloatingActionButton(),
-          drawer: PostsDrawer(),
-          drawerEnableOpenDragGesture: false,
-        );
-      case PostsListType.square:
-        return const Scaffold(
-          appBar: PostsAppBar(),
-          body: MainPostsList(
-            type: PostsListType.square,
-          ),
-          floatingActionButton:
-              useDirectUploadButton ? PostsFabs() : PostsFloatingActionButton(),
-          drawer: PostsDrawer(),
-          drawerEnableOpenDragGesture: false,
-        );
-      case PostsListType.page:
-        return const Scaffold(
-          backgroundColor: Colors.black,
-          appBar: PostsAppBar(
-            forceMaterialTransparency: true,
-            foregroundColor: Colors.white,
-            elevation: 0,
-          ),
-          body: MainPostsList(
-            type: PostsListType.page,
-          ),
-          floatingActionButton:
-              useDirectUploadButton ? PostsFabs() : PostsFloatingActionButton(),
-          drawer: PostsDrawer(),
-          drawerEnableOpenDragGesture: false,
-          extendBodyBehindAppBar: true,
-        );
-      case PostsListType.round:
-        return const Scaffold(
-          appBar: PostsAppBar(),
-          body: MainPostsList(
-            type: PostsListType.round,
-          ),
-          floatingActionButton:
-              useDirectUploadButton ? PostsFabs() : PostsFloatingActionButton(),
-          drawer: PostsDrawer(),
-          drawerEnableOpenDragGesture: false,
-        );
-      case PostsListType.mixed:
-        return const Scaffold(
-          appBar: PostsAppBar(),
-          body: MainPostsList(
-            type: PostsListType.mixed,
-          ),
-          floatingActionButton:
-              useDirectUploadButton ? PostsFabs() : PostsFloatingActionButton(),
-          drawer: PostsDrawer(),
-          drawerEnableOpenDragGesture: false,
-        );
-    }
+    final isPage = type == PostsListType.page;
+    return Scaffold(
+      appBar: isPage
+          ? PostsAppBar(
+              forceMaterialTransparency: true,
+              foregroundColor: Colors.white,
+              elevation: 0,
+            )
+          : null,
+      body: MainPostsList(type: type),
+      floatingActionButton:
+          useDirectUploadButton ? PostsFabs() : PostsFloatingActionButton(),
+      drawer: PostsDrawer(),
+      drawerEnableOpenDragGesture: false,
+      extendBodyBehindAppBar: isPage ? true : false,
+      backgroundColor: isPage ? Colors.black : null,
+    );
   }
 }

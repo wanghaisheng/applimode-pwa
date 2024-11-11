@@ -15,6 +15,7 @@ import 'package:applimode_app/src/utils/list_state.dart';
 import 'package:applimode_app/src/utils/now_to_int.dart';
 import 'package:applimode_app/src/utils/show_message_snack_bar.dart';
 import 'package:applimode_app/src/utils/updated_post_ids_list.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,6 +64,7 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
     final textTheme = Theme.of(context).textTheme;
     final mainColor = colorScheme.secondary;
     final countTextStyle = textTheme.bodyMedium?.copyWith(color: mainColor);
+    final isIosWeb = kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
 
     final adminSettings = ref.watch(adminSettingsProvider);
 
@@ -91,7 +93,12 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
         }
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.only(
+          top: 8,
+          left: 16,
+          right: 16,
+          bottom: isIosWeb ? iosWebBottomSafeArea : 8,
+        ),
         color: colorScheme.onInverseSurface,
         // height: 96,
         child: SafeArea(

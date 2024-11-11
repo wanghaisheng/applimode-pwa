@@ -8,7 +8,9 @@ class FilledHomeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FilledButton(
-      onPressed: () => context.go('/'),
+      // onPressed: () => context.go('/'),
+      // 이전의 네비게이션 히스토리 삭제
+      onPressed: () => Router.neglect(context, () => context.go('/')),
       child: Text(context.loc.goHome),
     );
   }

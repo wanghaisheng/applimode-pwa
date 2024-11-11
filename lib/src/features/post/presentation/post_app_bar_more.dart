@@ -17,25 +17,21 @@ import 'package:applimode_app/src/utils/web_back/web_back_stub.dart';
 class PostAppBarMore extends ConsumerWidget {
   const PostAppBarMore({
     super.key,
-    required this.postId,
-    // this.postAndWriter,
-    required this.postAsync,
+    required this.post,
     required this.writerAsync,
   });
 
-  final String postId;
-  // final PostAndWriter? postAndWriter;
-  final AsyncValue<Post?> postAsync;
+  final Post post;
   final AsyncValue<AppUser?> writerAsync;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authStateChangesProvider).value;
+    final postId = post.id;
     final appUser = user != null
         ? ref.watch(appUserFutureProvider(user.uid))
         : const AsyncData(null);
-    final postAndWriter =
-        PostAndWriter(post: postAsync.value!, writer: writerAsync.value!);
+    final postAndWriter = PostAndWriter(post: post, writer: writerAsync.value!);
     final useRecommendation =
         ref.watch(adminSettingsProvider).useRecommendation;
     return AsyncValueWidget(
@@ -61,7 +57,7 @@ class PostAppBarMore extends ConsumerWidget {
                 if (useRecommendation)
                   PopupMenuItem(
                     onTap: () async {
-                      final result = postAsync.value?.isRecommended ?? false
+                      final result = post.isRecommended
                           ? await ref
                               .read(postScreenControllerProvider.notifier)
                               .unrecommendPost(
@@ -85,14 +81,14 @@ class PostAppBarMore extends ConsumerWidget {
                       }
                     },
                     child: Text(
-                      postAsync.value?.isRecommended ?? false
+                      post.isRecommended
                           ? context.loc.unrecommendPost
                           : context.loc.recommendPost,
                     ),
                   ),
                 PopupMenuItem(
                   onTap: () async {
-                    final result = postAsync.value?.isHeader ?? false
+                    final result = post.isHeader
                         ? await ref
                             .read(postScreenControllerProvider.notifier)
                             .toGeneralPost(
@@ -116,14 +112,14 @@ class PostAppBarMore extends ConsumerWidget {
                     }
                   },
                   child: Text(
-                    postAsync.value?.isHeader ?? false
+                    post.isHeader
                         ? context.loc.specifyGeneralPost
                         : context.loc.specifyMainPost,
                   ),
                 ),
                 PopupMenuItem(
                   onTap: () async {
-                    final result = postAsync.value?.isBlock ?? false
+                    final result = post.isBlock
                         ? await ref
                             .read(postScreenControllerProvider.notifier)
                             .unblockPost(
@@ -147,7 +143,7 @@ class PostAppBarMore extends ConsumerWidget {
                     }
                   },
                   child: Text(
-                    postAsync.value?.isBlock ?? false
+                    post.isBlock
                         ? context.loc.unblockPost
                         : context.loc.blockPost,
                   ),
@@ -161,7 +157,7 @@ class PostAppBarMore extends ConsumerWidget {
                         .read(postScreenControllerProvider.notifier)
                         .deletePost(
                           postId: postId,
-                          post: postAsync.value!,
+                          post: post,
                           isAdmin: appUser?.isAdmin ?? false,
                         );
                     if (context.mounted && result) {

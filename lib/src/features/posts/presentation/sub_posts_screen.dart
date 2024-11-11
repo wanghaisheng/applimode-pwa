@@ -26,6 +26,51 @@ class SubPostsScreen extends ConsumerWidget {
   final String? appBarTitle;
   final PostsListType type;
 
+  Widget _itemBuilder(
+      BuildContext context, int index, QueryDocumentSnapshot<Post> doc) {
+    final post = doc.data();
+    switch (type) {
+      case PostsListType.small:
+        return SmallPostsItem(
+          post: post,
+          index: index,
+        );
+      case PostsListType.square:
+        return BasicPostsItem(
+          post: post,
+          index: index,
+        );
+      case PostsListType.page:
+        return BasicPostsItem(
+          post: post,
+          index: index,
+          aspectRatio: MediaQuery.sizeOf(context).aspectRatio,
+          isPage: true,
+          // isTappable: false,
+          showMainLabel: false,
+        );
+      case PostsListType.round:
+        return RoundPostsItem(
+          post: post,
+          index: index,
+        );
+      case PostsListType.mixed:
+        if (post.mainVideoUrl != null ||
+            (post.mainImageUrl != null && post.title.trim().isEmpty)) {
+          return RoundPostsItem(
+            post: post,
+            index: index,
+            needTopMargin: index == 0 ? false : true,
+            needBottomMargin: false,
+          );
+        }
+        return SmallPostsItem(
+          post: post,
+          index: index,
+        );
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final updatedPostQuery = ref.watch(postsRepositoryProvider).postsRef();
@@ -37,145 +82,67 @@ class SubPostsScreen extends ConsumerWidget {
         ? ((screenWidth - pcWidthBreakpoint) / 2) + roundCardPadding
         : roundCardPadding;
 
-    switch (type) {
-      case PostsListType.small:
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(appBarTitle ?? ''),
-            automaticallyImplyLeading: kIsWeb ? false : true,
-            leading: kIsWeb ? const WebBackButton() : null,
-          ),
-          body: SimplePageListView(
-            query: query,
-            listState: postsListStateProvider,
-            itemBuilder: (context, index, doc) {
-              final post = doc.data();
-              return SmallPostsItem(
-                post: post,
-                index: index,
-              );
-            },
-            refreshUpdatedDocs: true,
-            updatedDocQuery: updatedPostQuery,
-            resetUpdatedDocIds: resetUpdatedDocIds,
-            updatedDocsState: updatedPostIdsListProvider,
-          ),
-        );
-      case PostsListType.square:
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(appBarTitle ?? ''),
-            automaticallyImplyLeading: kIsWeb ? false : true,
-            leading: kIsWeb ? const WebBackButton() : null,
-          ),
-          body: SimplePageListView(
-            query: query,
-            listState: postsListStateProvider,
-            itemExtent: MediaQuery.sizeOf(context).width + cardBottomPadding,
-            itemBuilder: (context, index, doc) {
-              final post = doc.data();
-              return BasicPostsItem(
-                post: post,
-                index: index,
-              );
-            },
-            refreshUpdatedDocs: true,
-            updatedDocQuery: updatedPostQuery,
-            resetUpdatedDocIds: resetUpdatedDocIds,
-            updatedDocsState: updatedPostIdsListProvider,
-          ),
-        );
-      case PostsListType.page:
-        return Scaffold(
-          extendBodyBehindAppBar: true,
-          backgroundColor: Colors.black,
-          appBar: AppBar(
-            title: Text(appBarTitle ?? ''),
-            forceMaterialTransparency: true,
-            foregroundColor: Colors.white,
-            elevation: 0,
-            automaticallyImplyLeading: kIsWeb ? false : true,
-            leading: kIsWeb ? const WebBackButton() : null,
-          ),
-          body: SimplePageListView(
-            query: query,
-            isPage: true,
-            listState: postsListStateProvider,
-            itemBuilder: (context, index, doc) {
-              final post = doc.data();
-              return BasicPostsItem(
-                post: post,
-                index: index,
-                aspectRatio: MediaQuery.sizeOf(context).aspectRatio,
-                isPage: true,
-                // isTappable: false,
-                showMainLabel: false,
-              );
-            },
-            refreshUpdatedDocs: true,
-            updatedDocQuery: updatedPostQuery,
-            resetUpdatedDocIds: resetUpdatedDocIds,
-            updatedDocsState: updatedPostIdsListProvider,
-          ),
-        );
-      case PostsListType.round:
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(appBarTitle ?? ''),
-            automaticallyImplyLeading: kIsWeb ? false : true,
-            leading: kIsWeb ? const WebBackButton() : null,
-          ),
-          body: SimplePageListView(
-            query: query,
-            listState: postsListStateProvider,
-            itemExtent: ((screenWidth - (2 * horizontalMargin)) * 9 / 16) +
-                roundCardPadding,
-            itemBuilder: (context, index, doc) {
-              final post = doc.data();
-              return RoundPostsItem(
-                post: post,
-                index: index,
-              );
-            },
-            refreshUpdatedDocs: true,
-            updatedDocQuery: updatedPostQuery,
-            resetUpdatedDocIds: resetUpdatedDocIds,
-            updatedDocsState: updatedPostIdsListProvider,
-          ),
-        );
-      case PostsListType.mixed:
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(appBarTitle ?? ''),
-            automaticallyImplyLeading: kIsWeb ? false : true,
-            leading: kIsWeb ? const WebBackButton() : null,
-          ),
-          body: SimplePageListView(
-            query: query,
-            listState: postsListStateProvider,
-            padding: const EdgeInsets.only(bottom: roundCardPadding),
-            itemBuilder: (context, index, doc) {
-              final post = doc.data();
-              if (post.mainVideoUrl != null ||
-                  (post.mainImageUrl != null && post.title.trim().isEmpty)) {
-                return RoundPostsItem(
-                  post: post,
-                  index: index,
-                  needTopMargin: index == 0 ? false : true,
-                  needBottomMargin: false,
-                );
-              }
-              return SmallPostsItem(
-                post: post,
-                index: index,
-              );
-            },
-            refreshUpdatedDocs: true,
-            updatedDocQuery: updatedPostQuery,
-            resetUpdatedDocIds: resetUpdatedDocIds,
-            updatedDocsState: updatedPostIdsListProvider,
-          ),
-        );
-    }
+    final isPage = type == PostsListType.page;
+
+    return Scaffold(
+      appBar: isPage
+          ? AppBar(
+              title: Text(appBarTitle ?? ''),
+              forceMaterialTransparency: true,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              automaticallyImplyLeading: kIsWeb ? false : true,
+              leading: kIsWeb ? const WebBackButton() : null,
+            )
+          : null,
+      body: isPage
+          ? SimplePageListView(
+              query: query,
+              isPage: true,
+              listState: postsListStateProvider,
+              itemBuilder: _itemBuilder,
+              refreshUpdatedDocs: true,
+              updatedDocQuery: updatedPostQuery,
+              resetUpdatedDocIds: resetUpdatedDocIds,
+              updatedDocsState: updatedPostIdsListProvider,
+            )
+          : CustomScrollView(
+              slivers: [
+                if (!isPage)
+                  SliverAppBar(
+                    floating: true,
+                    title: Text(appBarTitle ?? ''),
+                    automaticallyImplyLeading: kIsWeb ? false : true,
+                    leading: kIsWeb ? const WebBackButton() : null,
+                  ),
+                SimplePageListView(
+                  query: query,
+                  listState: postsListStateProvider,
+                  padding: switch (type) {
+                    PostsListType.mixed =>
+                      const EdgeInsets.only(bottom: roundCardPadding),
+                    _ => null,
+                  },
+                  itemExtent: switch (type) {
+                    PostsListType.square =>
+                      MediaQuery.sizeOf(context).width + cardBottomPadding,
+                    PostsListType.round =>
+                      ((screenWidth - (2 * horizontalMargin)) * 9 / 16) +
+                          roundCardPadding,
+                    PostsListType.small => listSmallItemHeight,
+                    _ => null,
+                  },
+                  itemBuilder: _itemBuilder,
+                  refreshUpdatedDocs: true,
+                  updatedDocQuery: updatedPostQuery,
+                  resetUpdatedDocIds: resetUpdatedDocIds,
+                  updatedDocsState: updatedPostIdsListProvider,
+                  isSliver: true,
+                )
+              ],
+            ),
+      extendBodyBehindAppBar: isPage ? true : false,
+      backgroundColor: isPage ? Colors.black : null,
+    );
   }
 }

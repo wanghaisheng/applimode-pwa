@@ -3,6 +3,10 @@
 ### New Features and Improvements
 ### Bug Fixes
 -->
+## Version 0.2.0 (November 11, 2024)
+- Added ability to hide app bar when scrolling in some views.
+- Improved the main list view.
+
 ## Version 0.1.9 (November 4, 2024)
 - Fixed init and upgrade in applimode-tool.
 - Improved some docs.

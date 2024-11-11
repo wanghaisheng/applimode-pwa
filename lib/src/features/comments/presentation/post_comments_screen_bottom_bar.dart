@@ -5,6 +5,7 @@ import 'package:applimode_app/src/features/admin_settings/application/admin_sett
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/comments/presentation/post_comment_controller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
@@ -93,6 +94,8 @@ class _PostCommentsScreenBottomBarState
     final mediaMaxMBSize = ref.watch(adminSettingsProvider).mediaMaxMBSize;
     final user = ref.watch(authStateChangesProvider).value;
     final isLoading = ref.watch(postCommentControllerProvider).isLoading;
+    final isIosWeb = kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+
     return InkWell(
       /// If the user is not signed in, go to the sign in screen
       /// 로그인하지 않았을 경우 로그인창으로
@@ -101,7 +104,12 @@ class _PostCommentsScreenBottomBarState
       child: IgnorePointer(
         ignoring: user == null || isLoading,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: EdgeInsets.only(
+            top: 12,
+            left: 16,
+            right: 16,
+            bottom: isIosWeb ? iosWebBottomSafeArea : 12,
+          ),
           color: Theme.of(context).colorScheme.onInverseSurface,
           child: SafeArea(
             child: Row(

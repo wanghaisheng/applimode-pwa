@@ -1,5 +1,7 @@
 import 'package:applimode_app/src/constants/constants.dart';
+import 'package:applimode_app/src/features/posts/domain/post.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/round_posts_item.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:applimode_app/src/common_widgets/simple_page_list_view.dart';
 import 'package:applimode_app/src/common_widgets/web_back_button.dart';
@@ -23,12 +25,54 @@ class ProfilePostsScreen extends ConsumerWidget {
   final String uid;
   final PostsListType type;
 
+  Widget _itemBuilder(
+      BuildContext context, int index, QueryDocumentSnapshot<Post> doc) {
+    final post = doc.data();
+    switch (type) {
+      case PostsListType.small:
+        return SmallPostsItem(
+          post: post,
+          index: index,
+        );
+      case PostsListType.square:
+        return BasicPostsItem(
+          post: post,
+          index: index,
+        );
+      case PostsListType.page:
+        return BasicPostsItem(
+          post: post,
+          index: index,
+          aspectRatio: MediaQuery.sizeOf(context).aspectRatio,
+          isPage: true,
+          // isTappable: false,
+          showMainLabel: false,
+        );
+      case PostsListType.round:
+        return RoundPostsItem(
+          post: post,
+          index: index,
+        );
+      case PostsListType.mixed:
+        if (post.mainVideoUrl != null ||
+            (post.mainImageUrl != null && post.title.trim().isEmpty)) {
+          return RoundPostsItem(
+            post: post,
+            index: index,
+            needTopMargin: index == 0 ? false : true,
+            needBottomMargin: false,
+          );
+        }
+        return SmallPostsItem(
+          post: post,
+          index: index,
+        );
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isPage = type == PostsListType.page;
-    final isSmall = type == PostsListType.small;
-    final isRound = type == PostsListType.round;
-    final isMixed = type == PostsListType.mixed;
 
     final updatedPostQuery = ref.watch(postsRepositoryProvider).postsRef();
     final resetUpdatedDocIds =
@@ -40,6 +84,69 @@ class ProfilePostsScreen extends ConsumerWidget {
         ? ((screenWidth - pcWidthBreakpoint) / 2) + roundCardPadding
         : roundCardPadding;
 
+    return Scaffold(
+      appBar: isPage
+          ? AppBar(
+              title: Text(context.loc.posts),
+              forceMaterialTransparency: true,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              automaticallyImplyLeading: kIsWeb ? false : true,
+              leading: kIsWeb ? const WebBackButton() : null,
+            )
+          : null,
+      body: isPage
+          ? SimplePageListView(
+              query: query,
+              isPage: true,
+              listState: postsListStateProvider,
+              itemBuilder: _itemBuilder,
+              refreshUpdatedDocs: true,
+              updatedDocQuery: updatedPostQuery,
+              resetUpdatedDocIds: resetUpdatedDocIds,
+              updatedDocsState: updatedPostIdsListProvider,
+            )
+          : CustomScrollView(
+              slivers: [
+                if (!isPage)
+                  SliverAppBar(
+                    floating: true,
+                    title: Text(context.loc.posts),
+                    automaticallyImplyLeading: kIsWeb ? false : true,
+                    leading: kIsWeb ? const WebBackButton() : null,
+                  ),
+                SimplePageListView(
+                  query: query,
+                  listState: postsListStateProvider,
+                  padding: switch (type) {
+                    PostsListType.mixed =>
+                      const EdgeInsets.only(bottom: roundCardPadding),
+                    _ => null,
+                  },
+                  itemExtent: switch (type) {
+                    PostsListType.square =>
+                      MediaQuery.sizeOf(context).width + cardBottomPadding,
+                    PostsListType.round =>
+                      ((screenWidth - (2 * horizontalMargin)) * 9 / 16) +
+                          roundCardPadding,
+                    PostsListType.small => listSmallItemHeight,
+                    _ => null,
+                  },
+                  itemBuilder: _itemBuilder,
+                  refreshUpdatedDocs: true,
+                  updatedDocQuery: updatedPostQuery,
+                  resetUpdatedDocIds: resetUpdatedDocIds,
+                  updatedDocsState: updatedPostIdsListProvider,
+                  isSliver: true,
+                )
+              ],
+            ),
+      extendBodyBehindAppBar: isPage ? true : false,
+      backgroundColor: isPage ? Colors.black : null,
+    );
+  }
+
+/*
     return Scaffold(
         extendBodyBehindAppBar: isPage ? true : false,
         backgroundColor: isPage ? Colors.black : null,
@@ -140,4 +247,5 @@ class ProfilePostsScreen extends ConsumerWidget {
             ),
         });
   }
+  */
 }

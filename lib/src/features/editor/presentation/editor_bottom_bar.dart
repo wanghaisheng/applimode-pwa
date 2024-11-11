@@ -1,3 +1,4 @@
+import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/editor/presentation/editor_screen_controller.dart';
@@ -75,13 +76,19 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
     final goRouter = ref.watch(goRouterProvider);
     // final progressState = ref.watch(uploadProgressStateProvider);
     final mediaMaxMBSize = ref.watch(adminSettingsProvider).mediaMaxMBSize;
+    final isIosWeb = kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
 
     return SafeArea(
       child: GestureDetector(
         onVerticalDragDown: (details) => FocusScope.of(context).unfocus(),
         behavior: HitTestBehavior.translucent,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: EdgeInsets.only(
+            top: 12,
+            left: 16,
+            right: 16,
+            bottom: isIosWeb ? iosWebBottomSafeArea : 12,
+          ),
           height: state.isLoading ? widget.bottomBarHeight : null,
           child: /* state.isLoading
               ? Row(

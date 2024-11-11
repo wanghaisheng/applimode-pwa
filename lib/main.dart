@@ -21,9 +21,11 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  debugPrint('firebase init starts: ${DateTime.now()}');
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  debugPrint('firebase init ends: ${DateTime.now()}');
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   // await RemoteConfigService(FirebaseRemoteConfig.instance).initialize();
   usePathUrlStrategy();

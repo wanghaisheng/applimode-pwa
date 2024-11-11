@@ -4,6 +4,7 @@ import 'package:applimode_app/src/common_widgets/simple_page_list_view.dart';
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/posts/data/posts_repository.dart';
 import 'package:applimode_app/src/features/posts/domain/post.dart';
+import 'package:applimode_app/src/features/posts/presentation/posts_app_bar/posts_app_bar.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/basic_posts_item.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/round_posts_item.dart';
 import 'package:applimode_app/src/features/posts/presentation/posts_list/posts_items/small_posts_item.dart';
@@ -12,6 +13,8 @@ import 'package:applimode_app/src/utils/list_state.dart';
 import 'package:applimode_app/src/utils/now_to_int.dart';
 import 'package:applimode_app/src/utils/updated_post_ids_list.dart';
 import 'package:applimode_app/custom_settings.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -45,6 +48,66 @@ class _MainPostsListState extends ConsumerState<MainPostsList> {
   Widget _startPostBuilder(BuildContext context) =>
       Center(child: Text(context.loc.startFirstPost));
 
+  Widget _itemBuilder(
+      BuildContext context, int index, QueryDocumentSnapshot<Post> doc) {
+    final post = doc.data();
+    switch (widget.type) {
+      case PostsListType.small:
+        if (index == 0 && post.isHeader) {
+          return RoundPostsItem(
+            post: post,
+            aspectRatio: smallItemHeaderRatio,
+            index: index,
+          );
+        }
+        return SmallPostsItem(
+          post: post,
+          index: index,
+        );
+      case PostsListType.square:
+        return BasicPostsItem(
+          post: post,
+          index: index,
+        );
+      case PostsListType.page:
+        return BasicPostsItem(
+          post: post,
+          index: index,
+          aspectRatio: MediaQuery.sizeOf(context).aspectRatio,
+          isPage: true,
+          // isTappable: false,
+          showMainLabel: false,
+        );
+      case PostsListType.round:
+        return RoundPostsItem(
+          post: post,
+          index: index,
+        );
+      case PostsListType.mixed:
+        if (index == 0 && post.isHeader) {
+          return RoundPostsItem(
+            post: post,
+            aspectRatio: smallItemHeaderRatio,
+            index: index,
+            needBottomMargin: false,
+          );
+        }
+        if (post.mainVideoUrl != null ||
+            (post.mainImageUrl != null && post.title.trim().isEmpty)) {
+          return RoundPostsItem(
+            post: post,
+            index: index,
+            needTopMargin: true,
+            needBottomMargin: false,
+          );
+        }
+        return SmallPostsItem(
+          post: post,
+          index: index,
+        );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final query = ref.watch(postsRepositoryProvider).defaultPostsQuery();
@@ -59,154 +122,73 @@ class _MainPostsListState extends ConsumerState<MainPostsList> {
         ? ((screenWidth - pcWidthBreakpoint) / 2) + roundCardPadding
         : roundCardPadding;
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        if (timer != null && timer!.isActive) {
-          return;
-        }
-        ref.read(postsListStateProvider.notifier).set(nowToInt());
-        timer = Timer(const Duration(seconds: mainPostsRefreshTimer), () {});
-      },
-      child: switch (widget.type) {
-        // small type
-        PostsListType.small => SimplePageListView<Post>(
-            query: query,
-            recentDocQuery: recentDocQuery,
-            showMain: true,
-            mainQuery: mainQuery,
-            listState: postsListStateProvider,
-            emptyBuilder: _startPostBuilder,
-            itemBuilder: (context, index, doc) {
-              final post = doc.data();
-              if (index == 0 && post.isHeader) {
-                return RoundPostsItem(
-                  post: post,
-                  aspectRatio: smallItemHeaderRatio,
-                  index: index,
-                );
-              }
-              return SmallPostsItem(
-                post: post,
-                index: index,
-              );
-            },
-            refreshUpdatedDocs: true,
-            updatedDocQuery: updatedPostQuery,
-            isRootTabel: true,
-            resetUpdatedDocIds: resetUpdatedDocIds,
-            updatedDocsState: updatedPostIdsListProvider,
-          ),
-        // square type
-        PostsListType.square => SimplePageListView<Post>(
-            query: query,
-            recentDocQuery: recentDocQuery,
-            showMain: true,
-            mainQuery: mainQuery,
-            listState: postsListStateProvider,
-            itemExtent: MediaQuery.sizeOf(context).width + cardBottomPadding,
-            emptyBuilder: _startPostBuilder,
-            itemBuilder: (context, index, doc) {
-              final post = doc.data();
-              return BasicPostsItem(
-                post: post,
-                index: index,
-              );
-            },
-            refreshUpdatedDocs: true,
-            updatedDocQuery: updatedPostQuery,
-            isRootTabel: true,
-            resetUpdatedDocIds: resetUpdatedDocIds,
-            updatedDocsState: updatedPostIdsListProvider,
-          ),
-        // page type
-        PostsListType.page => SimplePageListView<Post>(
-            query: query,
-            isPage: true,
-            recentDocQuery: recentDocQuery,
-            showMain: true,
-            allowImplicitScrolling: true,
-            mainQuery: mainQuery,
-            listState: postsListStateProvider,
-            emptyBuilder: _startPostBuilder,
-            itemBuilder: (context, index, doc) {
-              final post = doc.data();
+    final isPage = widget.type == PostsListType.page;
 
-              return BasicPostsItem(
-                post: post,
-                index: index,
-                aspectRatio: MediaQuery.sizeOf(context).aspectRatio,
-                isPage: true,
-                // isTappable: false,
-                showMainLabel: false,
-              );
-            },
-            refreshUpdatedDocs: true,
-            updatedDocQuery: updatedPostQuery,
-            isRootTabel: true,
-            resetUpdatedDocIds: resetUpdatedDocIds,
-            updatedDocsState: updatedPostIdsListProvider,
-          ),
-        PostsListType.round => SimplePageListView<Post>(
-            query: query,
-            recentDocQuery: recentDocQuery,
-            showMain: true,
-            mainQuery: mainQuery,
-            listState: postsListStateProvider,
-            itemExtent: ((screenWidth - (2 * horizontalMargin)) * 9 / 16) +
-                roundCardPadding,
-            emptyBuilder: _startPostBuilder,
-            itemBuilder: (context, index, doc) {
-              final post = doc.data();
-              return RoundPostsItem(
-                post: post,
-                index: index,
-              );
-            },
-            refreshUpdatedDocs: true,
-            updatedDocQuery: updatedPostQuery,
-            isRootTabel: true,
-            resetUpdatedDocIds: resetUpdatedDocIds,
-            updatedDocsState: updatedPostIdsListProvider,
-          ),
-        PostsListType.mixed => SimplePageListView<Post>(
-            query: query,
-            recentDocQuery: recentDocQuery,
-            showMain: true,
-            mainQuery: mainQuery,
-            listState: postsListStateProvider,
-            padding: const EdgeInsets.only(bottom: roundCardPadding),
-            emptyBuilder: _startPostBuilder,
-            itemBuilder: (context, index, doc) {
-              final post = doc.data();
-              if (index == 0 && post.isHeader) {
-                return RoundPostsItem(
-                  post: post,
-                  aspectRatio: smallItemHeaderRatio,
-                  index: index,
-                  needBottomMargin: false,
-                );
-              }
-              if (post.mainVideoUrl != null ||
-                  (post.mainImageUrl != null && post.title.trim().isEmpty)) {
-                return RoundPostsItem(
-                  post: post,
-                  index: index,
-                  needTopMargin: true,
-                  needBottomMargin: false,
-                );
-              }
-              return SmallPostsItem(
-                post: post,
-                index: index,
-              );
-            },
-            refreshUpdatedDocs: true,
-            updatedDocQuery: updatedPostQuery,
-            isRootTabel: true,
-            resetUpdatedDocIds: resetUpdatedDocIds,
-            updatedDocsState: updatedPostIdsListProvider,
-          ),
-      },
+    if (isPage) {
+      return RefreshIndicator(
+        onRefresh: () async {
+          if (timer != null && timer!.isActive) {
+            return;
+          }
+          ref.read(postsListStateProvider.notifier).set(nowToInt());
+          timer = Timer(const Duration(seconds: mainPostsRefreshTimer), () {});
+        },
+        child: SimplePageListView<Post>(
+          query: query,
+          mainQuery: mainQuery,
+          isPage: true,
+          recentDocQuery: recentDocQuery,
+          allowImplicitScrolling: true,
+          listState: postsListStateProvider,
+          emptyBuilder: _startPostBuilder,
+          itemBuilder: _itemBuilder,
+          refreshUpdatedDocs: true,
+          updatedDocQuery: updatedPostQuery,
+          resetUpdatedDocIds: resetUpdatedDocIds,
+          updatedDocsState: updatedPostIdsListProvider,
+        ),
+      );
+    }
+    return CustomScrollView(
+      physics: const BouncingScrollPhysics(
+        parent: AlwaysScrollableScrollPhysics(),
+      ),
+      slivers: [
+        PostsAppBar(isSliver: true),
+        CupertinoSliverRefreshControl(onRefresh: () async {
+          if (timer != null && timer!.isActive) {
+            return;
+          }
+          ref.read(postsListStateProvider.notifier).set(nowToInt());
+          timer = Timer(const Duration(seconds: mainPostsRefreshTimer), () {});
+        }),
+        SimplePageListView<Post>(
+          query: query,
+          mainQuery: mainQuery,
+          recentDocQuery: recentDocQuery,
+          listState: postsListStateProvider,
+          padding: switch (widget.type) {
+            PostsListType.mixed =>
+              const EdgeInsets.only(bottom: roundCardPadding),
+            _ => null,
+          },
+          itemExtent: switch (widget.type) {
+            PostsListType.square =>
+              MediaQuery.sizeOf(context).width + cardBottomPadding,
+            PostsListType.round =>
+              ((screenWidth - (2 * horizontalMargin)) * 9 / 16) +
+                  roundCardPadding,
+            _ => null,
+          },
+          emptyBuilder: _startPostBuilder,
+          itemBuilder: _itemBuilder,
+          refreshUpdatedDocs: true,
+          updatedDocQuery: updatedPostQuery,
+          resetUpdatedDocIds: resetUpdatedDocIds,
+          updatedDocsState: updatedPostIdsListProvider,
+          isSliver: true,
+        )
+      ],
     );
   }
 }

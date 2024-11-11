@@ -18,15 +18,11 @@ import 'package:go_router/go_router.dart';
 class PostAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const PostAppBar({
     super.key,
-    required this.postId,
-    // this.postAndWriter,
-    required this.postAsync,
+    required this.post,
     required this.writerAsync,
   });
 
-  final String postId;
-  // final PostAndWriter? postAndWriter;
-  final AsyncValue<Post?> postAsync;
+  final Post post;
   final AsyncValue<AppUser?> writerAsync;
 
   @override
@@ -41,7 +37,8 @@ class PostAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final isLoading = ref.watch(postScreenControllerProvider).isLoading;
     final useCategory = ref.watch(adminSettingsProvider).useCategory;
 
-    return AppBar(
+    return SliverAppBar(
+      floating: true,
       centerTitle: false,
       toolbarHeight: postScreenAppBarHeight,
       automaticallyImplyLeading: kIsWeb ? false : true,
@@ -55,7 +52,7 @@ class PostAppBar extends ConsumerWidget implements PreferredSizeWidget {
               ? const SizedBox.shrink()
               : WriterItem(
                   writer: isAppUser ? appUser : writer,
-                  post: postAsync.value,
+                  post: post,
                   showSubtitle: true,
                   showMainCategory: useCategory,
                   profileImagesize: profileSizeBig,
@@ -67,15 +64,11 @@ class PostAppBar extends ConsumerWidget implements PreferredSizeWidget {
         },
       ),
       actions: [
-        if (postAsync.value != null &&
-            writerAsync.value != null &&
-            user != null)
+        if (writerAsync.value != null && user != null)
           IgnorePointer(
             ignoring: isLoading,
             child: PostAppBarMore(
-              postId: postId,
-              // postAndWriter: postAndWriter,
-              postAsync: postAsync,
+              post: post,
               writerAsync: writerAsync,
             ),
           ),

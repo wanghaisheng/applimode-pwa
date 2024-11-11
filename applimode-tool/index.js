@@ -1091,7 +1091,7 @@ async function setAppMainColor() {
     { path: 'lib/src/app_settings/app_settings_controller.dart', regex: null },
     { path: 'lib/src/features/admin_settings/domain/app_main_category.dart', regex: null },
     { path: 'lib/src/utils/format.dart', regex: null },
-    { path: 'web/manifest.json', regex: /("theme_color": "#).*(",)/ },
+    // { path: 'web/manifest.json', regex: /("theme_color": "#).*(",)/ },
   ];
 
   for (const file of targetFiles) {

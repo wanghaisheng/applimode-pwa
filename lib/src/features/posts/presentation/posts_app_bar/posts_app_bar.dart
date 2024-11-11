@@ -14,12 +14,14 @@ class PostsAppBar extends ConsumerWidget implements PreferredSizeWidget {
     this.foregroundColor,
     this.elevation,
     this.centerTitle,
+    this.isSliver = false,
   });
 
   final bool forceMaterialTransparency;
   final Color? foregroundColor;
   final double? elevation;
   final bool? centerTitle;
+  final bool isSliver;
 
   @override
   Size get preferredSize => const Size.fromHeight(mainScreenAppBarHeight);
@@ -31,57 +33,42 @@ class PostsAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final homeBarTitle = adminSettings.homeBarTitle;
     final homeBarImageUrl = adminSettings.homeBarImageUrl;
     final isMaintenance = adminSettings.isMaintenance;
-    return AppBar(
-      title: isMaintenance
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  context.loc.maintenanceTitle,
-                  style: Theme.of(context).textTheme.titleMedium,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  context.loc.maintenanceAccess,
-                  style: Theme.of(context).textTheme.labelMedium,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            )
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (homeBarStyle == 1 || homeBarStyle == 2)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: mainScreenAppBarPadding),
-                    child: SizedBox(
-                      height:
-                          mainScreenAppBarHeight - 2 * mainScreenAppBarPadding,
-                      child: homeBarImageUrl.startsWith('assets')
-                          ? Image.asset(homeBarImageUrl)
-                          : PlatformNetworkImage(
-                              imageUrl: homeBarImageUrl,
-                              /*
-                        cacheHeight: (mainScreenAppBarHeight -
-                                2 * mainScreenAppBarPadding)
-                            .round(),
-                        */
-                              errorWidget: const SizedBox.shrink(),
-                            ),
-                    ),
+    return isSliver
+        ? SliverAppBar(
+            title: isMaintenance
+                ? MaintenanaceColumn()
+                : PostsAppBarRow(
+                    homeBarTitle: homeBarTitle,
+                    homeBarStyle: homeBarStyle,
+                    homeBarImageUrl: homeBarImageUrl,
                   ),
-                if (homeBarStyle == 2) const SizedBox(width: 8),
-                if (homeBarStyle == 0 || homeBarStyle == 2) Text(homeBarTitle),
-              ],
-            ),
-      forceMaterialTransparency: forceMaterialTransparency,
-      foregroundColor: foregroundColor,
-      elevation: elevation,
-      centerTitle: centerTitle,
-      actions: [
-        /*
+            forceMaterialTransparency: forceMaterialTransparency,
+            foregroundColor: foregroundColor,
+            elevation: elevation,
+            centerTitle: centerTitle,
+            actions: _buildActions(context),
+            // AppBar가 하단 List 내렸을 때 바로 보여야 한다
+            floating: true,
+          )
+        : AppBar(
+            title: isMaintenance
+                ? MaintenanaceColumn()
+                : PostsAppBarRow(
+                    homeBarTitle: homeBarTitle,
+                    homeBarStyle: homeBarStyle,
+                    homeBarImageUrl: homeBarImageUrl,
+                  ),
+            forceMaterialTransparency: forceMaterialTransparency,
+            foregroundColor: foregroundColor,
+            elevation: elevation,
+            centerTitle: centerTitle,
+            actions: _buildActions(context),
+          );
+  }
+
+  List<Widget> _buildActions(BuildContext context) {
+    return [
+      /*
         IconButton(
           onPressed: () async {
             final result = context.canPop();
@@ -111,11 +98,77 @@ class PostsAppBar extends ConsumerWidget implements PreferredSizeWidget {
           icon: const Icon(Icons.check_circle_outline_rounded),
         ),
         */
-        if (showSearchButton)
-          IconButton(
-            onPressed: () => context.push(ScreenPaths.search),
-            icon: const Icon(Icons.search),
+      if (showSearchButton)
+        IconButton(
+          onPressed: () => context.push(ScreenPaths.search),
+          icon: const Icon(Icons.search),
+        ),
+    ];
+  }
+}
+
+class MaintenanaceColumn extends StatelessWidget {
+  const MaintenanaceColumn({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          context.loc.maintenanceTitle,
+          style: Theme.of(context).textTheme.titleMedium,
+          overflow: TextOverflow.ellipsis,
+        ),
+        Text(
+          context.loc.maintenanceAccess,
+          style: Theme.of(context).textTheme.labelMedium,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+  }
+}
+
+class PostsAppBarRow extends StatelessWidget {
+  const PostsAppBarRow({
+    super.key,
+    required this.homeBarTitle,
+    required this.homeBarStyle,
+    required this.homeBarImageUrl,
+  });
+
+  final String homeBarTitle;
+  final int homeBarStyle;
+  final String homeBarImageUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (homeBarStyle == 1 || homeBarStyle == 2)
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: mainScreenAppBarPadding),
+            child: SizedBox(
+              height: mainScreenAppBarHeight - 2 * mainScreenAppBarPadding,
+              child: homeBarImageUrl.startsWith('assets')
+                  ? Image.asset(homeBarImageUrl)
+                  : PlatformNetworkImage(
+                      imageUrl: homeBarImageUrl,
+                      /*
+                        cacheHeight: (mainScreenAppBarHeight -
+                                2 * mainScreenAppBarPadding)
+                            .round(),
+                        */
+                      errorWidget: const SizedBox.shrink(),
+                    ),
+            ),
           ),
+        if (homeBarStyle == 2) const SizedBox(width: 8),
+        if (homeBarStyle == 0 || homeBarStyle == 2) Text(homeBarTitle),
       ],
     );
   }

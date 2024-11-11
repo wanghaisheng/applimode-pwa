@@ -48,16 +48,21 @@ import 'package:video_player/video_player.dart';
 part 'app_router.g.dart';
 
 class ScreenPaths {
+  // sliver applied
   static String home = '/';
   static String maintenance = '/maintenance';
   static String firebaseSignIn = '/firebaseSignIn';
   static String phone = '/phone';
   static String appUserCheck = '/appUserCheck';
   static String write = '/write';
+  // sliver applied
   static String search = '/search';
   static String adminSettings = '/adminSettings';
+  // sliver applied
   static String recommendedPosts = '/recommendedPosts';
+  // sliver applied
   static String ranking = '/ranking';
+  // sliver applied
   static String post(String postId) => '/post/$postId';
   static String edit(String postId) => '/post/$postId/edit';
   static String comments(String postId) => '/post/$postId/comments';
@@ -73,7 +78,9 @@ class ScreenPaths {
       '/account/$uid/changeEmail/$email';
   static String changePassword(String uid) => '/account/$uid/changePassword';
   static String profile(String uid) => '/profile/$uid';
+  // sliver applied
   static String userPosts(String uid) => '/$uid/posts';
+  // sliver applied
   static String userComments(String uid) => '/$uid/comments';
   static String userLikes(String uid) => '/$uid/likes';
   static String commentLikes(String commentId) => '/comment/$commentId/likes';

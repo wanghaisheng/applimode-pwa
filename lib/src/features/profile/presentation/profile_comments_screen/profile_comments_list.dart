@@ -1,3 +1,4 @@
+import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/features/comments/data/post_comments_repository.dart';
 import 'package:applimode_app/src/features/comments/domain/post_comment.dart';
 import 'package:applimode_app/src/features/comments/presentation/post_comments_item.dart';
@@ -18,6 +19,7 @@ class ProfileCommentsList extends ConsumerWidget {
     final commentsQuery = ref.watch(postCommentsQueryProvider(uid: uid));
     return FirestoreListView<PostComment>(
       query: commentsQuery,
+      pageSize: firebaseListFetchLimit,
       emptyBuilder: (context) => Center(
         child: Text(context.loc.noComment),
       ),

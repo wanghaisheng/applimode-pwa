@@ -15,7 +15,7 @@ const String firebaseProjectId = 'my-applimode';
 const String appCreator = 'JongsukOh';
 const String appEmail = 'yourEmail@email.com';
 const String appEffectiveDate = '2024-08-06';
-const String appVersion = '0.1.9+2';
+const String appVersion = '0.2.0+1';
 
 // spare values when admin settings is not set
 const String spareHomeBarTitle = 'My Applimode';
@@ -163,6 +163,12 @@ const int listFetchLimit = 10;
 // Number of items loaded in the main head view of the home screen. default 1
 // 홈화면 상단 메인 뷰에서 사용하기 위해 블러오는 아이템 숫자. 기본 1
 const int mainFetchLimit = 1;
+// fetch limit for FirestoreListView
+// FirestoreListView 에서 사용할 fecth limit
+// The number of reads in FirestoreListView is the number of previous reads plus the current number of reads,
+// so it should be set large from the beginning.
+// FirestoreListView 의 read 수는 이전 읽기 수 더하기 현재 읽기 수이므로 처음부터 크게 잡을 것
+const int firebaseListFetchLimit = 100;
 
 // Refresh cycle through main screen pull-to-refresh. Default 10 seconds
 // 메인화면 풀투리프레쉬를 통한 새로고침 주기. 기본 10초
@@ -416,6 +422,10 @@ const int longContentSize = 2400;
 // Maximum length saved as a title when specified as long content. default 140
 // 긴 컨텐츠로 지정되었을 경우 타이틀로 저장하는 최대 길이. 기본 140
 const int contentTitleSize = 140;
+
+// ios, ipados web에서 하단 safearea 사이즈
+// Bottom safearea size on iOS, iPadOS web
+const double iosWebBottomSafeArea = 24.0;
 
 // Text displayed if there is no self-introduction on the bio edit screen.
 // default noBio
