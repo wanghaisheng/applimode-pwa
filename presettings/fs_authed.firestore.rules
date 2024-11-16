@@ -1,11 +1,12 @@
 rules_version = '2';
 
+// ruleType=signedUser
 // 로그인 필수 v2
 // Allow read access to any user signed in
 service cloud.firestore {
   match /databases/{database}/documents {
     function isAdmin() {
-      return request.auth.uid in ["adminUid", "adminUid"];
+      return request.auth.uid in [];
     }
   	match /users/{document} {
     	allow read: if request.auth != null;

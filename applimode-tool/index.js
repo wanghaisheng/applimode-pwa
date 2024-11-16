@@ -61,6 +61,14 @@ const isInitialSignInRegex = /const bool isInitialSignIn = (.*);/;
 const verifiedOnlyWriteRegex = /const bool verifiedOnlyWrite = (.*);/;
 const adminOnlyWriteRegex = /const bool adminOnlyWrite = (.*);/;
 
+// Regex for finding values in firestore.rules
+// firestore.rule 파일에서 값을 찾기 위한 regex
+const adminFunctionRegex = /function isAdmin\(\) \{\s*return request\.auth\.uid in \[(.*)\];\s*\}/;
+const verifiedFunctionRegex = /function isVerified\(\) \{\s*return request\.auth\.uid in \[(.*)\];\s*\}/;
+const allUserAccessRegex = /\/\/ Allow read access to all user/;
+const signedAccessRegex = /\/\/ Allow read access to any user signed in/;
+const verifiedAccessRegex = /\/\/ Allow read access to verified user/;
+
 // Color codes
 // 색상 코드
 const bold = '\x1b[1m';
@@ -105,6 +113,7 @@ const reset = '\x1b[0m';
 // const projectsPath = `${currentProjectPath}/..`
 const currentProjectPath = path.dirname(__dirname);
 const projectsPath = path.dirname(path.dirname(__dirname));;
+
 
 const currentLibPath = `${currentProjectPath}/lib`;
 
@@ -485,6 +494,7 @@ const pubspecFile = 'pubspec.yaml';
 const indexFile = 'index.html';
 const fbMessageFile = 'firebase-messaging-sw.js';
 const manifestFile = 'manifest.json';
+const firestoreRulesFile = 'firestore.rules';
 
 // Initialize Applimode
 // Applimode 초기화
@@ -806,6 +816,53 @@ async function upgradeApplimode() {
   // Copy user's manifest.json file
   // 사용자의 manifest.json 파일 복사
   await fs.writeFile(newManifestPath, userManifestFile, 'utf8');
+  
+  // firestore.rules 파일 업데이트하기
+
+  // 기존 admin 및 verified id들 업데이트하기
+  const userRulesPath = path.join(userRootPath, firestoreRulesFile);
+  const newRulesPath = path.join(newRootPath, firestoreRulesFile);
+  let userRulesContent = await fs.readFile(userRulesPath, 'utf8');
+  let newRulesContent;
+
+  // 기존 룰이 allUserAccess 인지 확인
+  const isUserRulesAllMatch = userRulesContent.match(allUserAccessRegex);
+  // 기존 signedUserAccess 인지 확인
+  const isUserRulesSignedMatch = userRulesContent.match(signedAccessRegex);
+  // 기존 룰이 verifiedUserAccess 인지 확인
+  const isUserRulesVerifiedMatch = userRulesContent.match(verifiedAccessRegex);
+  // 기존 룰에서 isAdmin 함수 찾기
+  const isUserAdminMatch = userRulesContent.match(adminFunctionRegex);
+  // 기존 룰에서 isVerified 함수 찾기
+  const isUserVerifiedMatch = userRulesContent.match(verifiedFunctionRegex);
+  
+  if (isUserRulesSignedMatch) {
+    newRulesContent = await fs.readFile(path.join(newRootPath, 'presettings/fs_authed.firestore.rules'), 'utf8');
+  } else if (isUserRulesVerifiedMatch) {
+    newRulesContent = await fs.readFile(path.join(newRootPath, 'presettings/fs_verified.firestore.rules'), 'utf8');
+  } else {
+    newRulesContent = await fs.readFile(path.join(newRootPath, 'presettings/fs_open.firestore.rules'), 'utf8');
+  }
+
+  if (isUserAdminMatch) {
+    newRulesContent = newRulesContent.replace(
+      adminFunctionRegex, isUserAdminMatch[0],
+    );
+  }
+
+  if (isUserVerifiedMatch) {
+    newRulesContent = newRulesContent.replace(
+      verifiedFunctionRegex, isUserVerifiedMatch[0],
+    );
+  }
+  
+  // Update firestore.rules file
+  try {
+    await fs.writeFile(newRulesPath, newRulesContent, 'utf8');
+    console.log(`Updated ${blue}firestore.rules${reset}.`);
+  } catch (err) {
+    console.error(`${red}Error updating firestore.rules: ${err.message}${reset}`);
+  }
 
   // Move images
   // 이미지 이동
@@ -1091,6 +1148,7 @@ async function setAppMainColor() {
     { path: 'lib/src/app_settings/app_settings_controller.dart', regex: null },
     { path: 'lib/src/features/admin_settings/domain/app_main_category.dart', regex: null },
     { path: 'lib/src/utils/format.dart', regex: null },
+    // 안드로이드 system bar를 검정색으로 유지하기 위해 변경하지 않음
     // { path: 'web/manifest.json', regex: /("theme_color": "#).*(",)/ },
   ];
 
@@ -1718,8 +1776,8 @@ async function setSecurity() {
     `${red}Please enter a, s, or v.${reset}`
   );
 
-  // Update custom_settings.dart and firestore.rules based on user input
-  let firestoreRulesContent;
+  let newRulesContent;
+
   switch (securitySetting.toLowerCase()) {
     case 'a':
       // All users
@@ -1734,7 +1792,7 @@ async function setSecurity() {
         verifiedOnlyWriteRegex,
         `const bool verifiedOnlyWrite = false;`
       );
-      firestoreRulesContent = await fs.readFile(path.join(currentProjectPath, 'presettings/fs_open.firestore.rules'), 'utf8');
+      newRulesContent = await fs.readFile(path.join(currentProjectPath, 'presettings/fs_open.firestore.rules'), 'utf8');
       break;
     case 's':
       // Signed-in users
@@ -1749,7 +1807,7 @@ async function setSecurity() {
         verifiedOnlyWriteRegex,
         `const bool verifiedOnlyWrite = false;`
       );
-      firestoreRulesContent = await fs.readFile(path.join(currentProjectPath, 'presettings/fs_authed.firestore.rules'), 'utf8');
+      newRulesContent = await fs.readFile(path.join(currentProjectPath, 'presettings/fs_authed.firestore.rules'), 'utf8');
       break;
     case 'v':
       // Verified users
@@ -1764,14 +1822,35 @@ async function setSecurity() {
         verifiedOnlyWriteRegex,
         `const bool verifiedOnlyWrite = true;`
       );
-      firestoreRulesContent = await fs.readFile(path.join(currentProjectPath, 'presettings/fs_verified.firestore.rules'), 'utf8');
+      newRulesContent = await fs.readFile(path.join(currentProjectPath, 'presettings/fs_verified.firestore.rules'), 'utf8');
       break;
   }
 
+  // 기존 admin 및 verified id들 업데이트하기
+  const currentRulesPath = path.join(currentProjectPath, firestoreRulesFile);
+  let currentRulesContent = await fs.readFile(currentRulesPath, 'utf8');
+
+  // isAdmin 함수 찾기
+  const isAdminMatch = currentRulesContent.match(adminFunctionRegex);
+  // isVerified 함수 찾기
+  const isVerifiedMatch = currentRulesContent.match(verifiedFunctionRegex);
+
+  if (isAdminMatch) {
+    newRulesContent = newRulesContent.replace(
+      adminFunctionRegex, isAdminMatch[0],
+    );
+  }
+
+  if (isVerifiedMatch) {
+    newRulesContent = newRulesContent.replace(
+      verifiedFunctionRegex, isVerifiedMatch[0],
+    );
+  }
+  
+
   // Update firestore.rules file
   try {
-    const destinationPath = path.join(currentProjectPath, 'firestore.rules');
-    await fs.writeFile(destinationPath, firestoreRulesContent, 'utf8');
+    await fs.writeFile(currentRulesPath, newRulesContent, 'utf8');
     console.log(`Updated ${blue}firestore.rules${reset} with new security settings.`);
   } catch (err) {
     console.error(`${red}Error updating firestore.rules: ${err.message}${reset}`);
@@ -1817,6 +1896,134 @@ async function setAdminOnlyWrite() {
   console.log(`${yellow}👋 adminOnlyWrite has been enabled.${reset}`);
 }
 
+// Add admin id to firestore.rules file
+// firestore.rules 파일에 admin id 추가
+async function addAdminToFirestoreRules() {
+  console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's add an admin to Firestore rules.${reset}`);
+
+  const firestoreRulesPath = `${currentProjectPath}/firestore.rules`;
+
+  try {
+    // firestore.rules 파일 존재 확인
+    await fs.access(firestoreRulesPath, fs.constants.F_OK);
+  } catch (err) {
+    console.error(`${red}Error: firestore.rules file not found. Please create it in the root of your project.${reset}`);
+    return;
+  }
+
+  let newAdminUid;
+  // 추가할 admin uid 받기
+  if (args.length > 0) {
+    newAdminUid = args[0];
+  } else {
+    newAdminUid = await askRequired(
+      `(1/1) ${greenBold}Enter the UID of the admin you want to add: ${reset}`,
+      answer => !isEmpty(answer),
+      `${red}Please enter a valid UID.${reset}`
+    );
+  }
+
+
+  try {
+    let rulesContent = await fs.readFile(firestoreRulesPath, 'utf8');
+
+    // isAdmin 함수 찾기
+    const isAdminMatch = rulesContent.match(adminFunctionRegex);
+
+    if (!isAdminMatch) {
+      console.error(`${red}Error: Could not find the isAdmin function in firestore.rules. Please ensure it exists and is in the correct format.${reset}`);
+      return;
+    }
+
+    const currentAdmins = isAdminMatch[1].split(',').map(uid => uid.trim().replace(/["']/g, '')).filter(uid => uid !== '');
+
+    // 이미 존재하는지 확인하고 추가
+    if (!currentAdmins.includes(newAdminUid)) {
+      currentAdmins.push(newAdminUid);
+    }
+
+
+    const updatedAdminsString = currentAdmins.map(uid => `"${uid}"`).join(', ');
+
+    // firestore.rules 파일 업데이트
+    const updatedRulesContent = rulesContent.replace(
+      adminFunctionRegex,
+      `function isAdmin() {\n      return request.auth.uid in [${updatedAdminsString}];\n    }`
+    );
+
+
+    await fs.writeFile(firestoreRulesPath, updatedRulesContent, 'utf8');
+
+    console.log(`${green}Successfully added admin UID "${newAdminUid}" to firestore.rules.${reset}`);
+  } catch (err) {
+    console.error(`${red}Error updating firestore.rules: ${err.message}${reset}`);
+  }
+}
+
+// Add verified id to firestore.rules file
+// firestore.rules 파일에 verified id 추가
+async function addVerifiedToFirestoreRules() {
+  console.log(`${yellow}🧡 Welcome to Applimode-Tool. Let's add an verified to Firestore rules.${reset}`);
+
+  const firestoreRulesPath = `${currentProjectPath}/firestore.rules`;
+
+  try {
+    // firestore.rules 파일 존재 확인
+    await fs.access(firestoreRulesPath, fs.constants.F_OK);
+  } catch (err) {
+    console.error(`${red}Error: firestore.rules file not found. Please create it in the root of your project.${reset}`);
+    return;
+  }
+
+  let newVerifiedUid;
+  // 추가할 verified uid 받기
+  if (args.length > 0) {
+    newVerifiedUid = args[0];
+  } else {
+    newVerifiedUid = await askRequired(
+      `(1/1) ${greenBold}Enter the UID of the verified you want to add: ${reset}`,
+      answer => !isEmpty(answer),
+      `${red}Please enter a valid UID.${reset}`
+    );
+  }
+
+
+  try {
+    let rulesContent = await fs.readFile(firestoreRulesPath, 'utf8');
+
+    // isVerified 함수 찾기
+    const isVerifiedMatch = rulesContent.match(verifiedFunctionRegex);
+
+    if (!isVerifiedMatch) {
+      console.error(`${red}Error: Could not find the isVerified function in firestore.rules. Please ensure it exists and is in the correct format.${reset}`);
+      return;
+    }
+
+    const currentVerifieds = isVerifiedMatch[1].split(',').map(uid => uid.trim().replace(/["']/g, '')).filter(uid => uid !== '');
+
+    // 이미 존재하는지 확인하고 추가
+    if (!currentVerifieds.includes(newVerifiedUid)) {
+      currentVerifieds.push(newVerifiedUid);
+    }
+
+
+    const updatedVerifiedsString = currentVerifieds.map(uid => `"${uid}"`).join(', ');
+
+    // firestore.rules 파일 업데이트
+    const updatedRulesContent = rulesContent.replace(
+      verifiedFunctionRegex,
+      `function isVerified() {\n      return request.auth.uid in [${updatedVerifiedsString}];\n    }`
+    );
+
+
+    await fs.writeFile(firestoreRulesPath, updatedRulesContent, 'utf8');
+
+    console.log(`${green}Successfully added verified UID "${newVerifiedUid}" to firestore.rules.${reset}`);
+  } catch (err) {
+    console.error(`${red}Error updating firestore.rules: ${err.message}${reset}`);
+  }
+}
+
 // Check if the folder exists and execute the command
 // 폴더가 존재하는지 확인하고 명령어 실행
 fs.access(projectsPath)
@@ -1857,6 +2064,10 @@ fs.access(projectsPath)
       await setSecurity();
     } else if (command[0].trim() == 'write') {
       await setAdminOnlyWrite();
+    } else if (command[0].trim() == 'admin') {
+      await addAdminToFirestoreRules();
+    } else if (command[0].trim() == 'verified') {
+      await addVerifiedToFirestoreRules();
     } else {
       console.error(`${red}Error:', 'The command must start with init, upgrade, fullname, shortname, organization, firebaserc, color, worker, fcm, ai, rtwo, cdn, done, rtwosecureget, youtubeimage, youtube video, security, write.${reset}`);
       process.exit(1);

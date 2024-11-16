@@ -329,22 +329,43 @@ node ./applimode-tool/index.js color
 * Click the **Edit field** button (pencil shape) next to the **isAdmin** field. (Move your mouse cursor over the **isAdmin** field to display the **Edid field** button)
 ![fb-firestore-isadmin](https://github.com/mycalls/applimode-examples/blob/main/assets/fb-firestore-isadmin.png?raw=true)
 * Change the value from **false** to **true** and click **Update**.
+<!--
 * Click **Rules** (on the top menu).
 * Change the first word **adminUid** in line 8 (or near it) to your uid. (paste your uid)
 > ex) return request.auth.uid in ["9a6sIEiAldOzFIZ9hO2SxaG6Db63", "adminUid"];
 ![fb-firestore-rules](https://github.com/mycalls/applimode-examples/blob/main/assets/fb-firestore-rules.png?raw=true)
 * Click **Publish**
+-->
+* Go to or open your Applimode project in **VSCode**.
+* Click **View** (on the top menu of VSCode) and select **Terminal**.
+* Run the following command:
+```sh
+node ./applimode-tool/index.js admin
+```
+* Paste your uid that you copied.
+* Run the following command:
+```sh
+firebase deploy --only firestore
+```
 
 > [!NOTE]
 > To add a verified user, follow these steps:
-> Click **Firestore Database** (on the left sidebar).
-> * Click the users collection and select your uid.
+> * Click **Firestore Database** (on the left sidebar).
+> * Click the users collection and select the user UID you want to designate as a verified user.
 > * Click the **Edit field** button (pencil shape) next to the **verified** field. (Move your mouse cursor over the **verified** field to display the **Edid field** button)
 > * Change the value from **false** to **true** and click **Update**.
-> * Click **Rules** (on the top menu).
-> * Change the first word **verifiedUid** in line 8 (or near it) to your uid. (paste your uid)
-> ex) return request.auth.uid in ["9a6sIEiAldOzFIZ9hO2SxaG6Db63", "verifiedUid"];
-* Click **Publish**
+> * Copy the uid value from the **uid** field.
+> * Go to or open your Applimode project in **VSCode**.
+> * Click **View** (on the top menu of VSCode) and select **Terminal**.
+> * Run the following command:
+> ```sh
+> node ./applimode-tool/index.js verified
+> ```
+> * Paste the uid that you copied.
+> * Run the following command:
+> ```sh
+> firebase deploy --only firestore
+> ```
 
 > [!CAUTION]
 > If you designate someone as an administrator, the user can change admin settings in the app, edit, delete or block all posts, and even block all posts from a specific user.
@@ -411,7 +432,7 @@ node ./applimode-tool/index.js color
 * Click **View** (on the top menu of VSCode) and select **Terminal**.
 * Run the following command:
 ```sh
-flutter build web --release --web-renderer=html
+flutter build web --release
 ```
 ```sh
 firebase deploy --only hosting
@@ -875,6 +896,7 @@ node ./applimode-tool/index.js security
 ```sh
 firebase deploy --only firestore
 ```
+<!--
 * If you have added admin or verified user IDs to the previous Firestore rules, please follow these steps:
 * Open or go to your [Firebase console](https://console.firebase.google.com/) in your web browser.
 * Click your project.
@@ -887,6 +909,7 @@ firebase deploy --only firestore
 * Click **Rules** on the top.
 * Add admin IDs or verified IDs. If you have forgotten how to do this, please follow the [this page](#add-administrator).
 * Click **Publish**.
+-->
 <!--
 #### Access is restricted to logged-in users.
 * Go to or open your Applimode project in **VSCode**.

@@ -22,7 +22,9 @@
     "youtubeimage": "node index.js youtubeimage",
     "youtubevideo": "node index.js youtubevideo",
     "security": "node index.js security",
-    "write": "node index.js write"
+    "write": "node index.js write",
+    "admin": "node index.js admin",
+    "verified": "node index.js verified"
   },
   "keywords": [],
   "author": "",

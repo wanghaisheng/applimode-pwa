@@ -1,14 +1,15 @@
 rules_version = '2';
 
+// ruleType=verifiedUser
 // 관리자가 지정한 사용자만 사용 가능
 // Allow read access to verified user
 service cloud.firestore {
   match /databases/{database}/documents {
     function isVerified() {
-      return request.auth.uid in ["verifiedUid", "verifiedUid"];
+      return request.auth.uid in [];
     }
     function isAdmin() {
-      return request.auth.uid in ["adminUid", "adminUid"];
+      return request.auth.uid in [];
     }
 
   	match /users/{document} {

@@ -25,7 +25,6 @@ import 'package:applimode_app/src/features/ranking/ranking_screen.dart';
 import 'package:applimode_app/src/features/video_player/full_video_screen.dart';
 import 'package:applimode_app/src/routing/maintenance_screen.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
-import 'package:applimode_app/src/utils/build_slide_transition.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -103,17 +102,6 @@ GoRouter goRouter(Ref ref) {
   final appSettings = ref.watch(appSettingsControllerProvider);
   final postsRepository = ref.watch(postsRepositoryProvider);
 
-  // Extra page shown when swiping back in Safari on iOS
-  // To temporarily resolve this issue,
-  // use NoTransitionPage on the web on apple devices.
-  // If it is resolved in flutter, we will change.
-  // final isIosWeb = kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
-  final isAppleWeb = kIsWeb &&
-      (defaultTargetPlatform == TargetPlatform.iOS ||
-          defaultTargetPlatform == TargetPlatform.macOS);
-  final isAndOrWin = defaultTargetPlatform == TargetPlatform.android ||
-      defaultTargetPlatform == TargetPlatform.windows;
-
   return GoRouter(
     initialLocation: '/',
     refreshListenable: GoRouterRefreshStream(authRepository.authStateChanges()),
@@ -174,213 +162,73 @@ GoRouter goRouter(Ref ref) {
       GoRoute(
           path: ScreenPaths.firebaseSignIn,
           pageBuilder: (context, state) {
-            if (isAppleWeb) {
-              return const NoTransitionPage(
-                child: FirebaseSignInScreen(),
-              );
-            }
-            if (isAndOrWin) {
-              return const CustomTransitionPage(
-                fullscreenDialog: true,
-                transitionsBuilder: buildVerticalSlideTransitiron,
-                child: FirebaseSignInScreen(),
-              );
-            }
-            return const CupertinoPage(
-              child: FirebaseSignInScreen(),
-            );
+            return _buildPage(
+                child: const FirebaseSignInScreen(), isFullScreen: true);
           }),
       GoRoute(
           path: ScreenPaths.phone,
           pageBuilder: (context, state) {
-            if (isAppleWeb) {
-              return const NoTransitionPage(
-                child: FirebasePhoneScreen(),
-              );
-            }
-            if (isAndOrWin) {
-              return const CustomTransitionPage(
-                // fullscreenDialog: true,
-                transitionsBuilder: buildVerticalSlideTransitiron,
-                child: FirebasePhoneScreen(),
-              );
-            }
-            return const CupertinoPage(
-              child: FirebasePhoneScreen(),
-            );
+            return _buildPage(child: const FirebasePhoneScreen());
           }),
       GoRoute(
           path: ScreenPaths.appUserCheck,
           pageBuilder: (context, state) {
-            if (isAppleWeb) {
-              return const NoTransitionPage(
-                child: AppUserCheckScreen(),
-              );
-            }
-            if (isAndOrWin) {
-              return const CustomTransitionPage(
-                fullscreenDialog: true,
-                transitionsBuilder: buildVerticalSlideTransitiron,
-                child: AppUserCheckScreen(),
-              );
-            }
-            return const CupertinoPage(
-              fullscreenDialog: true,
-              child: AppUserCheckScreen(),
+            return _buildPage(
+              child: const AppUserCheckScreen(),
+              // isFullScreen: true,
             );
           }),
       GoRoute(
           path: ScreenPaths.write,
           pageBuilder: (context, state) {
-            if (isAppleWeb) {
-              return const NoTransitionPage(
-                child: EditorScreen(),
-              );
-            }
-            if (isAndOrWin) {
-              return const CustomTransitionPage(
-                fullscreenDialog: true,
-                transitionsBuilder: buildVerticalSlideTransitiron,
-                child: EditorScreen(),
-              );
-            }
-            return const CupertinoPage(
-              child: EditorScreen(),
+            return _buildPage(
+              child: const EditorScreen(),
+              // isFullScreen: true,
             );
           }),
       GoRoute(
           path: ScreenPaths.search,
           pageBuilder: (context, state) {
             final preSearchWord = state.extra as String?;
-            if (isAppleWeb) {
-              return NoTransitionPage(
+            return _buildPage(
                 child: SearchScreen(
-                  preSearchWord: preSearchWord,
-                ),
-              );
-            }
-            if (isAndOrWin) {
-              return CustomTransitionPage(
-                transitionsBuilder: buildHorizontalSlideTransitiron,
-                child: SearchScreen(
-                  preSearchWord: preSearchWord,
-                ),
-              );
-            }
-            return CupertinoPage(
-              child: SearchScreen(
-                preSearchWord: preSearchWord,
-              ),
-            );
+              preSearchWord: preSearchWord,
+            ));
           }),
       GoRoute(
           path: ScreenPaths.adminSettings,
           pageBuilder: (context, state) {
-            if (isAppleWeb) {
-              return const NoTransitionPage(
-                child: AdminSettingsScreen(),
-              );
-            }
-            if (isAndOrWin) {
-              return const CustomTransitionPage(
-                transitionsBuilder: buildHorizontalSlideTransitiron,
-                child: AdminSettingsScreen(),
-              );
-            }
-            return const CupertinoPage(
-              child: AdminSettingsScreen(),
-            );
+            return _buildPage(child: const AdminSettingsScreen());
           }),
       GoRoute(
           path: ScreenPaths.recommendedPosts,
           pageBuilder: (context, state) {
-            if (isAppleWeb) {
-              return NoTransitionPage(
+            return _buildPage(
                 child: SubPostsScreen(
-                  appBarTitle: context.loc.recommendedPosts,
-                  query: postsRepository.recommendedPostsQuery(),
-                  type: showAppStyleOption
-                      ? PostsListType.values[appSettings.appStyle ?? 1]
-                      : postsListType,
-                ),
-              );
-            }
-            if (isAndOrWin) {
-              return CustomTransitionPage(
-                transitionsBuilder: buildHorizontalSlideTransitiron,
-                child: SubPostsScreen(
-                  appBarTitle: context.loc.recommendedPosts,
-                  query: postsRepository.recommendedPostsQuery(),
-                  type: showAppStyleOption
-                      ? PostsListType.values[appSettings.appStyle ?? 1]
-                      : postsListType,
-                ),
-              );
-            }
-            return CupertinoPage(
-              child: SubPostsScreen(
-                appBarTitle: context.loc.recommendedPosts,
-                query: postsRepository.recommendedPostsQuery(),
-                type: showAppStyleOption
-                    ? PostsListType.values[appSettings.appStyle ?? 1]
-                    : postsListType,
-              ),
-            );
+              appBarTitle: context.loc.recommendedPosts,
+              query: postsRepository.recommendedPostsQuery(),
+              type: showAppStyleOption
+                  ? PostsListType.values[appSettings.appStyle ?? 1]
+                  : postsListType,
+            ));
           }),
       GoRoute(
           path: ScreenPaths.ranking,
           pageBuilder: (context, state) {
-            if (isAppleWeb) {
-              return const NoTransitionPage(
-                child: RankingScreen(),
-              );
-            }
-            if (isAndOrWin) {
-              return const CustomTransitionPage(
-                transitionsBuilder: buildHorizontalSlideTransitiron,
-                child: RankingScreen(),
-              );
-            }
-            return const CupertinoPage(
-              child: RankingScreen(),
-            );
+            return _buildPage(child: const RankingScreen());
           }),
       ...categories.map(
         (category) => GoRoute(
           path: category.path,
           pageBuilder: (context, state) {
-            if (isAppleWeb) {
-              return NoTransitionPage(
+            return _buildPage(
                 child: SubPostsScreen(
-                  query: postsRepository.categoryPostsQuery(category.index),
-                  appBarTitle: category.title,
-                  type: showAppStyleOption
-                      ? PostsListType.values[appSettings.appStyle ?? 1]
-                      : postsListType,
-                ),
-              );
-            }
-            if (isAndOrWin) {
-              return CustomTransitionPage(
-                transitionsBuilder: buildHorizontalSlideTransitiron,
-                child: SubPostsScreen(
-                  query: postsRepository.categoryPostsQuery(category.index),
-                  appBarTitle: category.title,
-                  type: showAppStyleOption
-                      ? PostsListType.values[appSettings.appStyle ?? 1]
-                      : postsListType,
-                ),
-              );
-            }
-            return CupertinoPage(
-              child: SubPostsScreen(
-                query: postsRepository.categoryPostsQuery(category.index),
-                appBarTitle: category.title,
-                type: showAppStyleOption
-                    ? PostsListType.values[appSettings.appStyle ?? 1]
-                    : postsListType,
-              ),
-            );
+              query: postsRepository.categoryPostsQuery(category.index),
+              appBarTitle: category.title,
+              type: showAppStyleOption
+                  ? PostsListType.values[appSettings.appStyle ?? 1]
+                  : postsListType,
+            ));
           },
         ),
       ),
@@ -389,29 +237,11 @@ GoRouter goRouter(Ref ref) {
         pageBuilder: (context, state) {
           final postId = state.pathParameters['id']!;
           final postAndWriter = state.extra as PostAndWriter?;
-          if (isAppleWeb) {
-            return NoTransitionPage(
+          return _buildPage(
               child: PostScreen(
-                postId: postId,
-                postAndWriter: postAndWriter,
-              ),
-            );
-          }
-          if (isAndOrWin) {
-            return CustomTransitionPage(
-              transitionsBuilder: buildHorizontalSlideTransitiron,
-              child: PostScreen(
-                postId: postId,
-                postAndWriter: postAndWriter,
-              ),
-            );
-          }
-          return CupertinoPage(
-            child: PostScreen(
-              postId: postId,
-              postAndWriter: postAndWriter,
-            ),
-          );
+            postId: postId,
+            postAndWriter: postAndWriter,
+          ));
         },
         routes: [
           GoRoute(
@@ -419,29 +249,12 @@ GoRouter goRouter(Ref ref) {
             pageBuilder: (context, state) {
               final postId = state.pathParameters['id'];
               final postAndWriter = state.extra as PostAndWriter?;
-              if (isAppleWeb) {
-                return NoTransitionPage(
-                  child: EditorScreen(
-                    postId: postId,
-                    postAndWriter: postAndWriter,
-                  ),
-                );
-              }
-              if (isAndOrWin) {
-                return CustomTransitionPage(
-                  fullscreenDialog: true,
-                  transitionsBuilder: buildVerticalSlideTransitiron,
-                  child: EditorScreen(
-                    postId: postId,
-                    postAndWriter: postAndWriter,
-                  ),
-                );
-              }
-              return CupertinoPage(
+              return _buildPage(
                 child: EditorScreen(
                   postId: postId,
                   postAndWriter: postAndWriter,
                 ),
+                // isFullScreen: true,
               );
             },
           ),
@@ -449,29 +262,12 @@ GoRouter goRouter(Ref ref) {
             path: 'likes',
             pageBuilder: (context, state) {
               final postId = state.pathParameters['id'];
-              if (isAppleWeb) {
-                return NoTransitionPage(
-                  child: LikeUsersScreen(
-                    postId: postId,
-                    isDislike: false,
-                  ),
-                );
-              }
-              if (isAndOrWin) {
-                return CustomTransitionPage(
-                  fullscreenDialog: true,
-                  transitionsBuilder: buildVerticalSlideTransitiron,
-                  child: LikeUsersScreen(
-                    postId: postId,
-                    isDislike: false,
-                  ),
-                );
-              }
-              return CupertinoPage(
+              return _buildPage(
                 child: LikeUsersScreen(
                   postId: postId,
                   isDislike: false,
                 ),
+                // isFullScreen: true,
               );
             },
           ),
@@ -479,29 +275,12 @@ GoRouter goRouter(Ref ref) {
             path: 'dislikes',
             pageBuilder: (context, state) {
               final postId = state.pathParameters['id'];
-              if (isAppleWeb) {
-                return NoTransitionPage(
-                  child: LikeUsersScreen(
-                    postId: postId,
-                    isDislike: true,
-                  ),
-                );
-              }
-              if (isAndOrWin) {
-                return CustomTransitionPage(
-                  fullscreenDialog: true,
-                  transitionsBuilder: buildVerticalSlideTransitiron,
-                  child: LikeUsersScreen(
-                    postId: postId,
-                    isDislike: true,
-                  ),
-                );
-              }
-              return CupertinoPage(
+              return _buildPage(
                 child: LikeUsersScreen(
                   postId: postId,
                   isDislike: true,
                 ),
+                // isFullScreen: true,
               );
             },
           ),
@@ -510,29 +289,12 @@ GoRouter goRouter(Ref ref) {
             pageBuilder: (context, state) {
               final postId = state.pathParameters['id']!;
               final postWriter = state.extra as AppUser?;
-              if (isAppleWeb) {
-                return NoTransitionPage(
-                  child: PostCommentsScreen(
-                    postId: postId,
-                    postWriter: postWriter,
-                  ),
-                );
-              }
-              if (isAndOrWin) {
-                return CustomTransitionPage(
-                  fullscreenDialog: true,
-                  transitionsBuilder: buildVerticalSlideTransitiron,
-                  child: PostCommentsScreen(
-                    postId: postId,
-                    postWriter: postWriter,
-                  ),
-                );
-              }
-              return CupertinoPage(
+              return _buildPage(
                 child: PostCommentsScreen(
                   postId: postId,
                   postWriter: postWriter,
                 ),
+                // isFullScreen: true,
               );
             },
             routes: [
@@ -541,29 +303,11 @@ GoRouter goRouter(Ref ref) {
                 pageBuilder: (context, state) {
                   final postId = state.pathParameters['id']!;
                   final commentId = state.pathParameters['parentCommentId']!;
-                  if (isAppleWeb) {
-                    return NoTransitionPage(
+                  return _buildPage(
                       child: PostCommentsScreen(
-                        postId: postId,
-                        parentCommentId: commentId,
-                      ),
-                    );
-                  }
-                  if (isAndOrWin) {
-                    return CustomTransitionPage(
-                      transitionsBuilder: buildHorizontalSlideTransitiron,
-                      child: PostCommentsScreen(
-                        postId: postId,
-                        parentCommentId: commentId,
-                      ),
-                    );
-                  }
-                  return CupertinoPage(
-                    child: PostCommentsScreen(
-                      postId: postId,
-                      parentCommentId: commentId,
-                    ),
-                  );
+                    postId: postId,
+                    parentCommentId: commentId,
+                  ));
                 },
               ),
             ],
@@ -574,29 +318,12 @@ GoRouter goRouter(Ref ref) {
           path: '/account/:uid',
           pageBuilder: (context, state) {
             final uid = state.pathParameters['uid']!;
-            if (isAppleWeb) {
-              return NoTransitionPage(
-                child: CustomProfileScreen(
-                  uid: uid,
-                  isAccount: true,
-                ),
-              );
-            }
-            if (isAndOrWin) {
-              return CustomTransitionPage(
-                fullscreenDialog: true,
-                transitionsBuilder: buildVerticalSlideTransitiron,
-                child: CustomProfileScreen(
-                  uid: uid,
-                  isAccount: true,
-                ),
-              );
-            }
-            return CupertinoPage(
+            return _buildPage(
               child: CustomProfileScreen(
                 uid: uid,
                 isAccount: true,
               ),
+              // isFullScreen: true,
             );
           },
           routes: [
@@ -604,97 +331,28 @@ GoRouter goRouter(Ref ref) {
               path: 'editUsername/:username',
               pageBuilder: (context, state) {
                 final username = state.pathParameters['username']!;
-                if (isAppleWeb) {
-                  return NoTransitionPage(
-                    child: EditUsernameScreen(
-                      username: username,
-                    ),
-                  );
-                }
-                if (isAndOrWin) {
-                  return CustomTransitionPage(
-                    transitionsBuilder: buildHorizontalSlideTransitiron,
-                    child: EditUsernameScreen(
-                      username: username,
-                    ),
-                  );
-                }
-                return CupertinoPage(
-                  child: EditUsernameScreen(
-                    username: username,
-                  ),
-                );
+                return _buildPage(
+                    child: EditUsernameScreen(username: username));
               },
             ),
             GoRoute(
               path: 'editBio/:bio',
               pageBuilder: (context, state) {
                 final bio = state.pathParameters['bio']!;
-                if (isAppleWeb) {
-                  return NoTransitionPage(
-                    child: EditBioScreen(
-                      bio: bio,
-                    ),
-                  );
-                }
-                if (isAndOrWin) {
-                  return CustomTransitionPage(
-                    transitionsBuilder: buildHorizontalSlideTransitiron,
-                    child: EditBioScreen(
-                      bio: bio,
-                    ),
-                  );
-                }
-                return CupertinoPage(
-                  child: EditBioScreen(
-                    bio: bio,
-                  ),
-                );
+                return _buildPage(child: EditBioScreen(bio: bio));
               },
             ),
             GoRoute(
               path: 'changeEmail/:email',
               pageBuilder: (context, state) {
                 final email = state.pathParameters['email']!;
-                if (isAppleWeb) {
-                  return NoTransitionPage(
-                    child: ChangeEmailScreen(
-                      email: email,
-                    ),
-                  );
-                }
-                if (isAndOrWin) {
-                  return CustomTransitionPage(
-                    transitionsBuilder: buildHorizontalSlideTransitiron,
-                    child: ChangeEmailScreen(
-                      email: email,
-                    ),
-                  );
-                }
-                return CupertinoPage(
-                  child: ChangeEmailScreen(
-                    email: email,
-                  ),
-                );
+                return _buildPage(child: ChangeEmailScreen(email: email));
               },
             ),
             GoRoute(
               path: 'changePassword',
               pageBuilder: (context, state) {
-                if (isAppleWeb) {
-                  return const NoTransitionPage(
-                    child: ChangePasswordScreen(),
-                  );
-                }
-                if (isAndOrWin) {
-                  return const CustomTransitionPage(
-                    transitionsBuilder: buildHorizontalSlideTransitiron,
-                    child: ChangePasswordScreen(),
-                  );
-                }
-                return const CupertinoPage(
-                  child: ChangePasswordScreen(),
-                );
+                return _buildPage(child: const ChangePasswordScreen());
               },
             ),
           ]),
@@ -702,116 +360,44 @@ GoRouter goRouter(Ref ref) {
         path: '/:uid/posts',
         pageBuilder: (context, state) {
           final uid = state.pathParameters['uid']!;
-          if (isAppleWeb) {
-            return NoTransitionPage(
+          return _buildPage(
               child: ProfilePostsScreen(
-                uid: uid,
-                type: showAppStyleOption
-                    ? PostsListType.values[appSettings.appStyle ?? 1]
-                    : postsListType,
-              ),
-            );
-          }
-          if (isAndOrWin) {
-            return CustomTransitionPage(
-              transitionsBuilder: buildHorizontalSlideTransitiron,
-              child: ProfilePostsScreen(
-                uid: uid,
-                type: showAppStyleOption
-                    ? PostsListType.values[appSettings.appStyle ?? 1]
-                    : postsListType,
-              ),
-            );
-          }
-          return CupertinoPage(
-            child: ProfilePostsScreen(
-              uid: uid,
-              type: showAppStyleOption
-                  ? PostsListType.values[appSettings.appStyle ?? 1]
-                  : postsListType,
-            ),
-          );
+            uid: uid,
+            type: showAppStyleOption
+                ? PostsListType.values[appSettings.appStyle ?? 1]
+                : postsListType,
+          ));
         },
       ),
       GoRoute(
         path: '/:uid/comments',
         pageBuilder: (context, state) {
           final uid = state.pathParameters['uid']!;
-          if (isAppleWeb) {
-            return NoTransitionPage(
-              child: ProfileCommentsScreen(uid: uid),
-            );
-          }
-          if (isAndOrWin) {
-            return CustomTransitionPage(
-              transitionsBuilder: buildHorizontalSlideTransitiron,
-              child: ProfileCommentsScreen(uid: uid),
-            );
-          }
-          return CupertinoPage(
-            child: ProfileCommentsScreen(uid: uid),
-          );
+          return _buildPage(child: ProfileCommentsScreen(uid: uid));
         },
       ),
       GoRoute(
         path: '/:uid/likes',
         pageBuilder: (context, state) {
           final uid = state.pathParameters['uid']!;
-          if (isAppleWeb) {
-            return NoTransitionPage(
+          return _buildPage(
               child: ProfileLikesScreen(
-                uid: uid,
-                type: showAppStyleOption
-                    ? PostsListType.values[appSettings.appStyle ?? 1]
-                    : postsListType,
-              ),
-            );
-          }
-          if (isAndOrWin) {
-            return CustomTransitionPage(
-              transitionsBuilder: buildHorizontalSlideTransitiron,
-              child: ProfileLikesScreen(
-                uid: uid,
-                type: showAppStyleOption
-                    ? PostsListType.values[appSettings.appStyle ?? 1]
-                    : postsListType,
-              ),
-            );
-          }
-          return CupertinoPage(
-            child: ProfileLikesScreen(
-              uid: uid,
-              type: showAppStyleOption
-                  ? PostsListType.values[appSettings.appStyle ?? 1]
-                  : postsListType,
-            ),
-          );
+            uid: uid,
+            type: showAppStyleOption
+                ? PostsListType.values[appSettings.appStyle ?? 1]
+                : postsListType,
+          ));
         },
       ),
       GoRoute(
         path: '/profile/:uid',
         pageBuilder: (context, state) {
           final uid = state.pathParameters['uid']!;
-          if (isAppleWeb) {
-            return NoTransitionPage(
-              child: CustomProfileScreen(
-                uid: uid,
-              ),
-            );
-          }
-          if (isAndOrWin) {
-            return CustomTransitionPage(
-              fullscreenDialog: true,
-              transitionsBuilder: buildVerticalSlideTransitiron,
-              child: CustomProfileScreen(
-                uid: uid,
-              ),
-            );
-          }
-          return CupertinoPage(
+          return _buildPage(
             child: CustomProfileScreen(
               uid: uid,
             ),
+            // isFullScreen: true,
           );
         },
       ),
@@ -819,32 +405,13 @@ GoRouter goRouter(Ref ref) {
         path: '/comment/:commentId/likes',
         pageBuilder: (context, state) {
           final commentId = state.pathParameters['commentId'];
-          if (isAppleWeb) {
-            return NoTransitionPage(
-              child: LikeUsersScreen(
-                isCommentLikes: true,
-                postCommentId: commentId,
-                isDislike: false,
-              ),
-            );
-          }
-          if (isAndOrWin) {
-            return CustomTransitionPage(
-              fullscreenDialog: true,
-              transitionsBuilder: buildVerticalSlideTransitiron,
-              child: LikeUsersScreen(
-                isCommentLikes: true,
-                postCommentId: commentId,
-                isDislike: false,
-              ),
-            );
-          }
-          return CupertinoPage(
+          return _buildPage(
             child: LikeUsersScreen(
               isCommentLikes: true,
               postCommentId: commentId,
               isDislike: false,
             ),
+            // isFullScreen: true,
           );
         },
       ),
@@ -852,32 +419,13 @@ GoRouter goRouter(Ref ref) {
         path: '/comment/:commentId/dislikes',
         pageBuilder: (context, state) {
           final commentId = state.pathParameters['commentId'];
-          if (isAppleWeb) {
-            return NoTransitionPage(
-              child: LikeUsersScreen(
-                isCommentLikes: true,
-                postCommentId: commentId,
-                isDislike: true,
-              ),
-            );
-          }
-          if (isAndOrWin) {
-            return CustomTransitionPage(
-              fullscreenDialog: true,
-              transitionsBuilder: buildVerticalSlideTransitiron,
-              child: LikeUsersScreen(
-                isCommentLikes: true,
-                postCommentId: commentId,
-                isDislike: true,
-              ),
-            );
-          }
-          return CupertinoPage(
+          return _buildPage(
             child: LikeUsersScreen(
               isCommentLikes: true,
               postCommentId: commentId,
               isDislike: true,
             ),
+            // isFullScreen: true,
           );
         },
       ),
@@ -892,31 +440,12 @@ GoRouter goRouter(Ref ref) {
           }
 
           final multiImages = state.extra as MultiImages?;
-          if (isAppleWeb) {
-            return NoTransitionPage(
+          return _buildPage(
               child: FullImageScreen(
-                imageUrl: imageUrl,
-                imageUrlsList: multiImages?.imageUrlsList,
-                currentIndex: multiImages?.currentIndex,
-              ),
-            );
-          }
-          if (isAndOrWin) {
-            return MaterialPage(
-              child: FullImageScreen(
-                imageUrl: imageUrl,
-                imageUrlsList: multiImages?.imageUrlsList,
-                currentIndex: multiImages?.currentIndex,
-              ),
-            );
-          }
-          return CupertinoPage(
-            child: FullImageScreen(
-              imageUrl: imageUrl,
-              imageUrlsList: multiImages?.imageUrlsList,
-              currentIndex: multiImages?.currentIndex,
-            ),
-          );
+            imageUrl: imageUrl,
+            imageUrlsList: multiImages?.imageUrlsList,
+            currentIndex: multiImages?.currentIndex,
+          ));
         },
       ),
       GoRoute(
@@ -930,66 +459,23 @@ GoRouter goRouter(Ref ref) {
           }
 
           final controller = state.extra as VideoPlayerController?;
-          if (isAppleWeb) {
-            return NoTransitionPage(
+          return _buildPage(
               child: FullVideoScreen(
-                videoUrl: videoUrl,
-                videoController: controller,
-              ),
-            );
-          }
-          if (isAndOrWin) {
-            return MaterialPage(
-              child: FullVideoScreen(
-                videoUrl: videoUrl,
-                videoController: controller,
-              ),
-            );
-          }
-          return CupertinoPage(
-            child: FullVideoScreen(
-              videoUrl: videoUrl,
-              videoController: controller,
-            ),
-          );
+            videoUrl: videoUrl,
+            videoController: controller,
+          ));
         },
       ),
       GoRoute(
         path: '/privacy',
         pageBuilder: (context, state) {
-          if (isAppleWeb) {
-            return const NoTransitionPage(
-              child: AppPrivacyScreen(),
-            );
-          }
-          if (isAndOrWin) {
-            return const CustomTransitionPage(
-              transitionsBuilder: buildHorizontalSlideTransitiron,
-              child: AppPrivacyScreen(),
-            );
-          }
-          return const CupertinoPage(
-            child: AppPrivacyScreen(),
-          );
+          return _buildPage(child: const AppPrivacyScreen());
         },
       ),
       GoRoute(
         path: '/terms',
         pageBuilder: (context, state) {
-          if (isAppleWeb) {
-            return const NoTransitionPage(
-              child: AppTermsScreen(),
-            );
-          }
-          if (isAndOrWin) {
-            return const CustomTransitionPage(
-              transitionsBuilder: buildHorizontalSlideTransitiron,
-              child: AppTermsScreen(),
-            );
-          }
-          return const CupertinoPage(
-            child: AppTermsScreen(),
-          );
+          return _buildPage(child: const AppTermsScreen());
         },
       ),
       GoRoute(
@@ -997,32 +483,12 @@ GoRouter goRouter(Ref ref) {
         pageBuilder: (context, state) {
           final thisYear = DateTime.now().year;
           final legalese = '© $thisYear $appCreator';
-          if (isAppleWeb) {
-            return NoTransitionPage(
+          return _buildPage(
               child: LicensePage(
-                applicationName: fullAppName,
-                applicationLegalese: legalese,
-                applicationVersion: appVersion,
-              ),
-            );
-          }
-          if (isAndOrWin) {
-            return CustomTransitionPage(
-              transitionsBuilder: buildHorizontalSlideTransitiron,
-              child: LicensePage(
-                applicationName: fullAppName,
-                applicationLegalese: legalese,
-                applicationVersion: appVersion,
-              ),
-            );
-          }
-          return CupertinoPage(
-            child: LicensePage(
-              applicationName: fullAppName,
-              applicationLegalese: legalese,
-              applicationVersion: appVersion,
-            ),
-          );
+            applicationName: fullAppName,
+            applicationLegalese: legalese,
+            applicationVersion: appVersion,
+          ));
         },
       ),
     ],
@@ -1031,5 +497,59 @@ GoRouter goRouter(Ref ref) {
       errorMessage: context.loc.pageNotFound,
       isHome: true,
     )),
+  );
+}
+
+// Screen transitions branch depending on the target platform
+// 타겟플램폼에 따라 스크린 트랜지션 분기
+Page<dynamic> _buildPage({
+  required Widget child,
+  bool isFullScreen = false,
+}) {
+  // Extra page shown when swiping back in Safari on iOS
+  // To temporarily resolve this issue,
+  // use NoTransitionPage on the web on apple devices.
+  // If it is resolved in flutter, we will change.
+
+  // final isIosWeb = kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+  /*
+  final isApple = defaultTargetPlatform == TargetPlatform.iOS ||
+      defaultTargetPlatform == TargetPlatform.macOS;
+  */
+  final isAppleWeb = kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.macOS);
+  final isAppleNative = !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.macOS);
+  /*
+  final isAndOrWin = defaultTargetPlatform == TargetPlatform.android ||
+      defaultTargetPlatform == TargetPlatform.windows;
+  */
+
+  if (isAppleWeb) {
+    return NoTransitionPage(
+      child: child,
+    );
+  }
+  if (isAppleNative) {
+    return CupertinoPage(
+      child: child,
+    );
+  }
+  /*
+  if (isAndOrWin) {
+    return CustomTransitionPage(
+      fullscreenDialog: isFullScreen,
+      transitionsBuilder: isFullScreen
+          ? buildVerticalSlideTransitiron
+          : buildHorizontalSlideTransitiron,
+      child: child,
+    );
+  }
+  */
+  return MaterialPage(
+    child: child,
+    fullscreenDialog: isFullScreen,
   );
 }

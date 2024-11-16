@@ -3,6 +3,12 @@
 ### New Features and Improvements
 ### Bug Fixes
 -->
+## Version 0.2.1 (November 18, 2024)
+- Improved screen transitions.
+- Improved the stability of the main list view.
+- Added functionality to manage admin and authenticated users in the Applimode Tool.
+- Updated a dependency to the latest release.
+
 ## Version 0.2.0 (November 11, 2024)
 - Added ability to hide app bar when scrolling in some views.
 - Improved the main list view.

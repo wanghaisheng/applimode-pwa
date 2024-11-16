@@ -83,6 +83,7 @@ Additionally, you can set or configure the following:
 
 ## Demo
 * [Applimode Demo Web](https://applimode-demo.web.app/)
+* [Applimode Dev Web](https://applimode-type-b.web.app/)
 <!--
 * [Android]()
 * iOS will be updated in the future.
