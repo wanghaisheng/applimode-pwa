@@ -3,6 +3,7 @@ import 'dart:developer' as dev;
 
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/constants/constants.dart';
+import 'package:applimode_app/src/exceptions/app_exception.dart';
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
@@ -53,26 +54,29 @@ class EditorScreenController extends _$EditorScreenController {
     required bool hasPostContent,
     String? postId,
     List<String>? oldRemoteMedia,
-    required String needLogin,
-    required String needPermission,
-    required String faildPostSubmit,
-    required String initializing,
-    required String uploadingFile,
-    required String completing,
     AppUser? writer,
     required String postNotiString,
   }) async {
     WakelockPlus.enable();
     final user = ref.read(authRepositoryProvider).currentUser;
+
     if (user == null) {
       WakelockPlus.disable();
-      state = AsyncError(Exception(needLogin), StackTrace.current);
+      state = AsyncError(NeedLogInException(), StackTrace.current);
       return false;
     }
 
+    /*
+    if (user != null) {
+      WakelockPlus.disable();
+      state = AsyncError(NeedPermissionException(), StackTrace.current);
+      return false;
+    }
+    */
+
     if (postId != null && writer == null) {
       WakelockPlus.disable();
-      state = AsyncError(Exception(needPermission), StackTrace.current);
+      state = AsyncError(NeedPermissionException(), StackTrace.current);
       return false;
     }
 
@@ -84,7 +88,7 @@ class EditorScreenController extends _$EditorScreenController {
     if (adminOnlyWrite) {
       if (appUser == null || !appUser.isAdmin) {
         WakelockPlus.disable();
-        state = AsyncError(Exception(needPermission), StackTrace.current);
+        state = AsyncError(NeedPermissionException(), StackTrace.current);
         return false;
       }
     }
@@ -94,14 +98,14 @@ class EditorScreenController extends _$EditorScreenController {
     if (verifiedOnlyWrite) {
       if (appUser == null || !appUser.verified) {
         WakelockPlus.disable();
-        state = AsyncError(Exception(needPermission), StackTrace.current);
+        state = AsyncError(NeedPermissionException(), StackTrace.current);
         return false;
       }
     }
 
     if (appUser == null || appUser.isBlock) {
       WakelockPlus.disable();
-      state = AsyncError(Exception(needPermission), StackTrace.current);
+      state = AsyncError(NeedPermissionException(), StackTrace.current);
       return false;
     }
 
@@ -113,7 +117,7 @@ class EditorScreenController extends _$EditorScreenController {
       // Auth 와 작성자가 다를 경우
       // 팝업창 작성하고 팝
       WakelockPlus.disable();
-      state = AsyncError(Exception(needPermission), StackTrace.current);
+      state = AsyncError(NeedPermissionException(), StackTrace.current);
       return false;
     }
 
@@ -155,7 +159,7 @@ class EditorScreenController extends _$EditorScreenController {
             }
             */
           } catch (e) {
-            debugPrint('oldMediaDelete: ${e.toString()}');
+            debugPrint('oldMediaDeleteError: ${e.toString()}');
           }
         }
       }
@@ -186,21 +190,31 @@ class EditorScreenController extends _$EditorScreenController {
               : Format.extToMimeType(
                   Regex.mediaWithExtRegex.firstMatch(match[1]!)![2]!);
 
-          debugPrint('mediaType: $mediaType');
+          dev.log('mediaType: $mediaType');
 
           final ext = Format.mimeTypeToExtWithDot(mediaType);
 
-          // 태그에 따라 bytes로 변경
-          final bytes = isVideo
-              ? await storageRepository
-                  .getBytes(XFile(Format.fixMediaWithExt(match[2]!)))
-              : await storageRepository
-                  .getBytes(XFile(Format.fixMediaWithExt(match[1]!)));
+          // Convert media file to bytes
+          // 미디어 파일을 bytes로 변경
+          Uint8List? bytes;
+          try {
+            bytes = isVideo
+                ? await storageRepository
+                    .getBytes(XFile(Format.fixMediaWithExt(match[2]!)))
+                : await storageRepository
+                    .getBytes(XFile(Format.fixMediaWithExt(match[1]!)));
+          } catch (e) {
+            debugPrint('FailedMediaFileException: $e');
+            state = AsyncError(FailedMediaFileException(), StackTrace.current);
+            return false;
+          }
 
           // generate video thumbnail
           if (isVideo) {
             String thumbnailFilename = '$filename-thumbnail.jpeg';
             if (match[1] != null && match[1]!.isNotEmpty) {
+              // when receiving a thumbnail image file directly
+              // 썸네일 이미지 파일을 직접 받을 경우
               try {
                 final thumbnailMediaType = Format.extToMimeType(
                     Regex.mediaWithExtRegex.firstMatch(match[1]!)![2]!);
@@ -228,116 +242,138 @@ class EditorScreenController extends _$EditorScreenController {
                   );
                   videoThumbnailUrl = url;
                 }
+                dev.log('upload custom thumbnail');
               } catch (e) {
-                debugPrint('videoThumbnailUpload: ${e.toString()}');
+                debugPrint('customThumbnailUploadError: ${e.toString()}');
               }
             } else {
-              if (kIsWeb) {
-                final videoThumbnail = await WvtStub().getThumbnailData(
-                  video: Format.fixMediaWithExt(match[2]!),
-                  maxWidth: videoThumbnailMaxWidth,
-                  maxHeight: videoThumbnailMaxHeight,
-                  quality: videoThumbnailQuality,
-                );
-                // ignore: unnecessary_null_comparison
-                if (videoThumbnail != null) {
-                  if (useRTwoStorage) {
-                    final url = await rTwoRepository.uploadBytes(
-                      bytes: videoThumbnail,
-                      storagePathname: '$postWriterId/$postsPath/$id',
-                      filename: thumbnailFilename,
-                      showPercentage: false,
-                    );
-                    videoThumbnailUrl = url;
-                  } else {
-                    final url = await storageRepository.uploadBytes(
-                      bytes: videoThumbnail,
-                      storagePathname: '$postWriterId/$postsPath/$id',
-                      filename: thumbnailFilename,
-                    );
-                    videoThumbnailUrl = url;
+              // When extracting a thumbnail from videos
+              // 비디오에서 썸네일 추출할 경우
+              try {
+                if (kIsWeb) {
+                  // upload thumbnail on web
+                  final videoThumbnail = await WvtStub().getThumbnailData(
+                    video: Format.fixMediaWithExt(match[2]!),
+                    maxWidth: videoThumbnailMaxWidth,
+                    maxHeight: videoThumbnailMaxHeight,
+                    quality: videoThumbnailQuality,
+                  );
+                  // ignore: unnecessary_null_comparison
+                  if (videoThumbnail != null) {
+                    if (useRTwoStorage) {
+                      final url = await rTwoRepository.uploadBytes(
+                        bytes: videoThumbnail,
+                        storagePathname: '$postWriterId/$postsPath/$id',
+                        filename: thumbnailFilename,
+                        showPercentage: false,
+                      );
+                      videoThumbnailUrl = url;
+                    } else {
+                      final url = await storageRepository.uploadBytes(
+                        bytes: videoThumbnail,
+                        storagePathname: '$postWriterId/$postsPath/$id',
+                        filename: thumbnailFilename,
+                      );
+                      videoThumbnailUrl = url;
+                    }
                   }
-                }
-              } else {
-                final videoThumbnail = await VideoThumbnail.thumbnailData(
-                  video: Format.fixMediaWithExt(match[2]!),
-                  imageFormat: ImageFormat.JPEG,
-                  maxWidth: videoThumbnailMaxWidth,
-                  maxHeight: videoThumbnailMaxHeight,
-                  quality: videoThumbnailQuality,
-                );
-                if (videoThumbnail != null) {
-                  if (useRTwoStorage) {
-                    final url = await rTwoRepository.uploadBytes(
-                      bytes: videoThumbnail,
-                      storagePathname: '$postWriterId/$postsPath/$id',
-                      filename: thumbnailFilename,
-                      showPercentage: false,
-                    );
-                    videoThumbnailUrl = url;
-                  } else {
-                    final url = await storageRepository.uploadBytes(
-                      bytes: videoThumbnail,
-                      storagePathname: '$postWriterId/$postsPath/$id',
-                      filename: thumbnailFilename,
-                    );
-                    videoThumbnailUrl = url;
+                  dev.log('upload thumbnail on web');
+                } else {
+                  // upload thumbnail on native
+                  final videoThumbnail = await VideoThumbnail.thumbnailData(
+                    video: Format.fixMediaWithExt(match[2]!),
+                    imageFormat: ImageFormat.JPEG,
+                    maxWidth: videoThumbnailMaxWidth,
+                    maxHeight: videoThumbnailMaxHeight,
+                    quality: videoThumbnailQuality,
+                  );
+                  if (videoThumbnail != null) {
+                    if (useRTwoStorage) {
+                      final url = await rTwoRepository.uploadBytes(
+                        bytes: videoThumbnail,
+                        storagePathname: '$postWriterId/$postsPath/$id',
+                        filename: thumbnailFilename,
+                        showPercentage: false,
+                      );
+                      videoThumbnailUrl = url;
+                    } else {
+                      final url = await storageRepository.uploadBytes(
+                        bytes: videoThumbnail,
+                        storagePathname: '$postWriterId/$postsPath/$id',
+                        filename: thumbnailFilename,
+                      );
+                      videoThumbnailUrl = url;
+                    }
                   }
+                  dev.log('upload thumbnail on native');
                 }
+              } catch (e) {
+                debugPrint('ThumbnailUploadError: ${e.toString()}');
               }
             }
           }
 
           TaskSnapshot? takeSnapshot;
 
-          if (!useRTwoStorage) {
-            final uploadTask = storageRepository.uploadTask(
-              bytes: bytes,
-              storagePathname: '$postWriterId/$postsPath/$id',
-              filename: '$filename$ext',
-              contentType: mediaType,
-            );
+          // upload media
+          try {
+            if (!useRTwoStorage) {
+              // firebase storage
+              final uploadTask = storageRepository.uploadTask(
+                bytes: bytes,
+                storagePathname: '$postWriterId/$postsPath/$id',
+                filename: '$filename$ext',
+                contentType: mediaType,
+              );
 
-            uploadTask.snapshotEvents.listen(
-              (taskSnapshot) {
-                switch (taskSnapshot.state) {
-                  case TaskState.running:
-                    final percent = 100.0 *
-                        (taskSnapshot.bytesTransferred /
-                            taskSnapshot.totalBytes);
-                    ref
-                        .read(uploadProgressStateProvider.notifier)
-                        .set(i, percent.toInt());
-                    break;
-                  case TaskState.error:
-                    break;
-                  case TaskState.success:
-                    break;
-                  default:
-                    break;
-                }
-              },
-            );
+              uploadTask.snapshotEvents.listen(
+                (taskSnapshot) {
+                  switch (taskSnapshot.state) {
+                    case TaskState.running:
+                      final percent = 100.0 *
+                          (taskSnapshot.bytesTransferred /
+                              taskSnapshot.totalBytes);
+                      ref
+                          .read(uploadProgressStateProvider.notifier)
+                          .set(i, percent.toInt());
+                      break;
+                    case TaskState.error:
+                      break;
+                    case TaskState.success:
+                      break;
+                    default:
+                      break;
+                  }
+                },
+              );
 
-            takeSnapshot = await uploadTask;
+              takeSnapshot = await uploadTask;
+            }
+
+            // get media url
+            final remoteMediaUrl = useRTwoStorage
+                ? await rTwoRepository.uploadBytes(
+                    bytes: bytes,
+                    storagePathname: '$postWriterId/$postsPath/$id',
+                    filename: '$filename$ext',
+                    contentType: mediaType,
+                    index: i,
+                  )
+                : await takeSnapshot?.ref.getDownloadURL() ?? '';
+
+            isVideo
+                ? remoteMediaUrls
+                    .add('[remoteVideo][$videoThumbnailUrl][$remoteMediaUrl]')
+                : remoteMediaUrls.add('[remoteImage][$remoteMediaUrl][]');
+          } catch (e) {
+            debugPrint('FailedMediaFileUploadException: $e');
+            state = AsyncError(
+                FailedMediaFileUploadException(), StackTrace.current);
+            return false;
           }
-
-          final remoteMediaUrl = useRTwoStorage
-              ? await rTwoRepository.uploadBytes(
-                  bytes: bytes,
-                  storagePathname: '$postWriterId/$postsPath/$id',
-                  filename: '$filename$ext',
-                  contentType: mediaType,
-                  index: i,
-                )
-              : await takeSnapshot?.ref.getDownloadURL() ?? '';
-
-          isVideo
-              ? remoteMediaUrls
-                  .add('[remoteVideo][$videoThumbnailUrl][$remoteMediaUrl]')
-              : remoteMediaUrls.add('[remoteImage][$remoteMediaUrl][]');
         }
 
+        // replace media local media url with remote media url
         for (int i = 0; i < localMediaUrls.length; i++) {
           newContent =
               newContent.replaceFirst(localMediaUrls[i], remoteMediaUrls[i]);
@@ -345,16 +381,20 @@ class EditorScreenController extends _$EditorScreenController {
         // dev.log(newContent);
       }
 
-      if (postId != null) {
-        final remoteVideoMatches =
-            Regex.remoteVideoRegex.allMatches(content).toList();
-        if (remoteVideoMatches.isNotEmpty) {
-          for (final match in remoteVideoMatches) {
-            if (match[1] != null &&
-                match[1]!.isNotEmpty &&
-                (oldRemoteMedia == null ||
-                    !oldRemoteMedia.contains(match[1]))) {
-              try {
+      // when editing a post
+      // 포스트를 수정할 때
+      // when changing a thumbnail on a existing remote media
+      // 리모트 미디어에서 썸네일만 변경했을 경우
+      try {
+        if (postId != null) {
+          final remoteVideoMatches =
+              Regex.remoteVideoRegex.allMatches(content).toList();
+          if (remoteVideoMatches.isNotEmpty) {
+            for (final match in remoteVideoMatches) {
+              if (match[1] != null &&
+                  match[1]!.isNotEmpty &&
+                  (oldRemoteMedia == null ||
+                      !oldRemoteMedia.contains(match[1]))) {
                 final thumbnailMediaType = Format.extToMimeType(
                     Regex.mediaWithExtRegex.firstMatch(match[1]!)![2]!);
 
@@ -365,6 +405,7 @@ class EditorScreenController extends _$EditorScreenController {
                     .getBytes(XFile(Format.fixMediaWithExt(match[1]!)));
 
                 String newUrl = '';
+                // upload new thumbnail
                 if (useRTwoStorage) {
                   newUrl = await rTwoRepository.uploadBytes(
                     bytes: videoThumbnail,
@@ -381,50 +422,62 @@ class EditorScreenController extends _$EditorScreenController {
                     contentType: thumbnailMediaType,
                   );
                 }
+                // replace old thumbnail url with new thumbnail url
                 newContent = newContent.replaceFirst(match[1]!, newUrl);
-              } catch (e) {
-                debugPrint('uploadVideoThumbnail: ${e.toString()}');
+                dev.log('replaceVideoThumbnail done');
               }
             }
           }
         }
+      } catch (e) {
+        debugPrint('replaceVideoThumbnailError: ${e.toString()}');
       }
 
-      // hashtags
-      final hashtagMatches = Regex.hashtagLinkRegex.allMatches(newContent);
-      if (hashtagMatches.isNotEmpty) {
-        for (final tag in hashtagMatches) {
-          if (tag[1] != null && tag[1]!.trim().isNotEmpty) {
-            hashtags.add(tag[1]!.trim());
-            if (tag[1]!.contains('_')) {
-              if (tag[1]!.replaceAll('_', '').trim().isNotEmpty) {
-                hashtags.add(tag[1]!.replaceAll('_', '').trim());
-              }
-              final splits = tag[1]!.split('_');
-              for (final split in splits) {
-                if (split.trim().isNotEmpty) {
-                  hashtags.add(split.trim());
+      // parse hashtags
+      try {
+        final hashtagMatches = Regex.hashtagLinkRegex.allMatches(newContent);
+        if (hashtagMatches.isNotEmpty) {
+          for (final tag in hashtagMatches) {
+            if (tag[1] != null && tag[1]!.trim().isNotEmpty) {
+              hashtags.add(tag[1]!.trim());
+              if (tag[1]!.contains('_')) {
+                if (tag[1]!.replaceAll('_', '').trim().isNotEmpty) {
+                  hashtags.add(tag[1]!.replaceAll('_', '').trim());
+                }
+                final splits = tag[1]!.split('_');
+                for (final split in splits) {
+                  if (split.trim().isNotEmpty) {
+                    hashtags.add(split.trim());
+                  }
                 }
               }
             }
           }
         }
+      } catch (e) {
+        debugPrint('parseHashtagError: ${e.toString()}');
       }
 
-      if (useDOneForSearch &&
-          StringConverter.toSearch(newContent).trim().isNotEmpty) {
-        if (postId == null) {
-          ref
-              .read(dOneRepositoryProvider)
-              .postPostsSearch(id, StringConverter.toSearch(newContent));
-        } else {
-          ref
-              .read(dOneRepositoryProvider)
-              .putPostsSearch(id, StringConverter.toSearch(newContent));
+      // d1 search (full text search)
+      try {
+        if (useDOneForSearch &&
+            StringConverter.toSearch(newContent).trim().isNotEmpty) {
+          if (postId == null) {
+            ref
+                .read(dOneRepositoryProvider)
+                .postPostsSearch(id, StringConverter.toSearch(newContent));
+          } else {
+            ref
+                .read(dOneRepositoryProvider)
+                .putPostsSearch(id, StringConverter.toSearch(newContent));
+          }
         }
+      } catch (e) {
+        debugPrint('d1PostError: ${e.toString()}');
       }
 
-      // mainImageUrl
+      // get mainImageUrl
+      // no need to try-catch
       final firstRemoteImage = Regex.remoteImageRegex.firstMatch(newContent);
       final firstWebImage = Regex.webImageRegex.firstMatch(newContent);
       final firstWebUrlImage = Regex.webImageUrlRegex.firstMatch(newContent);
@@ -467,7 +520,8 @@ class EditorScreenController extends _$EditorScreenController {
         mainImageUrl = StringConverter.buildYtThumbnail(firstYtImage[1]!);
       }
 
-      // mainVideoUrl
+      // get mainVideoUrl
+      // no need to try-catch
       final firstRemoteVideo = Regex.remoteVideoRegex.firstMatch(newContent);
       final firstWebVideo = Regex.webVideoRegex.firstMatch(newContent);
       final firstWebUrlVideo = Regex.webVideoUrlRegex.firstMatch(newContent);
@@ -479,21 +533,30 @@ class EditorScreenController extends _$EditorScreenController {
         mainVideoUrl = firstWebUrlVideo[0];
       }
 
-      // to shorten cloud storage object url
-      final postContent = newContent;
+      // when post content is too long
+      // 포스트의 길이가 너무 길 경우 사용
+      final contentForLong = newContent;
 
-      final modifiedNewContent = StringConverter.toTitle(newContent);
-      final contentTitle = modifiedNewContent.length > contentTitleSize
-          ? modifiedNewContent.substring(0, contentTitleSize)
-          : modifiedNewContent;
+      // get post title
+      final preContentTitle = StringConverter.toTitle(newContent);
+      // to shorten post title length
+      final contentTitle = preContentTitle.length > contentTitleSize
+          ? preContentTitle.substring(0, contentTitleSize)
+          : preContentTitle;
 
+      // when post content is very long
       final isLongContent = utf8.encode(newContent).length > longContentSize;
       if (isLongContent) {
-        newContent = modifiedNewContent.length > contentTitleSize
-            ? modifiedNewContent.substring(0, contentTitleSize)
-            : modifiedNewContent;
+        // to shorten post content length when saving on firestore
+        // firestore의 posts에 저장될 content 길이를 줄이기 위해
+        // use title instead of conent
+        // 길이를 최대한 줄이기 위해 content에 title을 그대로 저장
+        newContent = preContentTitle.length > contentTitleSize
+            ? preContentTitle.substring(0, contentTitleSize)
+            : preContentTitle;
       }
 
+      // posting
       if (postId == null) {
         // new post
         await ref.read(postsRepositoryProvider).createPost(
@@ -529,17 +592,23 @@ class EditorScreenController extends _$EditorScreenController {
               updatedAt: DateTime.now(),
             );
       }
-      // create postContent
-      if (isLongContent) {
-        await ref.read(postContentsRepositoryProvider).createPostContent(
-              id: id,
-              uid: postWriterId,
-              content: postContent,
-              category: category,
-            );
+
+      // create long content
+      try {
+        if (isLongContent) {
+          await ref.read(postContentsRepositoryProvider).createPostContent(
+                id: id,
+                uid: postWriterId,
+                content: contentForLong,
+                category: category,
+              );
+          dev.log('this is long content');
+        }
+      } catch (e) {
+        debugPrint('postLongContentError: ${e.toString()}');
       }
 
-      // delete postContent
+      // delete long content
       try {
         if (!isLongContent && hasPostContent) {
           await ref.read(postContentsRepositoryProvider).deletePostContent(id);
@@ -551,7 +620,7 @@ class EditorScreenController extends _$EditorScreenController {
     } catch (e, st) {
       WakelockPlus.disable();
       debugPrint('editorScreenPublishError: ${e.toString()}');
-      state = AsyncError(Exception(faildPostSubmit), st);
+      state = AsyncError(FailedPostSubmitException(), st);
       return false;
     }
 
@@ -578,19 +647,22 @@ class EditorScreenController extends _$EditorScreenController {
     // when success
     // refresh posts list
     // 기존 포스트 리스트 새로고침
+    try {
+      // ref.invalidate(mainPostsListControllerProvider);
+      // ref.invalidate(subPostsListControllerProvider);
+      // use SimplePageListView
+      if (postId == null) {
+        ref.read(postsListStateProvider.notifier).set(nowToInt());
+      } else {
+        ref.read(updatedPostIdsListProvider.notifier).set(postId);
+      }
 
-    // ref.invalidate(mainPostsListControllerProvider);
-    // ref.invalidate(subPostsListControllerProvider);
-    // use SimplePageListView
-    if (postId == null) {
-      ref.read(postsListStateProvider.notifier).set(nowToInt());
-    } else {
-      ref.read(updatedPostIdsListProvider.notifier).set(postId);
+      // ref.invalidate(mainPostsFutureProvider);
+      ref.invalidate(uploadProgressStateProvider);
+      ref.invalidate(postContentFutureProvider);
+    } catch (e) {
+      debugPrint('refreshListError: ${e.toString()}');
     }
-
-    // ref.invalidate(mainPostsFutureProvider);
-    ref.invalidate(uploadProgressStateProvider);
-    ref.invalidate(postContentFutureProvider);
 
     return true;
 

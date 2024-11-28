@@ -123,6 +123,18 @@ class PostCommentLikesRepository {
     return query.docs.map((e) => e.id).toList();
   }
 
+  // 회원 탈퇴시 사용자, 사용자가 작성한 포스트, 사용자가 작성한 댓글의 좋아요 싫어요 아이디 목록 가져오기
+  Future<List<String>> getPostCommentLikeIdsForClose(String uid) async {
+    final query = await postCommentLikesRef()
+        .where(Filter.or(
+          Filter('uid', isEqualTo: uid),
+          Filter('postWriterId', isEqualTo: uid),
+          Filter('commentWriterId', isEqualTo: uid),
+        ))
+        .get();
+    return query.docs.map((e) => e.id).toList();
+  }
+
   // 각 댓글에 대한 사용자의 좋아요 싫어요 상태 확인
   Future<List<PostCommentLike>> fetchPostCommentLikesByUser({
     required String uid,

@@ -2,6 +2,7 @@ import 'dart:developer' as dev;
 
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/show_adaptive_alert_dialog.dart';
+import 'package:applimode_app/src/utils/show_message_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -27,6 +28,21 @@ extension AsyncValueUI on AsyncValue {
         exception: message,
       );
       */
+    }
+  }
+
+  void showMessageSnackBarOnError(
+    BuildContext context, {
+    String? content,
+  }) {
+    dev.log('AsyncValueUi - isLoading: $isLoading, hasError: $hasError');
+    if (!isLoading && hasError) {
+      final message = error.toString();
+      debugPrint('AsyncValueUIError: $message');
+      showMessageSnackBar(
+        context,
+        content ?? context.loc.tryLater,
+      );
     }
   }
 }

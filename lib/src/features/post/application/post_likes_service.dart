@@ -1,6 +1,7 @@
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/posts/data/post_likes_repository.dart';
 import 'package:applimode_app/src/features/posts/data/posts_repository.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -24,7 +25,11 @@ class PostLikesService {
     required String postWriterId,
   }) async {
     await postsRepository.increaseLikeCount(postId);
-    await appUserRepository.increaseLikeCount(postWriterId);
+    try {
+      await appUserRepository.increaseLikeCount(postWriterId);
+    } catch (e) {
+      debugPrint('failed increasePostWriterLikeCount: ${e.toString()}');
+    }
     await postLikesRepository.createPostLike(
       id: id,
       uid: uid,
@@ -40,7 +45,11 @@ class PostLikesService {
     required String postWriterId,
   }) async {
     await postsRepository.decreaseLikeCount(postId);
-    await appUserRepository.decreaseLikeCount(postWriterId);
+    try {
+      await appUserRepository.decreaseLikeCount(postWriterId);
+    } catch (e) {
+      debugPrint('failed decreasePostWriterLikeCount: ${e.toString()}');
+    }
     await postLikesRepository.deletePostLike(id);
   }
 
@@ -51,7 +60,11 @@ class PostLikesService {
     required String postWriterId,
   }) async {
     await postsRepository.increaseDislikeCount(postId);
-    await appUserRepository.increaseDislikeCount(postWriterId);
+    try {
+      await appUserRepository.increaseDislikeCount(postWriterId);
+    } catch (e) {
+      debugPrint('failed increasePostWriterDislikeCount: ${e.toString()}');
+    }
     await postLikesRepository.createPostLike(
       id: id,
       uid: uid,
@@ -68,7 +81,11 @@ class PostLikesService {
     required String postWriterId,
   }) async {
     await postsRepository.decreaseDislikeCount(postId);
-    await appUserRepository.decreaseDislikeCount(postWriterId);
+    try {
+      await appUserRepository.decreaseDislikeCount(postWriterId);
+    } catch (e) {
+      debugPrint('failed decreasePostWriterDislikeCount: ${e.toString()}');
+    }
     await postLikesRepository.deletePostLike(id);
   }
 }

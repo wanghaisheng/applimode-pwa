@@ -40,6 +40,7 @@ class PostLikesRepository {
     bool? isDislike,
     String? uid,
     String? postId,
+    String? postWriterId,
   }) {
     Query<PostLike> query = _firestore
         .collection(postLikesPath())
@@ -92,6 +93,11 @@ class PostLikesRepository {
           .where('isDislike', isEqualTo: true);
     }
 
+    // postWriter query
+    if (postWriterId != null) {
+      return query.where('postWriterId', isEqualTo: postWriterId);
+    }
+
     return query;
   }
 
@@ -138,9 +144,17 @@ class PostLikesRepository {
 
   // Get all likes and dislikes IDs of deleted posts when remove account
   // 회원 탈퇴시 삭제될 포스트의 모든 좋아요 싫어요 아이디 가져오기
-  Future<List<String>> getPostLikeIdsForPostWriter(String uid) async {
-    final query =
-        await postLikesRef().where('postWriterId', isEqualTo: uid).get();
+  Future<List<String>> getPostLikeIdsForPostWriter(String postWriterId) async {
+    final query = await postLikesRef(postWriterId: postWriterId).get();
+    return query.docs.map((e) => e.id).toList();
+  }
+
+  // 회원 탈퇴시 사용자 및 사용자가 작성한 포스트의 좋아요 싫어요 아이디 가져오기
+  Future<List<String>> getPostLikeIdsForClose(String uid) async {
+    final query = await postLikesRef()
+        .where(Filter.or(Filter('uid', isEqualTo: uid),
+            Filter('postWriterId', isEqualTo: uid)))
+        .get();
     return query.docs.map((e) => e.id).toList();
   }
 }

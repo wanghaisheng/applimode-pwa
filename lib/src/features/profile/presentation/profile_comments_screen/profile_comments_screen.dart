@@ -46,6 +46,7 @@ class ProfileCommentsScreen extends ConsumerWidget {
             bottom: false,
             sliver: SimplePageListView(
               isSliver: true,
+              isLiveUpdate: true,
               query: commentsQuery,
               listState: commentsListStateProvider,
               isNoGridView: true,

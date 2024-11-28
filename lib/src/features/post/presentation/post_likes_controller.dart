@@ -1,10 +1,12 @@
 import 'package:applimode_app/custom_settings.dart';
+import 'package:applimode_app/src/exceptions/app_exception.dart';
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/post/application/post_likes_service.dart';
 import 'package:applimode_app/src/features/posts/data/post_likes_repository.dart';
 import 'package:applimode_app/src/utils/call_fcm_function.dart';
+import 'package:applimode_app/src/utils/is_firestore_not_found.dart';
 import 'package:applimode_app/src/utils/list_state.dart';
 import 'package:applimode_app/src/utils/now_to_int.dart';
 import 'package:applimode_app/src/utils/updated_post_ids_list.dart';
@@ -33,7 +35,7 @@ class PostLikesController extends _$PostLikesController {
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
-      state = AsyncError(Exception('user is null'), StackTrace.current);
+      state = AsyncError(NeedLogInException(), StackTrace.current);
       return false;
     }
 
@@ -49,11 +51,17 @@ class PostLikesController extends _$PostLikesController {
       ),
     );
     if (key == this.key) {
-      state = newState;
+      if (newState.hasError && isFirestoreNotFound(newState.error.toString())) {
+        state = AsyncError(PageNotFoundException(), StackTrace.current);
+        ref.read(updatedPostIdsListProvider.notifier).set(postId);
+        return false;
+      } else {
+        state = newState;
+      }
     }
 
     if (state.hasError) {
-      debugPrint('increasePostLikeCount: ${state.error.toString()}');
+      debugPrint('failed increasePostLikeCount: ${state.error.toString()}');
       return false;
     }
 
@@ -94,7 +102,7 @@ class PostLikesController extends _$PostLikesController {
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
-      state = AsyncError(Exception('user is null'), StackTrace.current);
+      state = AsyncError(NeedLogInException(), StackTrace.current);
       return false;
     }
 
@@ -109,11 +117,17 @@ class PostLikesController extends _$PostLikesController {
     );
 
     if (key == this.key) {
-      state = newState;
+      if (newState.hasError && isFirestoreNotFound(newState.error.toString())) {
+        state = AsyncError(PageNotFoundException(), StackTrace.current);
+        ref.read(updatedPostIdsListProvider.notifier).set(postId);
+        return false;
+      } else {
+        state = newState;
+      }
     }
 
     if (state.hasError) {
-      debugPrint('decreasePostLikeCount: ${state.error.toString()}');
+      debugPrint('failed decreasePostLikeCount: ${state.error.toString()}');
       return false;
     }
 
@@ -133,7 +147,7 @@ class PostLikesController extends _$PostLikesController {
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
-      state = AsyncError(Exception('user is null'), StackTrace.current);
+      state = AsyncError(NeedLogInException(), StackTrace.current);
       return false;
     }
 
@@ -150,11 +164,17 @@ class PostLikesController extends _$PostLikesController {
     );
 
     if (key == this.key) {
-      state = newState;
+      if (newState.hasError && isFirestoreNotFound(newState.error.toString())) {
+        state = AsyncError(PageNotFoundException(), StackTrace.current);
+        ref.read(updatedPostIdsListProvider.notifier).set(postId);
+        return false;
+      } else {
+        state = newState;
+      }
     }
 
     if (state.hasError) {
-      debugPrint('increasePostDislikeCount: ${state.error.toString()}');
+      debugPrint('failed increasePostDislikeCount: ${state.error.toString()}');
       return false;
     }
 
@@ -175,7 +195,7 @@ class PostLikesController extends _$PostLikesController {
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
-      state = AsyncError(Exception('user is null'), StackTrace.current);
+      state = AsyncError(NeedLogInException(), StackTrace.current);
       return false;
     }
 
@@ -190,11 +210,17 @@ class PostLikesController extends _$PostLikesController {
     );
 
     if (key == this.key) {
-      state = newState;
+      if (newState.hasError && isFirestoreNotFound(newState.error.toString())) {
+        state = AsyncError(PageNotFoundException(), StackTrace.current);
+        ref.read(updatedPostIdsListProvider.notifier).set(postId);
+        return false;
+      } else {
+        state = newState;
+      }
     }
 
     if (state.hasError) {
-      debugPrint('decreasePostDislikeCount: ${state.error.toString()}');
+      debugPrint('failed decreasePostDislikeCount: ${state.error.toString()}');
       return false;
     }
 

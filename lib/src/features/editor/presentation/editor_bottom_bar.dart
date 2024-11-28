@@ -187,12 +187,6 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
                                 hasPostContent: widget.hasPostContent ?? false,
                                 postId: widget.postId,
                                 oldRemoteMedia: widget.remoteMedia,
-                                needLogin: context.loc.needLogin,
-                                needPermission: context.loc.needPermission,
-                                faildPostSubmit: context.loc.failedPostSubmit,
-                                initializing: context.loc.initializing,
-                                uploadingFile: context.loc.uploadingFile,
-                                completing: context.loc.completing,
                                 writer: widget.writer,
                                 postNotiString: context.loc.postNoti,
                               );

@@ -1,11 +1,14 @@
 import 'package:applimode_app/custom_settings.dart';
+import 'package:applimode_app/src/exceptions/app_exception.dart';
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/comments/application/post_comments_service.dart';
 import 'package:applimode_app/src/features/comments/data/post_comment_likes_repository.dart';
+import 'package:applimode_app/src/features/comments/presentation/post_comments_list_state.dart';
 import 'package:applimode_app/src/features/posts/data/posts_repository.dart';
 import 'package:applimode_app/src/utils/call_fcm_function.dart';
+import 'package:applimode_app/src/utils/is_firestore_not_found.dart';
 import 'package:applimode_app/src/utils/list_state.dart';
 import 'package:applimode_app/src/utils/nanoid.dart';
 import 'package:applimode_app/src/utils/now_to_int.dart';
@@ -42,29 +45,37 @@ class PostCommentController extends _$PostCommentController {
     required String replyNotiString,
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
-    if (user == null || postId == null) {
-      state =
-          AsyncError(Exception('user or postId is null'), StackTrace.current);
+    final listState = ref.read(postCommentsListStateControllerProvider);
+    if (user == null) {
+      state = AsyncError(NeedLogInException(), StackTrace.current);
+      return false;
+    }
+    if (postId == null) {
+      state = AsyncError(PageNotFoundException(), StackTrace.current);
       return false;
     }
 
     if (content == null && xFile == null) {
-      state = AsyncError(Exception('content is empty'), StackTrace.current);
+      state = AsyncError(EmptyContentException(), StackTrace.current);
       return false;
     }
 
     state = const AsyncLoading();
 
-    if (postWriter == null) {
-      final post = await ref.read(postsRepositoryProvider).fetchPost(postId);
-      if (post != null) {
-        postWriter = await ref.read(appUserFutureProvider(post.uid).future);
+    try {
+      if (postWriter == null) {
+        final post = await ref.read(postsRepositoryProvider).fetchPost(postId);
+        if (post != null) {
+          postWriter = await ref.read(appUserFutureProvider(post.uid).future);
+        }
       }
+    } catch (e) {
+      state = AsyncError(PageNotFoundException(), StackTrace.current);
+      return false;
     }
 
     if (postWriter == null) {
-      state = AsyncError(
-          Exception('this post has been deleted'), StackTrace.current);
+      state = AsyncError(PostWriterNotFoundException(), StackTrace.current);
       return false;
     }
 
@@ -85,7 +96,13 @@ class PostCommentController extends _$PostCommentController {
     );
 
     if (key == this.key) {
-      state = newState;
+      if (newState.hasError && isFirestoreNotFound(newState.error.toString())) {
+        state = AsyncError(PageNotFoundException(), StackTrace.current);
+        ref.read(updatedPostIdsListProvider.notifier).set(postId);
+        return false;
+      } else {
+        state = newState;
+      }
     }
 
     if (state.hasError) {
@@ -111,8 +128,13 @@ class PostCommentController extends _$PostCommentController {
       }
     }
 
+    // update posts list
     ref.read(updatedPostIdsListProvider.notifier).set(postId);
-    ref.read(commentsListStateProvider.notifier).set(nowToInt());
+    // support live updage when only byCreatedAt
+    // refresh comments list menually
+    if (!listState.byCreatedAt) {
+      ref.read(commentsListStateProvider.notifier).set(nowToInt());
+    }
 
     return true;
   }
@@ -128,7 +150,7 @@ class PostCommentController extends _$PostCommentController {
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null || user.uid != commentWriterId && isAdmin == false) {
-      state = AsyncError(Exception('no permition'), StackTrace.current);
+      state = AsyncError(NeedPermissionException(), StackTrace.current);
       return false;
     }
 
@@ -144,7 +166,14 @@ class PostCommentController extends _$PostCommentController {
             ));
 
     if (key == this.key) {
-      state = newState;
+      if (newState.hasError && isFirestoreNotFound(newState.error.toString())) {
+        state = AsyncError(PageNotFoundException(), StackTrace.current);
+        ref.read(updatedPostIdsListProvider.notifier).set(postId);
+        ref.read(updatedCommentIdsListProvider.notifier).set(id);
+        return false;
+      } else {
+        state = newState;
+      }
     }
 
     if (state.hasError) {
@@ -152,8 +181,10 @@ class PostCommentController extends _$PostCommentController {
       return false;
     }
 
+    // update posts list
     ref.read(updatedPostIdsListProvider.notifier).set(postId);
-    ref.read(commentsListStateProvider.notifier).set(nowToInt());
+    // update comments list
+    ref.read(updatedCommentIdsListProvider.notifier).set(id);
 
     return true;
   }
@@ -169,7 +200,7 @@ class PostCommentController extends _$PostCommentController {
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
-      state = AsyncError(Exception('no user'), StackTrace.current);
+      state = AsyncError(NeedLogInException(), StackTrace.current);
       return false;
     }
 
@@ -189,7 +220,13 @@ class PostCommentController extends _$PostCommentController {
     );
 
     if (key == this.key) {
-      state = newState;
+      if (newState.hasError && isFirestoreNotFound(newState.error.toString())) {
+        state = AsyncError(PageNotFoundException(), StackTrace.current);
+        ref.read(updatedCommentIdsListProvider.notifier).set(commentId);
+        return false;
+      } else {
+        state = newState;
+      }
     }
 
     if (state.hasError) {
@@ -219,9 +256,11 @@ class PostCommentController extends _$PostCommentController {
 
     ref.invalidate(postCommentLikesByUserFutureProvider);
     ref.invalidate(writerFutureProvider);
+    // update comments list
     ref.read(updatedCommentIdsListProvider.notifier).set(commentId);
+    // update users list
     ref.read(updatedUserIdsListProvider.notifier).set(commentWriterId);
-    // ref.read(commentsListStateProvider.notifier).set(nowToInt());
+    // refresh likes list
     ref.read(likesListStateProvider.notifier).set(nowToInt());
 
     return true;
@@ -234,7 +273,7 @@ class PostCommentController extends _$PostCommentController {
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
-      state = AsyncError(Exception('no user'), StackTrace.current);
+      state = AsyncError(NeedLogInException(), StackTrace.current);
       return false;
     }
 
@@ -249,7 +288,13 @@ class PostCommentController extends _$PostCommentController {
     );
 
     if (key == this.key) {
-      state = newState;
+      if (newState.hasError && isFirestoreNotFound(newState.error.toString())) {
+        state = AsyncError(PageNotFoundException(), StackTrace.current);
+        ref.read(updatedCommentIdsListProvider.notifier).set(commentId);
+        return false;
+      } else {
+        state = newState;
+      }
     }
 
     if (state.hasError) {
@@ -259,9 +304,11 @@ class PostCommentController extends _$PostCommentController {
 
     ref.invalidate(postCommentLikesByUserFutureProvider);
     ref.invalidate(writerFutureProvider);
+    // update comments list
     ref.read(updatedCommentIdsListProvider.notifier).set(commentId);
+    // update users list
     ref.read(updatedUserIdsListProvider.notifier).set(commentWriterId);
-    // ref.read(commentsListStateProvider.notifier).set(nowToInt());
+    // refresh likes list
     ref.read(likesListStateProvider.notifier).set(nowToInt());
 
     return true;
@@ -276,7 +323,7 @@ class PostCommentController extends _$PostCommentController {
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
-      state = AsyncError(Exception('no user'), StackTrace.current);
+      state = AsyncError(NeedLogInException(), StackTrace.current);
       return false;
     }
 
@@ -296,7 +343,13 @@ class PostCommentController extends _$PostCommentController {
     );
 
     if (key == this.key) {
-      state = newState;
+      if (newState.hasError && isFirestoreNotFound(newState.error.toString())) {
+        state = AsyncError(PageNotFoundException(), StackTrace.current);
+        ref.read(updatedCommentIdsListProvider.notifier).set(commentId);
+        return false;
+      } else {
+        state = newState;
+      }
     }
 
     if (state.hasError) {
@@ -306,9 +359,11 @@ class PostCommentController extends _$PostCommentController {
 
     ref.invalidate(postCommentLikesByUserFutureProvider);
     ref.invalidate(writerFutureProvider);
+    // update comments list
     ref.read(updatedCommentIdsListProvider.notifier).set(commentId);
+    // update users list
     ref.read(updatedUserIdsListProvider.notifier).set(commentWriterId);
-    // ref.read(commentsListStateProvider.notifier).set(nowToInt());
+    // refresh likes list
     ref.read(likesListStateProvider.notifier).set(nowToInt());
 
     return true;
@@ -321,7 +376,7 @@ class PostCommentController extends _$PostCommentController {
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
-      state = AsyncError(Exception('no user'), StackTrace.current);
+      state = AsyncError(NeedLogInException(), StackTrace.current);
       return false;
     }
 
@@ -336,7 +391,13 @@ class PostCommentController extends _$PostCommentController {
     );
 
     if (key == this.key) {
-      state = newState;
+      if (newState.hasError && isFirestoreNotFound(newState.error.toString())) {
+        state = AsyncError(PageNotFoundException(), StackTrace.current);
+        ref.read(updatedCommentIdsListProvider.notifier).set(commentId);
+        return false;
+      } else {
+        state = newState;
+      }
     }
 
     if (state.hasError) {
@@ -346,9 +407,11 @@ class PostCommentController extends _$PostCommentController {
 
     ref.invalidate(postCommentLikesByUserFutureProvider);
     ref.invalidate(writerFutureProvider);
+    // update comments list
     ref.read(updatedCommentIdsListProvider.notifier).set(commentId);
+    // update users list
     ref.read(updatedUserIdsListProvider.notifier).set(commentWriterId);
-    // ref.read(commentsListStateProvider.notifier).set(nowToInt());
+    // refresh likes list
     ref.read(likesListStateProvider.notifier).set(nowToInt());
 
     return true;

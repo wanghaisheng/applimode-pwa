@@ -17,54 +17,51 @@ class PostCommentsScreenAppBar extends ConsumerWidget
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (isRepliesScreen) {
-      return AppBar(
-        toolbarHeight: commentScreenAppBarHeight,
-        title: Text(context.loc.replies),
-        automaticallyImplyLeading: kIsWeb ? false : true,
-        leading: kIsWeb ? const WebBackButton() : null,
-      );
-    }
     final listState = ref.watch(postCommentsListStateControllerProvider);
     final listStateController =
         ref.watch(postCommentsListStateControllerProvider.notifier);
+
     return AppBar(
       toolbarHeight: commentScreenAppBarHeight,
-      title: Text(context.loc.commentsAppBarTitle),
+      title: Text(isRepliesScreen
+          ? context.loc.replies
+          : context.loc.commentsAppBarTitle),
       automaticallyImplyLeading: kIsWeb ? false : true,
       leading: kIsWeb ? const WebBackButton() : null,
-      actions: [
-        MenuAnchor(
-          style: const MenuStyle(
-              padding:
-                  WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 24))),
-          builder: (context, controller, child) => TextButton(
-            onPressed: () {
-              if (controller.isOpen) {
-                controller.close();
-              } else {
-                FocusScope.of(context).unfocus();
-                controller.open();
-              }
-            },
-            child: Text(getMenuAnchorString(context, listState)),
-          ),
-          menuChildren: [
-            MenuItemButton(
-              onPressed: () {
-                listStateController.byCreatedAt();
-              },
-              child: Text(context.loc.byCreatedAt),
-            ),
-            MenuItemButton(
-              onPressed: () {
-                listStateController.bySumCount();
-              },
-              child: Text(context.loc.bySumCount),
-            ),
-          ],
-        ),
-      ],
+      actions: isRepliesScreen
+          ? null
+          : [
+              MenuAnchor(
+                style: const MenuStyle(
+                    padding: WidgetStatePropertyAll(
+                        EdgeInsets.symmetric(horizontal: 24))),
+                builder: (context, controller, child) => TextButton(
+                  onPressed: () {
+                    if (controller.isOpen) {
+                      controller.close();
+                    } else {
+                      FocusScope.of(context).unfocus();
+                      controller.open();
+                    }
+                  },
+                  child: Text(getMenuAnchorString(context, listState)),
+                ),
+                menuChildren: [
+                  MenuItemButton(
+                    onPressed: () {
+                      listStateController.byCreatedAt();
+                    },
+                    child: Text(context.loc.byCreatedAt),
+                  ),
+                  MenuItemButton(
+                    onPressed: () {
+                      listStateController.bySumCount();
+                    },
+                    child: Text(context.loc.bySumCount),
+                  ),
+                ],
+              ),
+            ],
     );
   }
 

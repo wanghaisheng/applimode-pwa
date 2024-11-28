@@ -69,5 +69,11 @@ service cloud.firestore {
       allow update: if request.auth.uid == resource.data.uid || isAdmin();
       allow delete: if request.auth.uid == resource.data.uid || isAdmin();
     }
+    match /deleteErrors/{document} {
+    	allow read: if isVerified();
+      allow create: if request.auth.uid == request.resource.data.uid || isAdmin();
+      allow update: if request.auth.uid == resource.data.uid || isAdmin();
+      allow delete: if request.auth.uid == resource.data.uid || isAdmin();
+    }
   }
 }

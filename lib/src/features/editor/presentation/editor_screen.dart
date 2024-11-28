@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:applimode_app/src/exceptions/app_exception.dart';
 import 'package:applimode_app/src/features/editor/presentation/editor_screen_ai_controller.dart';
 import 'package:applimode_app/src/features/prompts/show_ai_dialog.dart';
+import 'package:applimode_app/src/utils/adaptive_back.dart';
 import 'package:applimode_app/src/utils/format.dart';
 import 'package:applimode_app/src/utils/regex.dart';
 import 'package:applimode_app/src/utils/shared_preferences.dart';
@@ -162,7 +164,26 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   @override
   Widget build(BuildContext context) {
     ref.listen(editorScreenControllerProvider, (_, state) {
-      state.showAlertDialogOnError(context, content: state.error.toString());
+      if (state.error is NeedLogInException) {
+        state.showMessageSnackBarOnError(context,
+            content: context.loc.needLogin);
+        adaptiveBack(context);
+      } else if (state.error is NeedPermissionException) {
+        state.showMessageSnackBarOnError(context,
+            content: context.loc.needPermission);
+        adaptiveBack(context);
+      } else if (state.error is FailedMediaFileException) {
+        state.showAlertDialogOnError(context,
+            content: context.loc.failedMediaFile);
+      } else if (state.error is FailedMediaFileUploadException) {
+        state.showAlertDialogOnError(context,
+            content: context.loc.failedUploadMediaFile);
+      } else if (state.error is FailedPostSubmitException) {
+        state.showAlertDialogOnError(context,
+            content: context.loc.failedPostSubmit);
+      } else {
+        state.showAlertDialogOnError(context, content: state.error.toString());
+      }
     });
 
     if (useAiAssistant) {
@@ -236,47 +257,6 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                   ),
                 ),
               ),
-            /*
-            if (useAiAssistant)
-            TextButton(
-              onPressed: () async {
-                final imageMatchs =
-                    Regex.localImageRegex.allMatches(_controller.text);
-                final List<String> imagePaths = [];
-                for (final match in imageMatchs) {
-                  if (match[1] != null) {
-                    imagePaths.add(match[1]!);
-                  }
-                }
-
-                // debugPrint('imagePaths: $imagePaths');
-                final result = await showAiDialog(
-                  context: context,
-                  imagePaths: imagePaths.isNotEmpty ? imagePaths : null,
-                );
-                if (result != null && result.isNotEmpty) {
-                  final text = _controller.text;
-                  final selection = _controller.selection;
-                  final start = selection.start;
-                  final end = selection.end;
-                  final inserted = '\n$result\n';
-                  final newText = text.replaceRange(
-                    start,
-                    end,
-                    inserted,
-                  );
-                  _controller.value = TextEditingValue(
-                    text: newText,
-                    selection: TextSelection.collapsed(
-                        offset: selection.baseOffset + inserted.length),
-                  );
-                  _focusNode.requestFocus();
-                }
-                // debugPrint('result: $result');
-              },
-              child: Text(context.loc.withAiButton),
-            )
-            */
           ],
         ),
         body: Column(

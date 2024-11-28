@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer' as dev;
 
 import 'package:applimode_app/src/app_settings/app_settings_controller.dart';
@@ -76,6 +77,7 @@ class SimplePageListView<Document> extends ConsumerStatefulWidget {
     this.isNoGridView = false,
     this.searchWords,
     this.isSliver = false,
+    this.isLiveUpdate = false,
   });
 
   final Query<Document> query;
@@ -124,6 +126,7 @@ class SimplePageListView<Document> extends ConsumerStatefulWidget {
   final bool isNoGridView;
   final String? searchWords;
   final bool isSliver;
+  final bool isLiveUpdate;
 
   @override
   ConsumerState<SimplePageListView<Document>> createState() =>
@@ -133,27 +136,29 @@ class SimplePageListView<Document> extends ConsumerStatefulWidget {
 class _SimplePageListViewState<Document>
     extends ConsumerState<SimplePageListView<Document>>
     with WidgetsBindingObserver {
-  late List<QueryDocumentSnapshot<Document>> docs = [];
+  List<QueryDocumentSnapshot<Document>> docs = [];
   // Check if the first page of the list is being loaded
   // 리스트의 첫 페이지를 불러오는 중인지 확인
-  late bool isFetching = false;
+  bool isFetching = false;
   // Check if the next page of the list is being loaded
   // 리스트의 다음 페이지를 불러오는 중인지 확인
-  late bool isFetchingMore = false;
+  bool isFetchingMore = false;
   // Check if there are more items to load
   // 더 불러올 아이템이 있는지 확인
-  late bool hasMore = false;
+  bool hasMore = false;
   // Check if the list needs to be refreshed
   // 리스트의 새로고침이 필요할 경우 확인
-  late int refreshTime = DateTime.now().millisecondsSinceEpoch;
+  int refreshTime = DateTime.now().millisecondsSinceEpoch;
   // Check if there is a main item at the top of the list
   // 리스트 최상단에 위치하는 메인 아이템이 있는지 확인
-  late bool hasMain = false;
+  bool hasMain = false;
   // If blocked by firestore security rule
   // firestore security rule 에서 막혔을 경우
-  late bool isPermissionDenied = false;
+  bool isPermissionDenied = false;
 
   bool _isCancelled = false;
+
+  StreamSubscription? _liveSubscription;
 
   @override
   void initState() {
@@ -179,6 +184,7 @@ class _SimplePageListViewState<Document>
   @override
   void dispose() {
     _isCancelled = true;
+    _liveSubscription?.cancel();
     // Remove app lifecycle observer
     // 앱 생명주기 옵저버 제거
     WidgetsBinding.instance.removeObserver(this);
@@ -202,7 +208,7 @@ class _SimplePageListViewState<Document>
                 milliseconds:
                     DateTime.now().millisecondsSinceEpoch - refreshTime)
             .inMinutes;
-        if (pauseDurationInMinute > 120) {
+        if (pauseDurationInMinute > 120 || docs.isEmpty) {
           docs = [];
           _fetchDocs();
         } else {
@@ -305,6 +311,52 @@ class _SimplePageListViewState<Document>
     }
   }
 
+  Future<void> _setLiveUpdate() async {
+    if (_isCancelled || widget.recentDocQuery != null) return;
+    try {
+      final latestDocQuery = widget.query.limit(1);
+      _liveSubscription = latestDocQuery.snapshots().listen((event) async {
+        if (docs.isEmpty) {
+          if (!isFetching && !isFetchingMore) {
+            if (_isCancelled) return;
+            if (mounted) {
+              SchedulerBinding.instance.scheduleFrame();
+              SchedulerBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  docs = event.docs;
+                });
+              });
+            }
+          }
+        } else {
+          final firstDoc = hasMain ? docs[1] : docs[0];
+          final recentSnapshot =
+              await widget.query.endBeforeDocument(firstDoc).get();
+          if (_isCancelled || recentSnapshot.docs.isEmpty) return;
+          final existingDocIds = docs.map((doc) => doc.id).toSet();
+          final newDocs = recentSnapshot.docs
+              .where((doc) => !existingDocIds.contains(doc.id))
+              .toList();
+          if (_isCancelled) return;
+          if (mounted) {
+            SchedulerBinding.instance.scheduleFrame();
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              setState(() {
+                // If there is a main item, add new posts after the main item
+                // 메인 아이템이 있는 경우에는 메인 아이템 이후로 추가
+                docs = hasMain
+                    ? [docs.first, ...newDocs, ...docs.sublist(1)]
+                    : [...newDocs, ...docs];
+              });
+            });
+          }
+        }
+      });
+    } catch (e) {
+      debugPrint('setLiveUpdate error: $e');
+    }
+  }
+
   void _fetchNextPage() {
     // Executes when the last item in the list is visible and hasMore is true
     // 리스트의 마지막 아이템이 표시되고 hasMore가 참일 경우 실행
@@ -329,6 +381,7 @@ class _SimplePageListViewState<Document>
         // 로드 모어일 경우
         isFetchingMore = true;
       } else {
+        _liveSubscription?.cancel();
         // when first page
         // 첫 페이지를 경우
         isFetching = true;
@@ -406,6 +459,9 @@ class _SimplePageListViewState<Document>
           });
         });
       }
+      if (widget.isLiveUpdate && widget.recentDocQuery == null && !nextPage) {
+        _setLiveUpdate();
+      }
       /*
       setState(() {
         if (nextPage) {
@@ -450,6 +506,18 @@ class _SimplePageListViewState<Document>
                 .get();
             final newDoc =
                 querySnapshot.docs.isNotEmpty ? querySnapshot.docs[0] : null;
+            if (newDoc == null) {
+              // 사용자가 문서를 삭제했을 경우 로컬에서 변경
+              docs = docs.where((doc) => doc.id != updatedDocId).toList();
+            } else {
+              // Change existing document to updated document
+              // 업데이트 된 문서로 기존 문서 변경
+              docs = [
+                for (final doc in docs)
+                  if (doc.id == updatedDocId) newDoc else doc
+              ];
+            }
+            /*
             if (newDoc != null) {
               // Change existing document to updated document
               // 업데이트 된 문서로 기존 문서 변경
@@ -458,6 +526,7 @@ class _SimplePageListViewState<Document>
                   if (doc.id == updatedDocId) newDoc else doc
               ];
             }
+            */
           }
         }
         if (_isCancelled) return;

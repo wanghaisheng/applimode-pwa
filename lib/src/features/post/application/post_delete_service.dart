@@ -1,3 +1,7 @@
+import 'dart:developer' as dev;
+
+import 'package:applimode_app/src/features/profile/data/delete_errors_repository.dart';
+import 'package:applimode_app/src/features/profile/domain/delete_error.dart';
 import 'package:flutter/foundation.dart';
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/comments/data/post_comment_likes_repository.dart';
@@ -11,6 +15,7 @@ import 'package:applimode_app/src/features/search/data/d_one_repository.dart';
 import 'package:applimode_app/src/utils/delete_storage_list.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
 
 class PostDeleteService {
   const PostDeleteService(this.ref);
@@ -22,6 +27,142 @@ class PostDeleteService {
     required String postId,
     required bool isLongContent,
   }) async {
+    final starts = DateTime.now();
+    // delete comment likes
+    Future<void> deleteCommentLikes() async {
+      final commentLikeIds = await ref
+          .read(postCommentLikesRepositoryProvider)
+          .getPostCommentLikeIdsForPost(postId);
+      for (var commentLikeId in commentLikeIds) {
+        await ref
+            .read(postCommentLikesRepositoryProvider)
+            .deletePostCommentLike(commentLikeId);
+      }
+    }
+
+    // delete post comments
+    Future<void> deleteComments() async {
+      final commentIds = await ref
+          .read(postCommentsRepositoryProvider)
+          .getPostCommentIdsForPost(postId);
+      for (var commentId in commentIds) {
+        await ref
+            .read(postCommentsRepositoryProvider)
+            .deletePostComment(commentId);
+      }
+    }
+
+    // delete post likes
+    Future<void> deletePostLikes() async {
+      final postLikeIds = await ref
+          .read(postLikesRepositoryProvider)
+          .getPostLikeIdsForPost(postId);
+
+      for (var postLikeId in postLikeIds) {
+        await ref.read(postLikesRepositoryProvider).deletePostLike(postLikeId);
+      }
+    }
+
+    // delete postContent
+    Future<void> deleteLongContent() async {
+      if (isLongContent) {
+        await ref
+            .read(postContentsRepositoryProvider)
+            .deletePostContent(postId);
+      }
+    }
+
+    // delete comment medias
+    Future<void> deleteCommentMedia() async {
+      try {
+        await deleteStorageList(ref, '$commentsPath/$postId');
+      } catch (e) {
+        final id = const Uuid().v7();
+        try {
+          await ref.read(deleteErrorsRepositoryProvider).createDeleteError(
+                id: id,
+                uid: uid,
+                errorType: DeleteErrorType.postCommentMedia.name,
+                errorIdType: DeleteErrorIdType.postId.name,
+                errorId: postId,
+              );
+        } catch (e) {
+          debugPrint('failed createDeleteError: ${e.toString()}');
+        }
+        debugPrint('filed deleteCommentMedia: ${e.toString()}');
+      }
+    }
+
+    // delete media for firebase storage
+    Future<void> deleteFBPostMedia() async {
+      await deleteStorageList(ref, '$uid/$postsPath/$postId');
+    }
+
+    // delete media for cloudflare r2 storage
+    Future<void> deleteCFPostMedia() async {
+      if (useRTwoStorage) {
+        try {
+          await ref
+              .read(rTwoStorageRepositoryProvider)
+              .deleteAssetsList('$uid/$postsPath/$postId');
+        } catch (e) {
+          final id = const Uuid().v7();
+          try {
+            await ref.read(deleteErrorsRepositoryProvider).createDeleteError(
+                  id: id,
+                  uid: uid,
+                  errorType: DeleteErrorType.postMediaFromCloudflare.name,
+                  errorIdType: DeleteErrorIdType.postId.name,
+                  errorId: postId,
+                );
+          } catch (e) {
+            debugPrint('failed createDeleteError: ${e.toString()}');
+          }
+
+          debugPrint('failed deleteCFPostMedia: ${e.toString()}');
+        }
+      }
+    }
+
+    // delete cloudflare d1 search index
+    Future<void> deleteDOne() async {
+      if (useDOneForSearch) {
+        try {
+          ref.read(dOneRepositoryProvider).deletePostsSearch(postId);
+        } catch (e) {
+          final id = const Uuid().v7();
+          try {
+            await ref.read(deleteErrorsRepositoryProvider).createDeleteError(
+                  id: id,
+                  uid: uid,
+                  errorType: DeleteErrorType.postDOne.name,
+                  errorIdType: DeleteErrorIdType.postId.name,
+                  errorId: postId,
+                );
+          } catch (e) {
+            debugPrint('failed createDeleteError: ${e.toString()}');
+          }
+
+          debugPrint('failed deleteDOne: ${e.toString()}');
+        }
+      }
+    }
+
+    await Future.wait([
+      deleteCommentLikes(),
+      deleteComments(),
+      deletePostLikes(),
+      deleteLongContent(),
+      deleteCommentMedia(),
+      deleteFBPostMedia(),
+      deleteCFPostMedia(),
+      deleteDOne(),
+    ]);
+
+    // delete post
+    await ref.read(postsRepositoryProvider).deletePost(postId);
+
+    /*
     // delete comment likes
     final commentLikeIds = await ref
         .read(postCommentLikesRepositoryProvider)
@@ -103,5 +244,10 @@ class PostDeleteService {
 
     // delete post
     await ref.read(postsRepositoryProvider).deletePost(postId);
+    */
+
+    final ends = DateTime.now();
+    dev.log(
+        'delete duration: ${Duration(milliseconds: ends.millisecondsSinceEpoch - starts.millisecondsSinceEpoch)}');
   }
 }

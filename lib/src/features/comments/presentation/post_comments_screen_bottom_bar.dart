@@ -9,7 +9,6 @@ import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
-import 'package:applimode_app/src/utils/async_value_ui.dart';
 import 'package:applimode_app/src/utils/format.dart';
 import 'package:applimode_app/src/utils/show_adaptive_alert_dialog.dart';
 import 'package:applimode_app/src/utils/show_image_picker.dart';
@@ -88,9 +87,6 @@ class _PostCommentsScreenBottomBarState
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(postCommentControllerProvider, (_, state) {
-      state.showAlertDialogOnError(context);
-    });
     final mediaMaxMBSize = ref.watch(adminSettingsProvider).mediaMaxMBSize;
     final user = ref.watch(authStateChangesProvider).value;
     final isLoading = ref.watch(postCommentControllerProvider).isLoading;
@@ -172,20 +168,18 @@ class _PostCommentsScreenBottomBarState
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Center(
-                        child: TextField(
-                          controller: _controller,
-                          // focusNode: _node,
-                          textInputAction: TextInputAction.done,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.zero,
-                            isDense: true,
-                            hintText: context.loc.leaveComment,
-                            // hintStyle: TextStyle(color: Colors.grey.shade400),
-                          ),
-                          onEditingComplete: _submit,
+                      child: TextField(
+                        controller: _controller,
+                        // focusNode: _node,
+                        textInputAction: TextInputAction.done,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.zero,
+                          isDense: true,
+                          hintText: context.loc.leaveComment,
+                          // hintStyle: TextStyle(color: Colors.grey.shade400),
                         ),
+                        onEditingComplete: _submit,
                       ),
                     ),
                   ),

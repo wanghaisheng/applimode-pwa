@@ -1,5 +1,6 @@
 import 'package:applimode_app/src/common_widgets/center_circular_indicator.dart';
 import 'package:applimode_app/src/common_widgets/error_widgets/error_message_button.dart';
+import 'package:applimode_app/src/exceptions/app_exception.dart';
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/post/presentation/post_app_bar.dart';
@@ -9,6 +10,7 @@ import 'package:applimode_app/src/features/posts/data/post_contents_repository.d
 import 'package:applimode_app/src/features/posts/data/posts_repository.dart';
 import 'package:applimode_app/src/features/posts/domain/post.dart';
 import 'package:applimode_app/src/features/posts/domain/post_and_writer.dart';
+import 'package:applimode_app/src/utils/adaptive_back.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/async_value_ui.dart';
 import 'package:applimode_app/src/utils/string_converter.dart';
@@ -55,7 +57,16 @@ class _PostScreenState extends ConsumerState<PostScreen> {
     final isLoading = ref.watch(postScreenControllerProvider).isLoading;
 
     ref.listen(postScreenControllerProvider, (_, state) {
-      state.showAlertDialogOnError(context, content: context.loc.tryLater);
+      if (state.error is NeedPermissionException) {
+        state.showMessageSnackBarOnError(context,
+            content: context.loc.needPermission);
+      } else if (state.error is PageNotFoundException) {
+        state.showMessageSnackBarOnError(context,
+            content: context.loc.pageNotFound);
+        adaptiveBack(context);
+      } else {
+        state.showAlertDialogOnError(context, content: state.error.toString());
+      }
     });
 
     ref.listen(updatedPostIdsListProvider, (_, state) {

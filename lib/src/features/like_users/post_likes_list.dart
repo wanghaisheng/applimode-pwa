@@ -49,34 +49,5 @@ class PostLikesList extends ConsumerWidget {
         },
       ),
     );
-    /*
-    return FirestoreListView<PostLike>(
-      query: postLikesQuery,
-      emptyBuilder: (context) => Center(
-        child: Text(context.loc.noLike),
-      ),
-      errorBuilder: (context, error, stackTrace) => Center(
-        child: Text(error.toString()),
-      ),
-      loadingBuilder: (context) =>
-          const Center(child: CircularProgressIndicator.adaptive()),
-      itemBuilder: (context, doc) {
-        final postLike = doc.data();
-        final likeUser = ref.watch(writerFutureProvider(postLike.uid));
-        return AsyncValueWidget(
-          value: likeUser,
-          data: (likeUser) {
-            if (likeUser == null) {
-              return const SizedBox.shrink();
-            }
-            return UserItem(
-              appUser: likeUser,
-              profileImageSize: profileSizeBig,
-            );
-          },
-        );
-      },
-    );
-    */
   }
 }

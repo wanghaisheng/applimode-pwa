@@ -45,3 +45,25 @@ class PostDeleteException implements Exception {
 class FileSizeException implements Exception {
   FileSizeException();
 }
+
+class NeedPermissionException implements Exception {}
+
+class NeedLogInException implements Exception {}
+
+class PageNotFoundException implements Exception {}
+
+class PostNotFoundException implements Exception {}
+
+class CommentNotFoundException implements Exception {}
+
+class PostWriterNotFoundException implements Exception {}
+
+class CommentWriterNotFoundException implements Exception {}
+
+class FailedPostSubmitException implements Exception {}
+
+class FailedMediaFileException implements Exception {}
+
+class FailedMediaFileUploadException implements Exception {}
+
+class EmptyContentException implements Exception {}

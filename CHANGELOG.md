@@ -3,6 +3,11 @@
 ### New Features and Improvements
 ### Bug Fixes
 -->
+## Version 0.2.2 (November 28, 2024)
+- Enhanced SimplePageListView and PostCommentsScreen.
+- Improved the deletePost and deleteAccount functions.
+- Refined exception handling.
+
 ## Version 0.2.1 (November 18, 2024)
 - Improved screen transitions.
 - Improved the stability of the main list view.

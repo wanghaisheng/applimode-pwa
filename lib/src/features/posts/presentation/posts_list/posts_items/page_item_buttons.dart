@@ -1,6 +1,7 @@
 import 'package:applimode_app/src/common_widgets/buttons/post_comment_button.dart';
 import 'package:applimode_app/src/common_widgets/buttons/post_dislike_button.dart';
 import 'package:applimode_app/src/common_widgets/buttons/post_like_button.dart';
+import 'package:applimode_app/src/exceptions/app_exception.dart';
 import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/post/presentation/post_likes_controller.dart';
@@ -9,12 +10,10 @@ import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/format.dart';
 import 'package:applimode_app/custom_settings.dart';
-import 'package:applimode_app/src/utils/list_state.dart';
-import 'package:applimode_app/src/utils/now_to_int.dart';
-import 'package:applimode_app/src/utils/show_message_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:applimode_app/src/utils/async_value_ui.dart';
 
 class PageItemButtons extends ConsumerWidget {
   const PageItemButtons({
@@ -28,10 +27,15 @@ class PageItemButtons extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen(postLikesControllerProvider, (_, next) {
-      if (!next.isLoading && next.hasError) {
-        showMessageSnackBar(context, context.loc.deletedPost);
-        ref.read(postsListStateProvider.notifier).set(nowToInt());
+    ref.listen(postLikesControllerProvider, (_, state) {
+      if (state.error is NeedLogInException) {
+        state.showMessageSnackBarOnError(context,
+            content: context.loc.needLogin);
+      } else if (state.error is PageNotFoundException) {
+        state.showMessageSnackBarOnError(context,
+            content: context.loc.pageNotFound);
+      } else {
+        state.showAlertDialogOnError(context, content: state.error.toString());
       }
     });
 

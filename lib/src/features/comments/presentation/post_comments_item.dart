@@ -8,11 +8,8 @@ import 'package:applimode_app/src/features/authentication/data/auth_repository.d
 import 'package:applimode_app/src/features/comments/domain/post_comment.dart';
 import 'package:applimode_app/src/features/comments/presentation/buttons/post_comment_like_button.dart';
 import 'package:applimode_app/src/features/comments/presentation/buttons/post_comment_more_button.dart';
-import 'package:applimode_app/src/features/comments/presentation/buttons/post_comment_reply_button.dart';
-import 'package:applimode_app/src/features/comments/presentation/post_comment_controller.dart';
 import 'package:applimode_app/src/features/comments/presentation/buttons/post_comment_dislike_button.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
-import 'package:applimode_app/src/utils/async_value_ui.dart';
 import 'package:applimode_app/src/utils/format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,10 +35,6 @@ class PostCommentsItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // dev.log('post comment item build');
-    ref.listen(postCommentControllerProvider, (_, state) {
-      state.showAlertDialogOnError(context);
-    });
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     final user = ref.watch(authStateChangesProvider).value;
@@ -54,16 +47,21 @@ class PostCommentsItem extends ConsumerWidget {
         return writer == null || writer.isBlock
             ? const SizedBox.shrink()
             : InkWell(
+                // when there is no replies page
+                onTap: onPressed != null ? () => onPressed!.call() : null,
+                // when there is replies page
+                /*
                 onTap: () {
                   if (onPressed != null) {
                     onPressed!.call();
-                  } else if (parentCommentId == null && !comment.isReply) {
+                  } else if (parentCommentId == null) {
                     context.push(ScreenPaths.replies(
                       comment.postId,
-                      comment.id,
+                      comment.parentCommentId,
                     ));
                   }
                 },
+                */
                 child: Column(
                   children: [
                     Padding(
@@ -115,12 +113,7 @@ class PostCommentsItem extends ConsumerWidget {
                                         ),
                                       ),
                                     ),
-                                    if (user != null &&
-                                        (parentCommentId == null &&
-                                                !comment.isReply ||
-                                            parentCommentId != null &&
-                                                comment.isReply ||
-                                            isProfile)) ...[
+                                    if (user != null) ...[
                                       const SizedBox(width: 16),
                                       PostCommentMoreButton(
                                         comment: comment,
@@ -178,11 +171,13 @@ class PostCommentsItem extends ConsumerWidget {
                                         dislikeCount: comment.dislikeCount,
                                       ),
                                     ],
+                                    /*
                                     if (parentCommentId == null &&
                                         adminSettings.showCommentCount) ...[
                                       const SizedBox(width: 4),
                                       PostCommentReplyButton(comment: comment),
                                     ],
+                                    */
                                     /*
                                     if (parentCommentId == null &&
                                             !comment.isReply ||

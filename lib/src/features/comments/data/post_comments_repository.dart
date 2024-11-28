@@ -110,7 +110,6 @@ class PostCommentsRepository {
     if (postId != null && byCreatedAt) {
       return query
           .where('postId', isEqualTo: postId)
-          .where('isReply', isEqualTo: false)
           .orderBy('createdAt', descending: true);
     }
 
@@ -118,7 +117,6 @@ class PostCommentsRepository {
     if (postId != null && bySumCount) {
       return query
           .where('postId', isEqualTo: postId)
-          .where('isReply', isEqualTo: false)
           .orderBy('sumCount', descending: true);
     }
 
@@ -126,7 +124,6 @@ class PostCommentsRepository {
     if (postId != null && byCommentCount) {
       return query
           .where('postId', isEqualTo: postId)
-          .where('isReply', isEqualTo: false)
           .orderBy('replyCount', descending: true);
     }
 
@@ -134,7 +131,6 @@ class PostCommentsRepository {
     if (postId != null && byLikeCount) {
       return query
           .where('postId', isEqualTo: postId)
-          .where('isReply', isEqualTo: false)
           .orderBy('likeCount', descending: true);
     }
 
@@ -142,7 +138,6 @@ class PostCommentsRepository {
     if (postId != null && byDislikeCount) {
       return query
           .where('postId', isEqualTo: postId)
-          .where('isReply', isEqualTo: false)
           .orderBy('dislikeCount', descending: true);
     }
 
@@ -174,7 +169,7 @@ class PostCommentsRepository {
   Query<PostComment> postCommentRepliesRef(String parentCommentId) =>
       postCommentsRef()
           .where('parentCommentId', isEqualTo: parentCommentId)
-          .orderBy('createdAt');
+          .orderBy('createdAt', descending: true);
 
   // 포스트에 대한 베스트 댓글 쿼리
   Future<List<PostComment>> fetchBestPostCommentsList(String postId) async {
@@ -198,18 +193,26 @@ class PostCommentsRepository {
     return query.docs.map((e) => e.id).toList();
   }
 
-  // 회원탈퇴시 댓글 목록 가져오기
+  // 회원탈퇴시 회원이 작성한 포스트에 대한 댓글 아이디 목록 가져오기
+  Future<List<String>> getPostCommentIdsForPostWriter(
+      String postWriterId) async {
+    final query = await postCommentsRef()
+        .where('postWriterId', isEqualTo: postWriterId)
+        .get();
+    return query.docs.map((e) => e.id).toList();
+  }
+
+  // 회원탈퇴시 사용자 댓글 목록 가져오기
   Future<List<PostComment>> getPostCommentsForUser(String uid) async {
     final query = await postCommentsRef().where('uid', isEqualTo: uid).get();
     return query.docs.map((e) => e.data()).toList();
   }
 
-  // 댓글 삭제시 답글 아이디 목록 가져오기
-  Future<List<PostComment>> getPostCommentRepliesForComment(
-      String parentCommentId) async {
+  // 회원탈퇴시 사용자 및 사용자가 작성한 포스트의 댓글 목록 가져오기
+  Future<List<PostComment>> getPostCommentsForClose(String uid) async {
     final query = await postCommentsRef()
-        .where('parentCommentId', isEqualTo: parentCommentId)
-        .where('isReply', isEqualTo: true)
+        .where(Filter.or(Filter('uid', isEqualTo: uid),
+            Filter('postWriterId', isEqualTo: uid)))
         .get();
     return query.docs.map((e) => e.data()).toList();
   }

@@ -1,5 +1,3 @@
-import 'dart:developer' as dev;
-
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/authentication/data/app_user_repository.dart';
 import 'package:applimode_app/src/features/comments/data/post_comment_likes_repository.dart';
@@ -28,16 +26,21 @@ class PostCommentsService {
     XFile? xFile,
     String? mediaType,
   }) async {
+    // update comment count for post
+    // when there is no post, function must stop
     await ref
         .read(postsRepositoryProvider)
         .updatePostCommentCount(id: postId, number: 1);
 
+    // update replies count for comment
+    // when there is no comment, function must stop
     if (isReply) {
       await ref
           .read(postCommentsRepositoryProvider)
           .updateReplyCount(id: parentCommentId, number: 1);
     }
 
+    // upload a image for comment
     String? remoteImageUrl;
     if (xFile != null) {
       final fileExt =
@@ -51,6 +54,7 @@ class PostCommentsService {
               );
     }
 
+    // create comment
     await ref.read(postCommentsRepositoryProvider).createPostComment(
           id: id,
           uid: uid,
@@ -70,73 +74,43 @@ class PostCommentsService {
     bool isReply = false,
     String? imageUrl,
   }) async {
-    // it's too many reading, so considering
     // delete image
     if (imageUrl != null) {
-      ref.read(firebaseStorageRepositoryProvider).deleteAsset(imageUrl);
+      await ref.read(firebaseStorageRepositoryProvider).deleteAsset(imageUrl);
     }
-    // delete replies
-    if (!isReply) {
-      final replies = await ref
-          .read(postCommentsRepositoryProvider)
-          .getPostCommentRepliesForComment(id);
-      for (final reply in replies) {
-        if (reply.imageUrl != null) {
-          ref
-              .read(firebaseStorageRepositoryProvider)
-              .deleteAsset(reply.imageUrl!);
-        }
-        /*
-        final likeIds = await ref
-            .read(postCommentLikesRepositoryProvider)
-            .getPostCommentLikeIdsForComment(reply.id);
-        for (final likeId in likeIds) {
-          await ref
-              .read(postCommentLikesRepositoryProvider)
-              .deletePostCommentLike(likeId);
-        }
-        */
-        await ref
-            .read(postCommentsRepositoryProvider)
-            .deletePostComment(reply.id);
-      }
-      try {
-        await ref
-            .read(postsRepositoryProvider)
-            .updatePostCommentCount(id: postId, number: -replies.length - 1);
-      } catch (e) {
-        dev.log('this post has already deleted');
-        debugPrint('updatePostCommentCount: ${e.toString()}');
-      }
-    }
-    // delete comment likes
-    final likeIds = isReply
-        ? await ref
-            .read(postCommentLikesRepositoryProvider)
-            .getPostCommentLikeIdsForComment(id)
-        : await ref
-            .read(postCommentLikesRepositoryProvider)
-            .getPostParentCommentLikeIdsForComment(parentCommentId);
-    for (final likeId in likeIds) {
+    // update comments count for post
+    try {
       await ref
-          .read(postCommentLikesRepositoryProvider)
-          .deletePostCommentLike(likeId);
+          .read(postsRepositoryProvider)
+          .updatePostCommentCount(id: postId, number: -1);
+    } catch (e) {
+      debugPrint('post already deleted');
+      debugPrint('failed updatePostCommentCount: ${e.toString()}');
     }
-    await ref.read(postCommentsRepositoryProvider).deletePostComment(id);
 
+    // update replies count for comment
     if (isReply) {
       try {
         await ref
             .read(postCommentsRepositoryProvider)
             .updateReplyCount(id: parentCommentId, number: -1);
-        await ref
-            .read(postsRepositoryProvider)
-            .updatePostCommentCount(id: postId, number: -1);
       } catch (e) {
-        dev.log('already deleted');
-        debugPrint('updatePostCommentCount: ${e.toString()}');
+        debugPrint('comment already deleted');
+        debugPrint('failed updateReplyCount: ${e.toString()}');
       }
     }
+
+    // delete comment likes
+    final likeIds = await ref
+        .read(postCommentLikesRepositoryProvider)
+        .getPostCommentLikeIdsForComment(id);
+    for (final likeId in likeIds) {
+      await ref
+          .read(postCommentLikesRepositoryProvider)
+          .deletePostCommentLike(likeId);
+    }
+    // delete comment
+    await ref.read(postCommentsRepositoryProvider).deletePostComment(id);
   }
 
   Future<void> increasePostCommentLike({
@@ -148,10 +122,15 @@ class PostCommentsService {
     required String postWriterId,
     required String parentCommentId,
   }) async {
+    // there is no comment, function must stop
+    // update likes count for comment
     await ref.read(postCommentsRepositoryProvider).increaseLikeCount(commentId);
+    // there is no comment writer, function must stop
+    // update likes count for comment writer
     await ref
         .read(appUserRepositoryProvider)
         .increaseLikeCount(commentWriterId);
+    // create comment like
     await ref.read(postCommentLikesRepositoryProvider).createPostCommentLike(
           id: id,
           uid: uid,
@@ -169,10 +148,27 @@ class PostCommentsService {
     required String commentId,
     required String commentWriterId,
   }) async {
-    await ref.read(postCommentsRepositoryProvider).decreaseLikeCount(commentId);
-    await ref
-        .read(appUserRepositoryProvider)
-        .decreaseLikeCount(commentWriterId);
+    // update likes count for comment
+    try {
+      await ref
+          .read(postCommentsRepositoryProvider)
+          .decreaseLikeCount(commentId);
+    } catch (e) {
+      debugPrint('comment already deleted');
+      debugPrint('failed decreaseLikeCount: ${e.toString()}');
+    }
+
+    // update likes count for comment writer
+    try {
+      await ref
+          .read(appUserRepositoryProvider)
+          .decreaseLikeCount(commentWriterId);
+    } catch (e) {
+      debugPrint('comment writer already deleted');
+      debugPrint('failed decreaseLikeCount: ${e.toString()}');
+    }
+
+    // delete comment like
     await ref
         .read(postCommentLikesRepositoryProvider)
         .deletePostCommentLike(id);
@@ -187,12 +183,17 @@ class PostCommentsService {
     required String postWriterId,
     required String parentCommentId,
   }) async {
+    // update dislikes count for comment
+    // there is no comment, function must stop
     await ref
         .read(postCommentsRepositoryProvider)
         .increaseDislikeCount(commentId);
+    // update dislikes count for comment writer
+    // there is no comment writer, function must stop
     await ref
         .read(appUserRepositoryProvider)
         .increaseDislikeCount(commentWriterId);
+    // create comment dislike
     await ref.read(postCommentLikesRepositoryProvider).createPostCommentLike(
           id: id,
           uid: uid,
@@ -211,12 +212,25 @@ class PostCommentsService {
     required String commentId,
     required String commentWriterId,
   }) async {
-    await ref
-        .read(postCommentsRepositoryProvider)
-        .decreaseDislikeCount(commentId);
-    await ref
-        .read(appUserRepositoryProvider)
-        .decreaseDislikeCount(commentWriterId);
+    // update dislikes count for comment
+    try {
+      await ref
+          .read(postCommentsRepositoryProvider)
+          .decreaseDislikeCount(commentId);
+    } catch (e) {
+      debugPrint('comment already deleted');
+      debugPrint('failed decreaseDislikeCount: ${e.toString()}');
+    }
+    // update dislikes count for comment writer
+    try {
+      await ref
+          .read(appUserRepositoryProvider)
+          .decreaseDislikeCount(commentWriterId);
+    } catch (e) {
+      debugPrint('comment writer already deleted');
+      debugPrint('failed decreaseDislikeCount: ${e.toString()}');
+    }
+    // delete comment dislike
     await ref
         .read(postCommentLikesRepositoryProvider)
         .deletePostCommentLike(id);

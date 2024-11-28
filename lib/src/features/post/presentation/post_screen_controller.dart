@@ -1,7 +1,9 @@
+import 'package:applimode_app/src/exceptions/app_exception.dart';
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
 import 'package:applimode_app/src/features/post/application/post_delete_service.dart';
 import 'package:applimode_app/src/features/posts/data/posts_repository.dart';
 import 'package:applimode_app/src/features/posts/domain/post.dart';
+import 'package:applimode_app/src/utils/is_firestore_not_found.dart';
 import 'package:applimode_app/src/utils/list_state.dart';
 import 'package:applimode_app/src/utils/now_to_int.dart';
 import 'package:applimode_app/src/utils/updated_post_ids_list.dart';
@@ -27,7 +29,7 @@ class PostScreenController extends _$PostScreenController {
   }) async {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null || post.uid != user.uid && isAdmin == false) {
-      state = AsyncError(Exception('permission error'), StackTrace.current);
+      state = AsyncError(NeedPermissionException(), StackTrace.current);
       return false;
     }
 
@@ -41,11 +43,12 @@ class PostScreenController extends _$PostScreenController {
     }
 
     if (state.hasError) {
-      debugPrint('deletePost: ${state.error.toString()}');
+      debugPrint('deletePostError: ${state.error.toString()}');
       return false;
     }
 
-    ref.read(postsListStateProvider.notifier).set(nowToInt());
+    ref.read(updatedPostIdsListProvider.notifier).set(postId);
+    // ref.read(postsListStateProvider.notifier).set(nowToInt());
 
     return true;
 
@@ -61,7 +64,7 @@ class PostScreenController extends _$PostScreenController {
     required bool isAdmin,
   }) async {
     if (isAdmin == false) {
-      state = AsyncError(Exception('permission error'), StackTrace.current);
+      state = AsyncError(NeedPermissionException(), StackTrace.current);
       return false;
     }
     final postsRepository = ref.read(postsRepositoryProvider);
@@ -70,11 +73,17 @@ class PostScreenController extends _$PostScreenController {
     final newState =
         await AsyncValue.guard(() => postsRepository.blockPost(postId));
     if (key == this.key) {
-      state = newState;
+      if (newState.hasError && isFirestoreNotFound(newState.error.toString())) {
+        state = AsyncError(PageNotFoundException(), StackTrace.current);
+        ref.read(updatedPostIdsListProvider.notifier).set(postId);
+        return false;
+      } else {
+        state = newState;
+      }
     }
 
     if (state.hasError) {
-      debugPrint('blockPost: ${state.error.toString()}');
+      debugPrint('failed blockPost: ${state.error.toString()}');
       return false;
     }
 
@@ -94,7 +103,7 @@ class PostScreenController extends _$PostScreenController {
     required bool isAdmin,
   }) async {
     if (isAdmin == false) {
-      state = AsyncError(Exception('permission error'), StackTrace.current);
+      state = AsyncError(NeedPermissionException(), StackTrace.current);
       return false;
     }
     final postsRepository = ref.read(postsRepositoryProvider);
@@ -103,11 +112,17 @@ class PostScreenController extends _$PostScreenController {
     final newState =
         await AsyncValue.guard(() => postsRepository.unblockPost(postId));
     if (key == this.key) {
-      state = newState;
+      if (newState.hasError && isFirestoreNotFound(newState.error.toString())) {
+        state = AsyncError(PageNotFoundException(), StackTrace.current);
+        ref.read(updatedPostIdsListProvider.notifier).set(postId);
+        return false;
+      } else {
+        state = newState;
+      }
     }
 
     if (state.hasError) {
-      debugPrint('unblockPost: ${state.error.toString()}');
+      debugPrint('failed unblockPost: ${state.error.toString()}');
       return false;
     }
 
@@ -127,7 +142,7 @@ class PostScreenController extends _$PostScreenController {
     required bool isAdmin,
   }) async {
     if (isAdmin == false) {
-      state = AsyncError(Exception('permission error'), StackTrace.current);
+      state = AsyncError(NeedPermissionException(), StackTrace.current);
       return false;
     }
     final postsRepository = ref.read(postsRepositoryProvider);
@@ -136,11 +151,17 @@ class PostScreenController extends _$PostScreenController {
     final newState =
         await AsyncValue.guard(() => postsRepository.recommendPost(postId));
     if (key == this.key) {
-      state = newState;
+      if (newState.hasError && isFirestoreNotFound(newState.error.toString())) {
+        state = AsyncError(PageNotFoundException(), StackTrace.current);
+        ref.read(updatedPostIdsListProvider.notifier).set(postId);
+        return false;
+      } else {
+        state = newState;
+      }
     }
 
     if (state.hasError) {
-      debugPrint('recommendPost: ${state.error.toString()}');
+      debugPrint('failed recommendPost: ${state.error.toString()}');
       return false;
     }
 
@@ -160,7 +181,7 @@ class PostScreenController extends _$PostScreenController {
     required bool isAdmin,
   }) async {
     if (isAdmin == false) {
-      state = AsyncError(Exception('permission error'), StackTrace.current);
+      state = AsyncError(NeedPermissionException(), StackTrace.current);
       return false;
     }
     final postsRepository = ref.read(postsRepositoryProvider);
@@ -169,11 +190,17 @@ class PostScreenController extends _$PostScreenController {
     final newState =
         await AsyncValue.guard(() => postsRepository.unrecommendPost(postId));
     if (key == this.key) {
-      state = newState;
+      if (newState.hasError && isFirestoreNotFound(newState.error.toString())) {
+        state = AsyncError(PageNotFoundException(), StackTrace.current);
+        ref.read(updatedPostIdsListProvider.notifier).set(postId);
+        return false;
+      } else {
+        state = newState;
+      }
     }
 
     if (state.hasError) {
-      debugPrint('unrecommendPost: ${state.error.toString()}');
+      debugPrint('failed unrecommendPost: ${state.error.toString()}');
       return false;
     }
 
@@ -193,7 +220,7 @@ class PostScreenController extends _$PostScreenController {
     required bool isAdmin,
   }) async {
     if (isAdmin == false) {
-      state = AsyncError(Exception('permission error'), StackTrace.current);
+      state = AsyncError(NeedPermissionException(), StackTrace.current);
       return false;
     }
     final postsRepository = ref.read(postsRepositoryProvider);
@@ -202,11 +229,17 @@ class PostScreenController extends _$PostScreenController {
     final newState =
         await AsyncValue.guard(() => postsRepository.toMainPost(postId));
     if (key == this.key) {
-      state = newState;
+      if (newState.hasError && isFirestoreNotFound(newState.error.toString())) {
+        state = AsyncError(PageNotFoundException(), StackTrace.current);
+        ref.read(postsListStateProvider.notifier).set(nowToInt());
+        return false;
+      } else {
+        state = newState;
+      }
     }
 
     if (state.hasError) {
-      debugPrint('toMainPost: ${state.error.toString()}');
+      debugPrint('failed toMainPost: ${state.error.toString()}');
       return false;
     }
 
@@ -226,7 +259,7 @@ class PostScreenController extends _$PostScreenController {
     required bool isAdmin,
   }) async {
     if (isAdmin == false) {
-      state = AsyncError(Exception('permission error'), StackTrace.current);
+      state = AsyncError(NeedPermissionException(), StackTrace.current);
       return false;
     }
     final postsRepository = ref.read(postsRepositoryProvider);
@@ -235,11 +268,17 @@ class PostScreenController extends _$PostScreenController {
     final newState =
         await AsyncValue.guard(() => postsRepository.toGeneralPost(postId));
     if (key == this.key) {
-      state = newState;
+      if (newState.hasError && isFirestoreNotFound(newState.error.toString())) {
+        state = AsyncError(PageNotFoundException(), StackTrace.current);
+        ref.read(postsListStateProvider.notifier).set(nowToInt());
+        return false;
+      } else {
+        state = newState;
+      }
     }
 
     if (state.hasError) {
-      debugPrint('toGeneralPost: ${state.error.toString()}');
+      debugPrint('failed toGeneralPost: ${state.error.toString()}');
       return false;
     }
 

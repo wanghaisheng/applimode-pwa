@@ -48,6 +48,11 @@ class UserPromptsRepository {
 
   Stream<UserPrompt?> watchUserPrompt(String id) =>
       userPromptDocRef(id).snapshots().map((event) => event.data());
+
+  Future<List<String>> getUserPromptIdsForUser(String uid) async {
+    final query = await userPromptsRef().where('uid', isEqualTo: uid).get();
+    return query.docs.map((e) => e.id).toList();
+  }
 }
 
 @Riverpod(keepAlive: true)

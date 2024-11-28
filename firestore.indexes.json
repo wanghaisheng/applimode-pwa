@@ -94,7 +94,7 @@
         },
         {
           "fieldPath": "createdAt",
-          "order": "ASCENDING"
+          "order": "DESCENDING"
         }
       ]
     },
@@ -104,10 +104,6 @@
       "fields": [
         {
           "fieldPath": "postId",
-          "order": "DESCENDING"
-        },
-        {
-          "fieldPath": "isReply",
           "order": "DESCENDING"
         },
         {
@@ -122,10 +118,6 @@
       "fields": [
         {
           "fieldPath": "postId",
-          "order": "DESCENDING"
-        },
-        {
-          "fieldPath": "isReply",
           "order": "DESCENDING"
         },
         {
