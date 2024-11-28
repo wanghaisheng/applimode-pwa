@@ -8,6 +8,7 @@
 
 #include <cloud_firestore/cloud_firestore_plugin_c_api.h>
 #include <desktop_webview_auth/desktop_webview_auth_plugin.h>
+#include <fc_native_video_thumbnail/fc_native_video_thumbnail_plugin_c_api.h>
 #include <file_selector_windows/file_selector_windows.h>
 #include <firebase_auth/firebase_auth_plugin_c_api.h>
 #include <firebase_core/firebase_core_plugin_c_api.h>
@@ -19,6 +20,8 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("CloudFirestorePluginCApi"));
   DesktopWebviewAuthPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("DesktopWebviewAuthPlugin"));
+  FcNativeVideoThumbnailPluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("FcNativeVideoThumbnailPluginCApi"));
   FileSelectorWindowsRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FileSelectorWindows"));
   FirebaseAuthPluginCApiRegisterWithRegistrar(

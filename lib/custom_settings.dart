@@ -15,7 +15,7 @@ const String firebaseProjectId = 'my-applimode';
 const String appCreator = 'JongsukOh';
 const String appEmail = 'yourEmail@email.com';
 const String appEffectiveDate = '2024-08-06';
-const String appVersion = '0.2.2+1';
+const String appVersion = '0.2.3+1';
 
 // spare values when admin settings is not set
 const String spareHomeBarTitle = 'My Applimode';
@@ -212,11 +212,11 @@ const int postImageQuality = 90;
 
 // Video thumbnail max width
 // 비디오 썸네일 최대 너비
-const int videoThumbnailMaxWidth = 1080;
+const int videoThumbnailMaxWidth = 1920;
 
 // Video thumbnail height
 // 비디오 썸네일 최대 높이
-const int videoThumbnailMaxHeight = 0;
+const int videoThumbnailMaxHeight = 1920;
 
 // Video thumbnail quality
 // 비디오 썸네일 품질

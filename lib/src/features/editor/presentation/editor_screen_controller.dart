@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer' as dev;
+import 'dart:io';
 
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/constants/constants.dart';
@@ -28,9 +29,11 @@ import 'package:applimode_app/src/utils/updated_post_ids_list.dart';
 import 'package:applimode_app/src/utils/upload_progress_state.dart';
 import 'package:applimode_app/src/utils/web_video_thumbnail/wvt_stub.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 // import 'package:http/http.dart' as http;
+import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 part 'editor_screen_controller.g.dart';
 
@@ -280,6 +283,38 @@ class EditorScreenController extends _$EditorScreenController {
                   dev.log('upload thumbnail on web');
                 } else {
                   // upload thumbnail on native
+                  final tempDir = await getTemporaryDirectory();
+                  final destFile = p.join(tempDir.path, thumbnailFilename);
+                  await FcNativeVideoThumbnail().getVideoThumbnail(
+                    srcFile: Format.fixMediaWithExt(match[2]!),
+                    destFile: destFile,
+                    width: videoThumbnailMaxWidth,
+                    height: videoThumbnailMaxHeight,
+                    format: 'jpeg',
+                    quality: videoThumbnailQuality,
+                  );
+                  if (await File(destFile).exists()) {
+                    final destFileBytes = await File(destFile).readAsBytes();
+                    if (useRTwoStorage) {
+                      final url = await rTwoRepository.uploadBytes(
+                        bytes: destFileBytes,
+                        storagePathname: '$postWriterId/$postsPath/$id',
+                        filename: thumbnailFilename,
+                        showPercentage: false,
+                      );
+                      videoThumbnailUrl = url;
+                    } else {
+                      final url = await storageRepository.uploadBytes(
+                        bytes: destFileBytes,
+                        storagePathname: '$postWriterId/$postsPath/$id',
+                        filename: thumbnailFilename,
+                      );
+                      videoThumbnailUrl = url;
+                    }
+                  } else {
+                    dev.log('failed to create thumbnail with fc_native');
+                  }
+                  /*
                   final videoThumbnail = await VideoThumbnail.thumbnailData(
                     video: Format.fixMediaWithExt(match[2]!),
                     imageFormat: ImageFormat.JPEG,
@@ -305,6 +340,7 @@ class EditorScreenController extends _$EditorScreenController {
                       videoThumbnailUrl = url;
                     }
                   }
+                  */
                   dev.log('upload thumbnail on native');
                 }
               } catch (e) {

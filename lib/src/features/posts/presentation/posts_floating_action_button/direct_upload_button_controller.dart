@@ -1,4 +1,9 @@
+import 'dart:developer' as dev;
+import 'dart:io';
+
+import 'package:applimode_app/src/exceptions/app_exception.dart';
 import 'package:applimode_app/src/utils/format.dart';
+import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/constants/constants.dart';
@@ -16,9 +21,10 @@ import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:applimode_app/src/utils/upload_progress_state.dart';
 import 'package:applimode_app/src/utils/web_video_thumbnail/wvt_stub.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:path/path.dart' as p;
 
 part 'direct_upload_button_controller.g.dart';
 
@@ -42,7 +48,7 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
     final user = ref.read(authRepositoryProvider).currentUser;
     if (user == null) {
       WakelockPlus.disable();
-      state = AsyncError(Exception('Login is required.'), StackTrace.current);
+      state = AsyncError(NeedLogInException(), StackTrace.current);
       return;
     }
 
@@ -54,8 +60,7 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
     if (adminOnlyWrite) {
       if (appUser == null || !appUser.isAdmin) {
         WakelockPlus.disable();
-        state =
-            AsyncError(Exception('Permission is required'), StackTrace.current);
+        state = AsyncError(NeedPermissionException(), StackTrace.current);
         return;
       }
     }
@@ -65,15 +70,14 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
     if (verifiedOnlyWrite) {
       if (appUser == null || !appUser.verified) {
         WakelockPlus.disable();
-        state =
-            AsyncError(Exception('Permission is required'), StackTrace.current);
+        state = AsyncError(NeedPermissionException(), StackTrace.current);
         return;
       }
     }
 
     if (appUser == null || appUser.isBlock) {
       WakelockPlus.disable();
-      state = AsyncError(Exception('you are blocked'), StackTrace.current);
+      state = AsyncError(NeedPermissionException(), StackTrace.current);
       return;
     }
 
@@ -96,65 +100,115 @@ class DirectUploadButtonController extends _$DirectUploadButtonController {
     final ext = Format.mimeTypeToExtWithDot(mediaType);
 
     try {
-      final bytes = isVideo
-          ? await storageRepository.getBytes(XFile(match[2]!))
-          : await storageRepository.getBytes(XFile(match[1]!));
+      // Convert media file to bytes
+      // 미디어 파일을 bytes로 변경
+      Uint8List? bytes;
+      try {
+        bytes = isVideo
+            ? await storageRepository.getBytes(XFile(match[2]!))
+            : await storageRepository.getBytes(XFile(match[1]!));
+      } catch (e) {
+        debugPrint('FailedMediaFileException: $e');
+        state = AsyncError(FailedMediaFileException(), StackTrace.current);
+        return;
+      }
 
-      // video thumbnail for mobile
+      // When extracting a thumbnail from videos
+      // 비디오에서 썸네일 추출할 경우
       if (isVideo) {
         String thumbnailFilename = '$filename-thumbnail.jpeg';
-        if (kIsWeb) {
-          final videoThumbnail = await WvtStub().getThumbnailData(
-            video: match[2]!,
-            maxWidth: videoThumbnailMaxWidth,
-            maxHeight: videoThumbnailMaxHeight,
-            quality: videoThumbnailQuality,
-          );
-          // ignore: unnecessary_null_comparison
-          if (videoThumbnail != null) {
-            if (useRTwoStorage) {
-              final url = await rTwoRepository.uploadBytes(
-                bytes: videoThumbnail,
-                storagePathname: '${user.uid}/$postsPath/$id',
-                filename: thumbnailFilename,
-                showPercentage: false,
-              );
-              videoThumbnailUrl = url;
-            } else {
-              final url = await storageRepository.uploadBytes(
-                bytes: videoThumbnail,
-                storagePathname: '${user.uid}/$postsPath/$id',
-                filename: thumbnailFilename,
-              );
-              videoThumbnailUrl = url;
+        try {
+          if (kIsWeb) {
+            // upload thumbnail on web
+            final videoThumbnail = await WvtStub().getThumbnailData(
+              video: match[2]!,
+              maxWidth: videoThumbnailMaxWidth,
+              maxHeight: videoThumbnailMaxHeight,
+              quality: videoThumbnailQuality,
+            );
+            // ignore: unnecessary_null_comparison
+            if (videoThumbnail != null) {
+              if (useRTwoStorage) {
+                final url = await rTwoRepository.uploadBytes(
+                  bytes: videoThumbnail,
+                  storagePathname: '${user.uid}/$postsPath/$id',
+                  filename: thumbnailFilename,
+                  showPercentage: false,
+                );
+                videoThumbnailUrl = url;
+              } else {
+                final url = await storageRepository.uploadBytes(
+                  bytes: videoThumbnail,
+                  storagePathname: '${user.uid}/$postsPath/$id',
+                  filename: thumbnailFilename,
+                );
+                videoThumbnailUrl = url;
+              }
             }
-          }
-        } else {
-          final videoThumbnail = await VideoThumbnail.thumbnailData(
-            video: match[2]!,
-            imageFormat: ImageFormat.JPEG,
-            maxWidth: videoThumbnailMaxWidth,
-            maxHeight: videoThumbnailMaxHeight,
-            quality: videoThumbnailQuality,
-          );
-          if (videoThumbnail != null) {
-            if (useRTwoStorage) {
-              final url = await rTwoRepository.uploadBytes(
-                bytes: videoThumbnail,
-                storagePathname: '${user.uid}/$postsPath/$id',
-                filename: thumbnailFilename,
-                showPercentage: false,
-              );
-              videoThumbnailUrl = url;
+            dev.log('upload thumbnail on web');
+          } else {
+            // upload thumbnail on native
+            final tempDir = await getTemporaryDirectory();
+            final destFile = p.join(tempDir.path, thumbnailFilename);
+            await FcNativeVideoThumbnail().getVideoThumbnail(
+              srcFile: Format.fixMediaWithExt(match[2]!),
+              destFile: destFile,
+              width: videoThumbnailMaxWidth,
+              height: videoThumbnailMaxHeight,
+              format: 'jpeg',
+              quality: videoThumbnailQuality,
+            );
+            if (await File(destFile).exists()) {
+              final destFileBytes = await File(destFile).readAsBytes();
+              if (useRTwoStorage) {
+                final url = await rTwoRepository.uploadBytes(
+                  bytes: destFileBytes,
+                  storagePathname: '${user.uid}/$postsPath/$id',
+                  filename: thumbnailFilename,
+                  showPercentage: false,
+                );
+                videoThumbnailUrl = url;
+              } else {
+                final url = await storageRepository.uploadBytes(
+                  bytes: destFileBytes,
+                  storagePathname: '${user.uid}/$postsPath/$id',
+                  filename: thumbnailFilename,
+                );
+                videoThumbnailUrl = url;
+              }
             } else {
-              final url = await storageRepository.uploadBytes(
-                bytes: videoThumbnail,
-                storagePathname: '${user.uid}/$postsPath/$id',
-                filename: thumbnailFilename,
-              );
-              videoThumbnailUrl = url;
+              dev.log('failed to create thumbnail with fc_native');
             }
+            /*
+            final videoThumbnail = await VideoThumbnail.thumbnailData(
+              video: match[2]!,
+              imageFormat: ImageFormat.JPEG,
+              maxWidth: videoThumbnailMaxWidth,
+              maxHeight: videoThumbnailMaxHeight,
+              quality: videoThumbnailQuality,
+            );
+            if (videoThumbnail != null) {
+              if (useRTwoStorage) {
+                final url = await rTwoRepository.uploadBytes(
+                  bytes: videoThumbnail,
+                  storagePathname: '${user.uid}/$postsPath/$id',
+                  filename: thumbnailFilename,
+                  showPercentage: false,
+                );
+                videoThumbnailUrl = url;
+              } else {
+                final url = await storageRepository.uploadBytes(
+                  bytes: videoThumbnail,
+                  storagePathname: '${user.uid}/$postsPath/$id',
+                  filename: thumbnailFilename,
+                );
+                videoThumbnailUrl = url;
+              }
+            }
+            */
           }
+        } catch (e) {
+          debugPrint('ThumbnailUploadError: ${e.toString()}');
         }
       }
 

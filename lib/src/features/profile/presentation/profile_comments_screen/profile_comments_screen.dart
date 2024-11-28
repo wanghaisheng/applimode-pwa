@@ -32,7 +32,6 @@ class ProfileCommentsScreen extends ConsumerWidget {
         title: Text(context.loc.comments),
       ),
       */
-      // body: ProfileCommentsList(uid: uid),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(

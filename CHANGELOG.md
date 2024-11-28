@@ -3,6 +3,10 @@
 ### New Features and Improvements
 ### Bug Fixes
 -->
+## Version 0.2.3 (November 29, 2024)
+- Update to Gradle 8.
+- Replace the dependency used for video thumbnail extraction.
+
 ## Version 0.2.2 (November 28, 2024)
 - Enhanced SimplePageListView and PostCommentsScreen.
 - Improved the deletePost and deleteAccount functions.
