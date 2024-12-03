@@ -3,12 +3,13 @@ import 'dart:developer' as dev;
 
 import 'package:applimode_app/src/app_settings/app_settings_controller.dart';
 import 'package:applimode_app/custom_settings.dart';
+import 'package:applimode_app/src/common_widgets/list_empty_widget.dart';
+import 'package:applimode_app/src/common_widgets/list_loading_widget.dart';
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -160,6 +161,8 @@ class _SimplePageListViewState<Document>
 
   StreamSubscription? _liveSubscription;
 
+  Timer? _debounceTimer;
+
   @override
   void initState() {
     super.initState();
@@ -179,6 +182,11 @@ class _SimplePageListViewState<Document>
       // 포스트의 해시태그를 눌러 검색뷰에 진입했을 때
       _fetchDocs();
     }
+    if (widget.controller != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.controller!.addListener(_scrollListener);
+      });
+    }
   }
 
   @override
@@ -188,6 +196,8 @@ class _SimplePageListViewState<Document>
     // Remove app lifecycle observer
     // 앱 생명주기 옵저버 제거
     WidgetsBinding.instance.removeObserver(this);
+    widget.controller?.removeListener(_scrollListener);
+    _debounceTimer?.cancel();
     super.dispose();
   }
 
@@ -208,11 +218,16 @@ class _SimplePageListViewState<Document>
                 milliseconds:
                     DateTime.now().millisecondsSinceEpoch - refreshTime)
             .inMinutes;
-        if (pauseDurationInMinute > 120 || docs.isEmpty) {
-          docs = [];
+        if (pauseDurationInMinute > 120) {
+          // docs = [];
           _fetchDocs();
-        } else {
-          _checkRecentDoc();
+        } else if (pauseDurationInMinute > 1) {
+          if (docs.isEmpty) {
+            // docs = [];
+            _fetchDocs();
+          } else {
+            _checkRecentDoc();
+          }
         }
       }
     }
@@ -224,41 +239,43 @@ class _SimplePageListViewState<Document>
   // 연결된 StatefulWidget 클래스에서 파라미터 값이 변경되면 실행
   @override
   void didUpdateWidget(covariant SimplePageListView<Document> oldWidget) {
-    // Only runs if useDidUpdateWidget is true and there is a search word in the search box.
-    // useDidUpdateWidget가 참이고, 검색창에서 검색어가 있는 경우에만 실행
-    /*
-    if (widget.useDidUpdateWidget &&
-        widget.isSearchView &&
-        widget.searchWords != null &&
-        widget.searchWords!.length > 1) {
-      docs = [];
-      _fechDocs();
-    }
-    */
-    // Only runs if useDidUpdateWidget is true, if this is not a search view, and if the query has changed
-    // useDidUpdateWidget가 참이고, 검색창이 아니면서 쿼리가 변경된 경우에만 실행
-    /*
-    if (widget.useDidUpdateWidget &&
-        !widget.isSearchView &&
-        oldWidget.query != widget.query) {
-      docs = [];
-      _fechDocs();
-    }
-    */
     if (widget.useDidUpdateWidget) {
       if (widget.isSearchView) {
-        if (widget.searchWords != null && widget.searchWords!.length > 1) {
-          docs = [];
+        if (widget.searchWords != null &&
+            widget.searchWords!.length > 1 &&
+            oldWidget.searchWords != widget.searchWords) {
+          // docs = [];
           _fetchDocs();
         }
       } else {
         if (oldWidget.query != widget.query) {
-          docs = [];
+          // docs = [];
           _fetchDocs();
         }
       }
     }
+    if (widget.controller != null) {
+      if (widget.controller != oldWidget.controller) {
+        oldWidget.controller?.removeListener(_scrollListener);
+        widget.controller?.addListener(_scrollListener);
+      }
+    }
     super.didUpdateWidget(oldWidget);
+  }
+
+  void _scrollListener() {
+    if (isFetching || isFetchingMore || !hasMore) return;
+    if (widget.controller != null) {
+      final position = widget.controller!.position;
+      if (position.pixels >= (position.maxScrollExtent - 50)) {
+        _fetchNextPage();
+      }
+    }
+  }
+
+  void _debounceSetState(VoidCallback callback) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(Duration(milliseconds: 500), callback);
   }
 
   Future<void> _checkRecentDoc() async {
@@ -301,8 +318,6 @@ class _SimplePageListViewState<Document>
                 });
               }
             }
-            // docs = [];
-            // _fechDocs();
           }
         }
       }
@@ -316,19 +331,21 @@ class _SimplePageListViewState<Document>
     try {
       final latestDocQuery = widget.query.limit(1);
       _liveSubscription = latestDocQuery.snapshots().listen((event) async {
+        if (isFetching || isFetchingMore) return;
         if (docs.isEmpty) {
-          if (!isFetching && !isFetchingMore) {
-            if (_isCancelled) return;
-            if (mounted) {
-              SchedulerBinding.instance.scheduleFrame();
-              SchedulerBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  docs = event.docs;
-                });
+          // there is no doc in list
+          // cancel when there is no doc in event
+          if (event.docs.isEmpty || _isCancelled) return;
+          if (mounted) {
+            SchedulerBinding.instance.scheduleFrame();
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              setState(() {
+                docs = event.docs;
               });
-            }
+            });
           }
         } else {
+          // there are docs in list
           final firstDoc = hasMain ? docs[1] : docs[0];
           final recentSnapshot =
               await widget.query.endBeforeDocument(firstDoc).get();
@@ -339,14 +356,16 @@ class _SimplePageListViewState<Document>
               .toList();
           if (_isCancelled) return;
           if (mounted) {
-            SchedulerBinding.instance.scheduleFrame();
-            SchedulerBinding.instance.addPostFrameCallback((_) {
-              setState(() {
-                // If there is a main item, add new posts after the main item
-                // 메인 아이템이 있는 경우에는 메인 아이템 이후로 추가
-                docs = hasMain
-                    ? [docs.first, ...newDocs, ...docs.sublist(1)]
-                    : [...newDocs, ...docs];
+            _debounceSetState(() {
+              SchedulerBinding.instance.scheduleFrame();
+              SchedulerBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  // If there is a main item, add new posts after the main item
+                  // 메인 아이템이 있는 경우에는 메인 아이템 이후로 추가
+                  docs = hasMain
+                      ? [docs.first, ...newDocs, ...docs.sublist(1)]
+                      : [...newDocs, ...docs];
+                });
               });
             });
           }
@@ -382,14 +401,23 @@ class _SimplePageListViewState<Document>
         isFetchingMore = true;
       } else {
         _liveSubscription?.cancel();
+        docs.clear();
         // when first page
         // 첫 페이지를 경우
         isFetching = true;
         // If docs are reloaded, such as when refreshed, hasMain is also initialized again.
         // 새로 고침했을 경우와 같이 docs를 새로 부르면 hasMain도 다시 초기화
         hasMain = false;
+        if (mounted) {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            setState(() {});
+          });
+        }
       }
+
+      /*
       Future.microtask(() => setState(() {}));
+      */
       if (nextPage) {
         // when loading more
         // 로드 모어일 경우
@@ -446,7 +474,7 @@ class _SimplePageListViewState<Document>
       docs = [...docs, ...result];
       // test empty table
       // 빈 창 테스트
-      // docs = [];
+      // docs.clear();
 
       // update current page
       // 현재 창의 상태를 변경시킴
@@ -474,7 +502,6 @@ class _SimplePageListViewState<Document>
     } catch (e) {
       if (_isCancelled) return;
       if (e.toString().contains('permission-denied') && mounted) {
-        if (_isCancelled) return;
         setState(() {
           isPermissionDenied = true;
         });
@@ -548,6 +575,7 @@ class _SimplePageListViewState<Document>
 
   @override
   Widget build(BuildContext context) {
+    dev.log('docs: ${docs.length}');
     final appSettings = ref.watch(appSettingsControllerProvider);
     final adminSettings = ref.watch(adminSettingsProvider);
 
@@ -556,8 +584,8 @@ class _SimplePageListViewState<Document>
     // 문서를 삭제하거나, 풀투리프레시를 했을 경우
     if (widget.listState != null) {
       ref.listen(widget.listState!, (_, next) {
-        if (next > refreshTime) {
-          docs = [];
+        if (next > refreshTime && !isFetching && !isFetchingMore) {
+          // docs = [];
           _fetchDocs();
         }
       });
@@ -589,6 +617,7 @@ class _SimplePageListViewState<Document>
 
     // when doc is empty
     if (docs.isEmpty) {
+      dev.log('doc is empty');
       return widget.isSliver
           ? SliverFillRemaining(
               child: ListEmptyWidget(
@@ -731,55 +760,11 @@ class _SimplePageListViewState<Document>
   }
 
   Widget? _itemBuilder(BuildContext context, int index) {
-    final isLastItem = index + 1 == docs.length;
-    if (isLastItem && hasMore) _fetchNextPage();
+    if (widget.controller == null) {
+      final isLastItem = index + 1 == docs.length;
+      if (isLastItem && hasMore) _fetchNextPage();
+    }
     final doc = docs[index];
     return widget.itemBuilder(context, index, doc);
-  }
-}
-
-class ListLoadingWidget extends StatelessWidget {
-  const ListLoadingWidget({
-    super.key,
-    this.loadingBuilder,
-  });
-
-  final Widget Function(BuildContext)? loadingBuilder;
-
-  @override
-  Widget build(BuildContext context) {
-    if (loadingBuilder != null) {
-      return loadingBuilder!.call(context);
-    }
-
-    return const Center(child: CupertinoActivityIndicator());
-  }
-}
-
-// 리스트에 아이템이 없을 경우 표시하는 위젯
-class ListEmptyWidget extends StatelessWidget {
-  const ListEmptyWidget({
-    super.key,
-    required this.isPermissionDenied,
-    this.emptyBuilder,
-  });
-
-  final bool isPermissionDenied;
-  final Widget Function(BuildContext)? emptyBuilder;
-  // firestore security rule 에서 막혔을 경우
-
-  @override
-  Widget build(BuildContext context) {
-    if (emptyBuilder != null) {
-      if (isPermissionDenied) {
-        return Text(context.loc.needPermission);
-      }
-      return emptyBuilder!.call(context);
-    }
-
-    return Center(
-        child: Text(isPermissionDenied
-            ? context.loc.needPermission
-            : context.loc.noContent));
   }
 }

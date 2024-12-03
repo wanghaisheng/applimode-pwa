@@ -1,8 +1,12 @@
+import 'dart:developer' as dev;
+
 import 'package:applimode_app/custom_settings.dart';
+import 'package:applimode_app/src/common_widgets/list_empty_widget.dart';
+import 'package:applimode_app/src/common_widgets/list_loading_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 typedef SearchPageListItemBuilder<Document> = Widget Function(
@@ -55,6 +59,7 @@ class SearchPageListView<Document> extends ConsumerStatefulWidget {
     this.resetUpdatedDocIds,
     this.updatedDocsState,
     this.useUid = false,
+    this.isSliver = false,
   });
 
   final String searchWords;
@@ -88,6 +93,7 @@ class SearchPageListView<Document> extends ConsumerStatefulWidget {
   final VoidCallback? resetUpdatedDocIds;
   final ProviderListenable<List<String>>? updatedDocsState;
   final bool useUid;
+  final bool isSliver;
 
   @override
   ConsumerState<SearchPageListView<Document>> createState() =>
@@ -97,13 +103,14 @@ class SearchPageListView<Document> extends ConsumerStatefulWidget {
 class _SearchPageListViewState<Document>
     extends ConsumerState<SearchPageListView<Document>>
     with WidgetsBindingObserver {
-  late List<DocumentSnapshot<Document>> docs = [];
-  late List<String> pids = [];
-  late bool isFetching = false;
-  late bool isFetchingMore = false;
-  late bool hasMore = false;
-  late int refreshTime = DateTime.now().millisecondsSinceEpoch;
-  late bool hasMain = false;
+  List<DocumentSnapshot<Document>> docs = [];
+  List<String> pids = [];
+  bool isFetching = false;
+  bool isFetchingMore = false;
+  bool hasMore = false;
+  int refreshTime = DateTime.now().millisecondsSinceEpoch;
+  bool hasMain = false;
+  bool _isCancelled = false;
 
   @override
   void initState() {
@@ -111,292 +118,42 @@ class _SearchPageListViewState<Document>
     if (widget.searchWords.trim().length > 1) {
       _fechDocs();
     }
+    if (widget.controller != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.controller!.addListener(_scrollListener);
+      });
+    }
   }
 
   @override
   void dispose() {
+    _isCancelled = true;
+    widget.controller?.removeListener(_scrollListener);
     super.dispose();
   }
 
   @override
   void didUpdateWidget(covariant SearchPageListView<Document> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.useDidUpdateWidget && widget.searchWords.trim().length > 1) {
-      pids = [];
-      docs = [];
+    if (widget.useDidUpdateWidget &&
+        widget.searchWords.trim().length > 1 &&
+        oldWidget.searchWords != widget.searchWords) {
       _fechDocs();
     }
-    /*
-    if (widget.useDidUpdateWidget &&
-        oldWidget.searchWords != widget.searchWords) {
-      if (widget.searchWords.length < 2) {
-        pids = [];
-        docs = [];
-      } else {
-        pids = [];
-        docs = [];
-        _fechDocs();
-      }
-    }
-    */
-  }
-
-  void _fetchNextPage() {
-    if (isFetching || isFetchingMore || !hasMore) {
-      return;
-    }
-    _fechDocs(nextPage: true);
-  }
-
-  Future<void> _fechDocs({bool nextPage = false}) async {
-    if (widget.searchWords.length < 2) {
-      pids = [];
-      docs = [];
-      return;
-    }
-    if (nextPage) {
-      isFetchingMore = true;
-    } else {
-      isFetching = true;
-    }
-    Future.microtask(() => setState(() {}));
-    if (nextPage) {
-      // dev.log('fetch search next page');
-      final lastIndex = pids.length > docs.length + listFetchLimit
-          ? docs.length + listFetchLimit
-          : pids.length;
-      for (final pid in pids.sublist(docs.length, lastIndex)) {
-        final snapshot = await widget.query(pid).get();
-        docs.add(snapshot);
-      }
-    } else {
-      // dev.log('fetch search initial page');
-      pids = await widget.searchQuery(widget.searchWords);
-      final lastIndex =
-          pids.length > listFetchLimit ? listFetchLimit : pids.length;
-
-      for (final pid in pids.sublist(0, lastIndex)) {
-        final snapshot = await widget.query(pid).get();
-        docs.add(snapshot);
-      }
-
-      refreshTime = DateTime.now().millisecondsSinceEpoch;
-    }
-
-    if (pids.length > docs.length) {
-      hasMore = true;
-    } else {
-      hasMore = false;
-    }
-
-    setState(() {
-      if (nextPage) {
-        isFetchingMore = false;
-      } else {
-        isFetching = false;
-      }
-    });
-  }
-
-  Future<void> updateDocs(List<String> updatedDocIds) async {
-    if (docs.isNotEmpty && updatedDocIds.isNotEmpty) {
-      final docIds = List.from(docs.map((snapshot) => snapshot.id));
-      for (final updatedDocId in updatedDocIds) {
-        if (docIds.contains(updatedDocId)) {
-          final newDoc = await widget.query(updatedDocId).get();
-          docs = [
-            for (final doc in docs)
-              if (doc.id == updatedDocId) newDoc else doc
-          ];
-        }
-      }
-      widget.resetUpdatedDocIds?.call();
-      if (mounted) {
-        setState(() {});
+    if (widget.controller != null) {
+      if (widget.controller != oldWidget.controller) {
+        oldWidget.controller?.removeListener(_scrollListener);
+        widget.controller?.addListener(_scrollListener);
       }
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // wher user changes doc, refesh
-    if (widget.listState != null) {
-      ref.listen(widget.listState!, (_, next) {
-        if (next > refreshTime) {
-          docs = [];
-          _fechDocs();
-        }
-      });
-    }
-
-    if (widget.refreshUpdatedDocs && widget.updatedDocsState != null) {
-      ref.listen(widget.updatedDocsState!, (_, next) {
-        // dev.log('updatedDocs: $next');
-        updateDocs(next);
-      });
-    }
-
-    // when fist fetch loading
-    if (isFetching) {
-      if (widget.loadingBuilder != null) {
-        return widget.loadingBuilder!.call(context);
-      }
-
-      return const Center(child: CupertinoActivityIndicator());
-    }
-
-    // when doc is empty
-    if (docs.isEmpty) {
-      if (widget.emptyBuilder != null) {
-        return widget.emptyBuilder!.call(context);
-      }
-
-      return Center(child: Text(context.loc.noContent));
-    }
-
-    return ListView.builder(
-      itemBuilder: _itemBuilder,
-      itemCount: docs.length,
-      scrollDirection: widget.scrollDirection,
-      reverse: widget.reverse,
-      controller: widget.controller,
-      primary: widget.primary,
-      physics: widget.physics,
-      shrinkWrap: widget.shrinkWrap,
-      padding: widget.padding,
-      itemExtent: widget.itemExtent,
-      prototypeItem: widget.prototypeItem,
-      addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-      addRepaintBoundaries: widget.addRepaintBoundaries,
-      addSemanticIndexes: widget.addSemanticIndexes,
-      cacheExtent: widget.cacheExtent,
-      semanticChildCount: widget.semanticChildCount,
-      dragStartBehavior: widget.dragStartBehavior,
-      keyboardDismissBehavior: widget.keyboardDismissBehavior,
-      restorationId: widget.restorationId,
-      clipBehavior: widget.clipBehavior,
-    );
-  }
-
-  Widget? _itemBuilder(BuildContext context, int index) {
-    final isLastItem = index + 1 == docs.length;
-    if (isLastItem && hasMore) _fetchNextPage();
-    final doc = docs[index];
-    return widget.itemBuilder(context, index, doc);
-  }
-}
-
-// limit version
-/*
-class SearchPageListView<Document> extends ConsumerStatefulWidget {
-  const SearchPageListView({
-    super.key,
-    required this.searchWords,
-    required this.searchQuery,
-    required this.query,
-    required this.itemBuilder,
-    this.loadingBuilder,
-    this.errorBuilder,
-    this.emptyBuilder,
-    this.listState,
-    this.showMain = false,
-    this.mainQuery,
-    this.scrollDirection = Axis.vertical,
-    this.reverse = false,
-    this.controller,
-    this.primary,
-    this.physics,
-    this.shrinkWrap = false,
-    this.padding,
-    this.itemExtent,
-    this.prototypeItem,
-    this.addAutomaticKeepAlives = true,
-    this.addRepaintBoundaries = true,
-    this.addSemanticIndexes = true,
-    this.cacheExtent,
-    this.semanticChildCount,
-    this.dragStartBehavior = DragStartBehavior.start,
-    this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-    this.restorationId,
-    this.clipBehavior = Clip.hardEdge,
-    this.useDidUpdateWidget = false,
-    this.refreshUpdatedDocs = false,
-    this.resetUpdatedDocIds,
-    this.updatedDocsState,
-    this.useUid = false,
-  });
-
-  final String searchWords;
-  final Future<List<String>> Function(String, [int?]) searchQuery;
-  final DocumentReference<Document> Function(String) query;
-  final SearchPageListItemBuilder<Document> itemBuilder;
-  final SearchPageListLoadingBuilder? loadingBuilder;
-  final SearchPageListErrorBuilder? errorBuilder;
-  final SearchPageListEmptyBuilder? emptyBuilder;
-  final ProviderListenable<int>? listState;
-  final bool showMain;
-  final Query<Document>? mainQuery;
-  final Axis scrollDirection;
-  final bool reverse;
-  final ScrollController? controller;
-  final bool? primary;
-  final ScrollPhysics? physics;
-  final bool shrinkWrap;
-  final EdgeInsetsGeometry? padding;
-  final double? itemExtent;
-  final Widget? prototypeItem;
-  final bool addAutomaticKeepAlives;
-  final bool addRepaintBoundaries;
-  final bool addSemanticIndexes;
-  final double? cacheExtent;
-  final int? semanticChildCount;
-  final DragStartBehavior dragStartBehavior;
-  final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
-  final String? restorationId;
-  final Clip clipBehavior;
-  final bool useDidUpdateWidget;
-  final bool refreshUpdatedDocs;
-  final VoidCallback? resetUpdatedDocIds;
-  final ProviderListenable<List<String>>? updatedDocsState;
-  final bool useUid;
-
-  @override
-  ConsumerState<SearchPageListView<Document>> createState() =>
-      _SearchPageListViewState<Document>();
-}
-
-class _SearchPageListViewState<Document>
-    extends ConsumerState<SearchPageListView<Document>>
-    with WidgetsBindingObserver {
-  late List<DocumentSnapshot<Document>> docs = [];
-  late bool isFetching = false;
-  late bool isFetchingMore = false;
-  late bool hasMore = false;
-  late int refreshTime = DateTime.now().millisecondsSinceEpoch;
-  late bool hasMain = false;
-
-  static const fetchLimit = 20;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(covariant SearchPageListView<Document> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.useDidUpdateWidget &&
-        oldWidget.searchWords != widget.searchWords) {
-      if (widget.searchWords.length < 2) {
-        docs = [];
-      } else {
-        docs = [];
-        _fechDocs();
+  void _scrollListener() {
+    if (isFetching || isFetchingMore || !hasMore) return;
+    if (widget.controller != null) {
+      final position = widget.controller!.position;
+      if (position.pixels >= (position.maxScrollExtent - 50)) {
+        _fetchNextPage();
       }
     }
   }
@@ -409,77 +166,119 @@ class _SearchPageListViewState<Document>
   }
 
   Future<void> _fechDocs({bool nextPage = false}) async {
-    if (widget.searchWords.length < 2) {
-      docs = [];
-      return;
-    }
-    List<DocumentSnapshot<Document>> snapshots = [];
-    if (nextPage) {
-      isFetchingMore = true;
-    } else {
-      isFetching = true;
-    }
-    Future.microtask(() => setState(() {}));
-    if (nextPage) {
-      final searchPids =
-          await widget.searchQuery(widget.searchWords, docs.length);
-      for (final pid in searchPids) {
-        final snapshot = await widget.query(pid).get();
-        snapshots.add(snapshot);
-      }
-    } else {
-      final searchPids = await widget.searchQuery(widget.searchWords);
-      for (final pid in searchPids) {
-        final snapshot = await widget.query(pid).get();
-        snapshots.add(snapshot);
-      }
-
-      refreshTime = DateTime.now().millisecondsSinceEpoch;
-    }
-
-    if (snapshots.length > fetchLimit) {
-      hasMore = true;
-      snapshots.removeLast();
-    } else {
-      hasMore = false;
-    }
-    docs = [...docs, ...snapshots];
-
-    setState(() {
+    if (_isCancelled || widget.searchWords.length < 2) return;
+    try {
       if (nextPage) {
-        isFetchingMore = false;
+        isFetchingMore = true;
       } else {
-        isFetching = false;
-      }
-    });
-  }
-
-  Future<void> updateDocs(List<String> updatedDocIds) async {
-    if (docs.isNotEmpty && updatedDocIds.isNotEmpty) {
-      final docIds = List.from(docs.map((snapshot) => snapshot.id));
-      for (final updatedDocId in updatedDocIds) {
-        if (docIds.contains(updatedDocId)) {
-          final newDoc = await widget.query(updatedDocId).get();
-          docs = [
-            for (final doc in docs)
-              if (doc.id == updatedDocId) newDoc else doc
-          ];
+        pids.clear();
+        docs.clear();
+        isFetching = true;
+        if (mounted) {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            setState(() {});
+          });
         }
       }
-      widget.resetUpdatedDocIds?.call();
-      if (mounted) {
-        setState(() {});
+      if (nextPage) {
+        dev.log('fetch search next page');
+        final lastIndex = pids.length > docs.length + listFetchLimit
+            ? docs.length + listFetchLimit
+            : pids.length;
+
+        final futures = pids
+            .sublist(docs.length, lastIndex)
+            .map((pid) => widget.query(pid).get());
+        final snapshots = await Future.wait(futures);
+        docs.addAll(snapshots);
+
+        /*
+        for (final pid in pids.sublist(docs.length, lastIndex)) {
+          final snapshot = await widget.query(pid).get();
+          docs.add(snapshot);
+        }
+        */
+      } else {
+        dev.log('fetch search initial page');
+        pids = await widget.searchQuery(widget.searchWords);
+        final lastIndex =
+            pids.length > listFetchLimit ? listFetchLimit : pids.length;
+
+        final futures =
+            pids.sublist(0, lastIndex).map((pid) => widget.query(pid).get());
+        final snapshots = await Future.wait(futures);
+        docs.addAll(snapshots);
+        /*
+        for (final pid in pids.sublist(0, lastIndex)) {
+          final snapshot = await widget.query(pid).get();
+          docs.add(snapshot);
+        }
+        */
+
+        refreshTime = DateTime.now().millisecondsSinceEpoch;
       }
+
+      if (pids.length > docs.length) {
+        hasMore = true;
+        dev.log('hasMore: $hasMore');
+      } else {
+        hasMore = false;
+        dev.log('hasMore: $hasMore');
+      }
+
+      if (_isCancelled) return;
+      if (mounted) {
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          setState(() {
+            isFetchingMore = false;
+            isFetching = false;
+          });
+        });
+      }
+    } catch (e) {
+      debugPrint('fetch docs error: ${e.toString()}');
+    }
+  }
+
+  Future<void> _updateDocs(List<String> updatedDocIds) async {
+    if (_isCancelled) return;
+    try {
+      if (docs.isNotEmpty && updatedDocIds.isNotEmpty) {
+        final docIds = List.from(docs.map((snapshot) => snapshot.id));
+        for (final updatedDocId in updatedDocIds) {
+          if (docIds.contains(updatedDocId)) {
+            final newDoc = await widget.query(updatedDocId).get();
+            if (newDoc.data() == null) {
+              docs = docs.where((doc) => doc.id != updatedDocId).toList();
+            } else {
+              docs = [
+                for (final doc in docs)
+                  if (doc.id == updatedDocId) newDoc else doc
+              ];
+            }
+          }
+        }
+        if (_isCancelled) return;
+        if (mounted) {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            setState(() {});
+          });
+        }
+        widget.resetUpdatedDocIds?.call();
+      }
+    } catch (e) {
+      debugPrint('updateDocs error: ${e.toString()}');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    dev.log('searchDocs: ${docs.length}');
     // wher user changes doc, refesh
     if (widget.listState != null) {
       ref.listen(widget.listState!, (_, next) {
-        if (next > refreshTime) {
-          docs = [];
+        if (next > refreshTime && !isFetching && !isFetchingMore) {
+          // docs = [];
           _fechDocs();
         }
       });
@@ -487,58 +286,89 @@ class _SearchPageListViewState<Document>
 
     if (widget.refreshUpdatedDocs && widget.updatedDocsState != null) {
       ref.listen(widget.updatedDocsState!, (_, next) {
-        // dev.log('updatedDocs: $next');
-        updateDocs(next);
+        dev.log('updatedDocs: $next');
+        _updateDocs(next);
       });
     }
 
     // when fist fetch loading
     if (isFetching) {
-      if (widget.loadingBuilder != null) {
-        return widget.loadingBuilder!.call(context);
-      }
-
-      return const Center(child: CupertinoActivityIndicator());
+      return widget.isSliver
+          ? SliverFillRemaining(
+              child: ListLoadingWidget(
+                loadingBuilder: widget.loadingBuilder,
+              ),
+            )
+          : ListLoadingWidget(
+              loadingBuilder: widget.loadingBuilder,
+            );
     }
 
     // when doc is empty
     if (docs.isEmpty) {
-      if (widget.emptyBuilder != null) {
-        return widget.emptyBuilder!.call(context);
-      }
-
-      return Center(child: Text(context.loc.noContent));
+      dev.log('doc is empty');
+      return widget.isSliver
+          ? SliverFillRemaining(
+              child: ListEmptyWidget(
+                isPermissionDenied: false,
+                emptyBuilder: widget.emptyBuilder,
+              ),
+            )
+          : ListEmptyWidget(
+              isPermissionDenied: false,
+              emptyBuilder: widget.emptyBuilder,
+            );
     }
 
-    return ListView.builder(
-      itemBuilder: _itemBuilder,
-      itemCount: docs.length,
-      scrollDirection: widget.scrollDirection,
-      reverse: widget.reverse,
-      controller: widget.controller,
-      primary: widget.primary,
-      physics: widget.physics,
-      shrinkWrap: widget.shrinkWrap,
-      padding: widget.padding,
-      itemExtent: widget.itemExtent,
-      prototypeItem: widget.prototypeItem,
-      addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-      addRepaintBoundaries: widget.addRepaintBoundaries,
-      addSemanticIndexes: widget.addSemanticIndexes,
-      cacheExtent: widget.cacheExtent,
-      semanticChildCount: widget.semanticChildCount,
-      dragStartBehavior: widget.dragStartBehavior,
-      keyboardDismissBehavior: widget.keyboardDismissBehavior,
-      restorationId: widget.restorationId,
-      clipBehavior: widget.clipBehavior,
-    );
+    return widget.isSliver
+        ? widget.padding != null
+            ? SliverPadding(
+                padding: widget.padding!,
+                sliver: SliverList.builder(
+                  itemBuilder: _itemBuilder,
+                  itemCount: docs.length,
+                  addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+                  addRepaintBoundaries: widget.addRepaintBoundaries,
+                  addSemanticIndexes: widget.addSemanticIndexes,
+                ),
+              )
+            : SliverList.builder(
+                itemBuilder: _itemBuilder,
+                itemCount: docs.length,
+                addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+                addRepaintBoundaries: widget.addRepaintBoundaries,
+                addSemanticIndexes: widget.addSemanticIndexes,
+              )
+        : ListView.builder(
+            itemBuilder: _itemBuilder,
+            itemCount: docs.length,
+            scrollDirection: widget.scrollDirection,
+            reverse: widget.reverse,
+            controller: widget.controller,
+            primary: widget.primary,
+            physics: widget.physics,
+            shrinkWrap: widget.shrinkWrap,
+            padding: widget.padding,
+            itemExtent: widget.itemExtent,
+            prototypeItem: widget.prototypeItem,
+            addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+            addRepaintBoundaries: widget.addRepaintBoundaries,
+            addSemanticIndexes: widget.addSemanticIndexes,
+            cacheExtent: widget.cacheExtent,
+            semanticChildCount: widget.semanticChildCount,
+            dragStartBehavior: widget.dragStartBehavior,
+            keyboardDismissBehavior: widget.keyboardDismissBehavior,
+            restorationId: widget.restorationId,
+            clipBehavior: widget.clipBehavior,
+          );
   }
 
   Widget? _itemBuilder(BuildContext context, int index) {
-    final isLastItem = index + 1 == docs.length;
-    if (isLastItem && hasMore) _fetchNextPage();
+    if (widget.controller == null) {
+      final isLastItem = index + 1 == docs.length;
+      if (isLastItem && hasMore) _fetchNextPage();
+    }
     final doc = docs[index];
     return widget.itemBuilder(context, index, doc);
   }
 }
-*/

@@ -31,6 +31,7 @@ class MainPostsList extends ConsumerStatefulWidget {
 }
 
 class _MainPostsListState extends ConsumerState<MainPostsList> {
+  final ScrollController _controller = ScrollController();
   Timer? timer;
 
   @override
@@ -41,6 +42,7 @@ class _MainPostsListState extends ConsumerState<MainPostsList> {
 
   @override
   void dispose() {
+    _controller.dispose();
     timer?.cancel();
     super.dispose();
   }
@@ -150,6 +152,7 @@ class _MainPostsListState extends ConsumerState<MainPostsList> {
       );
     }
     return CustomScrollView(
+      controller: _controller,
       physics: const BouncingScrollPhysics(
         parent: AlwaysScrollableScrollPhysics(),
       ),
@@ -187,6 +190,7 @@ class _MainPostsListState extends ConsumerState<MainPostsList> {
           resetUpdatedDocIds: resetUpdatedDocIds,
           updatedDocsState: updatedPostIdsListProvider,
           isSliver: true,
+          controller: _controller,
         )
       ],
     );
