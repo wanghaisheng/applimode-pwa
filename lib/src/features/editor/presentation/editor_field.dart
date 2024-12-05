@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class EditorField extends StatelessWidget {
@@ -14,6 +15,12 @@ class EditorField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Error where autofocus does not work on iOS web
+    // fix if it is improved
+    // ios web 에서 autofocus가 작동하지 않는 오류
+    // 개선될 경우 수정 바람
+    final isIosWeb = kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+
     return SafeArea(
       top: false,
       bottom: false,
@@ -22,7 +29,7 @@ class EditorField extends StatelessWidget {
         child: TextField(
           controller: controller,
           focusNode: focusNode,
-          autofocus: true,
+          autofocus: isIosWeb ? false : true,
           keyboardType: TextInputType.multiline,
           maxLines: null,
           decoration: const InputDecoration(

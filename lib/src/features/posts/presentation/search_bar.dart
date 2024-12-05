@@ -16,6 +16,14 @@ class CustomSearchBar extends StatefulWidget {
 }
 
 class _CustomSearchBarState extends State<CustomSearchBar> {
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -26,6 +34,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
             child: Center(
               child: TextField(
                 controller: widget.controller,
+                focusNode: _focusNode,
                 textInputAction: TextInputAction.done,
                 decoration: InputDecoration(
                   border: InputBorder.none,

@@ -36,20 +36,19 @@ class PostCommentsScreenBottomBar extends ConsumerStatefulWidget {
 class _PostCommentsScreenBottomBarState
     extends ConsumerState<PostCommentsScreenBottomBar> {
   final TextEditingController _controller = TextEditingController();
-  // late FocusNode _node;
+  final FocusNode _focusNode = FocusNode();
   XFile? _pickedFile;
   String? _mediaType;
 
   @override
   void initState() {
     super.initState();
-    // _node = FocusNode();
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    // _node.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -81,7 +80,11 @@ class _PostCommentsScreenBottomBarState
           _pickedFile = null;
         });
       }
-      FocusManager.instance.primaryFocus?.unfocus();
+      /*
+      if (mounted) {
+        FocusScope.of(context).unfocus();
+      }
+      */
     }
   }
 
@@ -170,7 +173,7 @@ class _PostCommentsScreenBottomBarState
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: TextField(
                         controller: _controller,
-                        // focusNode: _node,
+                        focusNode: _focusNode,
                         textInputAction: TextInputAction.done,
                         decoration: InputDecoration(
                           border: InputBorder.none,

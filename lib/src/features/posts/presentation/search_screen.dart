@@ -97,6 +97,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   index: index,
                 );
               },
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             );
           }
 
@@ -119,6 +120,7 @@ class _SearchScreenState extends State<SearchScreen> {
             resetUpdatedDocIds: resetUpdatedDocIds,
             updatedDocsState: updatedPostIdsListProvider,
             searchWords: searchWords.replaceAll(RegExp(r'[#_ ]'), '').trim(),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           );
         },
       ),

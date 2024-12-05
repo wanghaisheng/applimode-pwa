@@ -90,6 +90,8 @@ class PostCommentsScreen extends ConsumerWidget {
                 resetUpdatedDocIds: resetUpdatedDocIds,
                 updatedDocsState: updatedCommentIdsListProvider,
                 useDidUpdateWidget: true,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
               ),
             ),
           ),

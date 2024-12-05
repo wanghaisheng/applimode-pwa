@@ -56,7 +56,7 @@ class EditorScreen extends ConsumerStatefulWidget {
 
 class _EditorScreenState extends ConsumerState<EditorScreen> {
   final _controller = TextEditingController();
-  late FocusNode _focusNode;
+  final FocusNode _focusNode = FocusNode();
   int currentCategory = 0;
   bool hasPostContent = false;
   List<String>? _remoteMedia;
@@ -70,7 +70,6 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   @override
   void initState() {
     t = Timer(const Duration(milliseconds: 0), () {});
-    _focusNode = FocusNode();
     if (widget.postId != null) {
       if (widget.postAndWriter != null) {
         if (widget.postAndWriter!.post.isLongContent) {
