@@ -107,10 +107,6 @@ const String aiModelType = 'gemini-1.5-flash';
 // 홈화면 영상 소리 뮤트
 const bool isPostsItemVideoMute = false;
 
-// Use direct upload button on page type
-// 페이지 타입에서 다이렉트 업로드 버튼 사용
-const bool useDirectUploadButton = false;
-
 // Color type of basic post box. single, gradient, animation. basic gradient
 // 베이직 포스트 박스의 컬러 타입. single, gradient, animattion. 기본 gradient
 // const boxColorType = BoxColorType.gradient;

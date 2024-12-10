@@ -279,7 +279,7 @@ class BasicPostsItem extends ConsumerWidget {
                     if (isContent && isPage)
                       Positioned(
                         right: 16,
-                        bottom: useDirectUploadButton ? 160 : 96,
+                        bottom: 96,
                         child: SafeArea(
                           child: PageItemButtons(
                             post: post,
