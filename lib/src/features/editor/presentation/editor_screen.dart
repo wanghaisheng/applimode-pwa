@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as dev;
 
 import 'package:applimode_app/src/exceptions/app_exception.dart';
 import 'package:applimode_app/src/features/editor/presentation/editor_screen_ai_controller.dart';
@@ -58,6 +59,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   final _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   int currentCategory = 0;
+  // when post content is very long
   bool hasPostContent = false;
   List<String>? _remoteMedia;
 
@@ -65,24 +67,39 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   static const widthBreak = 800.0;
 
   // for auto save when writing a new post
-  late Timer t;
+  Timer? _debounceSaveTempTimer;
+
+  bool _isCancelled = false;
 
   @override
   void initState() {
-    t = Timer(const Duration(milliseconds: 0), () {});
     if (widget.postId != null) {
+      // when editing a existing post
       if (widget.postAndWriter != null) {
+        // when postAndWriter is not null
+        // postAndWriter가 null이 아닐 경우
         if (widget.postAndWriter!.post.isLongContent) {
-          buildLongContent();
+          // when post content is very long
+          // 포스트의 컨테츠 길이가 긴 경우
+          // If the post content length is too long, it is saved separately due to performance issues.
+          // 성능 문제로 인해 포스트의 컨텐츠 길이가 너무 길 경우 따로 저장했음
+          _buildLongContent();
         } else {
+          // normal content
+          // 일반적인 컨텐츠의 경우
           _controller.text = widget.postAndWriter?.post.content ?? '';
           currentCategory = widget.postAndWriter?.post.category ?? 0;
           _remoteMedia = buildRemoteMedia(_controller.text);
         }
       } else {
-        buildCurrentPost();
+        // postAndWriter is null
+        // postAndWriter가 null일 경우
+        // When refreshing the page in a web browser or accessing the link directly, postAndWriter becomes null.
+        // 웹브라우저에서 페이지 세로고침을 하거나 해당 링크로 바로 접근시 postAndWriter는 null이 됨.
+        _buildCurrentPost();
       }
     } else {
+      // when writing a new post
       final tempNewPost = ref
           .read(prefsWithCacheProvider)
           .requireValue
@@ -95,58 +112,77 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     super.initState();
   }
 
-  void _saveTemp() {
-    t.cancel();
-    t = Timer(const Duration(milliseconds: 1000), () {
-      final sharedPreferences = ref.read(prefsWithCacheProvider).requireValue;
-      // because the files selected in the image picker are temporarily saved
-      final onlyText = _controller.text
-          .replaceAll(Regex.localImageRegex, '')
-          .replaceAll(Regex.localVideoRegex, '');
-      sharedPreferences.setString('tempNewPost', onlyText);
-    });
-  }
-
-  Future<void> buildLongContent() async {
-    try {
-      hasPostContent = true;
-      final postContent =
-          await ref.read(postContentFutureProvider(widget.postId!).future);
-      _controller.text = postContent?.content ?? '';
-      currentCategory = postContent?.category ?? 0;
-      setState(() {});
-      _remoteMedia = buildRemoteMedia(_controller.text);
-    } catch (e) {
-      debugPrint('buildLongContent: ${e.toString()}');
-    }
-  }
-
-  Future<void> buildCurrentPost() async {
-    try {
-      final currentPost =
-          await ref.read(postFutureProvider(widget.postId!).future);
-      if (currentPost != null && currentPost.isLongContent) {
-        buildLongContent();
-      } else {
-        _controller.text = currentPost?.content ?? '';
-        currentCategory = currentPost?.category ?? 0;
-        setState(() {});
-        _remoteMedia = buildRemoteMedia(_controller.text);
-      }
-    } catch (e) {
-      debugPrint('buildCurrentPost: ${e.toString()}');
-    }
-  }
-
   @override
   void dispose() {
-    t.cancel();
+    _isCancelled = true;
+    _debounceSaveTempTimer?.cancel();
     if (widget.postId == null) {
       _controller.removeListener(_saveTemp);
     }
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
+  }
+
+  void _debounceSaveTemp(VoidCallback callback) {
+    _debounceSaveTempTimer?.cancel();
+    _debounceSaveTempTimer = Timer(Duration(milliseconds: 1000), callback);
+  }
+
+  void _saveTemp() {
+    _debounceSaveTemp(() {
+      try {
+        final sharedPreferences = ref.read(prefsWithCacheProvider).requireValue;
+        // because the files selected in the image picker are temporarily saved
+        final onlyText = _controller.text
+            .replaceAll(Regex.localImageRegex, '')
+            .replaceAll(Regex.localVideoRegex, '');
+        sharedPreferences.setString('tempNewPost', onlyText);
+      } catch (e) {
+        debugPrint('failed _debounceSaveTemp');
+      }
+    });
+  }
+
+  Future<void> _buildLongContent() async {
+    try {
+      hasPostContent = true;
+      final postContent =
+          await ref.read(postContentFutureProvider(widget.postId!).future);
+      _controller.text = postContent?.content ?? '';
+      currentCategory = postContent?.category ?? 0;
+      if (_isCancelled) return;
+      if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          setState(() {});
+        });
+      }
+      _remoteMedia = buildRemoteMedia(_controller.text);
+    } catch (e) {
+      debugPrint('failed _buildLongContent: ${e.toString()}');
+    }
+  }
+
+  Future<void> _buildCurrentPost() async {
+    try {
+      final currentPost =
+          await ref.read(postFutureProvider(widget.postId!).future);
+      if (currentPost != null && currentPost.isLongContent) {
+        _buildLongContent();
+      } else {
+        _controller.text = currentPost?.content ?? '';
+        currentCategory = currentPost?.category ?? 0;
+        if (_isCancelled) return;
+        if (mounted) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            setState(() {});
+          });
+        }
+        _remoteMedia = buildRemoteMedia(_controller.text);
+      }
+    } catch (e) {
+      debugPrint('failed _buildCurrentPost: ${e.toString()}');
+    }
   }
 
   String _buildAppBarTitle(BuildContext context) => widget.postId == null
@@ -158,6 +194,114 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       TabTitle(title: context.loc.editor),
       TabTitle(title: context.loc.preview),
     ];
+  }
+
+  Future<void> _getMedia(double mediaMaxMBSize) async {
+    final text = _controller.text;
+    final selection = _controller.selection;
+    final start = selection.start;
+    final end = selection.end;
+
+    bool isVideo = false;
+
+    final isThumbnail = start > 1 &&
+        end + 1 < text.length &&
+        text[start - 1] == r'[' &&
+        text[start - 2] == r']' &&
+        text[end] == r']' &&
+        text[end + 1] == r'[';
+
+    final XFile? pickedFile = await showImagePicker(
+      isImage: isThumbnail,
+      maxWidth: postImageMaxWidth,
+      imageQuality: postImageQuality,
+      mediaMaxMBSize: mediaMaxMBSize,
+    ).catchError((error) {
+      debugPrint('showImagePicker: ${error.toString()}');
+      if (mounted) {
+        showAdaptiveAlertDialog(
+            context: context,
+            title: context.loc.maxFileSizeErrorTitle,
+            content:
+                '${context.loc.maxFileSizedErrorContent} (${mediaMaxMBSize}MB)');
+      }
+      return null;
+    });
+
+    if (pickedFile != null) {
+      try {
+        // This can only be confirmed when checking the file directly imported from the image picker.
+        String? mediaType = pickedFile.mimeType;
+        dev.log('media type from picker: $mediaType');
+
+        if (mediaType == null) {
+          // If pickedFile's mediaType is null
+          // get the mediaType from pickedFile's ext
+          final fileExt = pickedFile.name.split('.').last.toLowerCase();
+          dev.log('pickedFile\'s ext: $fileExt');
+          dev.log('is this video: ${videoExts.contains(fileExt)}');
+          if (videoExts.contains(fileExt)) {
+            // video file
+            mediaType = Format.extToMimeType(fileExt);
+            isVideo = true;
+          } else if (imageExts.contains(fileExt)) {
+            // image file
+            mediaType = Format.extToMimeType(fileExt);
+            isVideo = false;
+          } else {
+            // Cancel getMedia if media type is incompatible
+            debugPrint('ext is unsupported mediaType');
+            return;
+          }
+        } else {
+          // If pickedFile's mediaType is not null
+          if (imageContentTypes.contains(mediaType)) {
+            // video file
+            isVideo = false;
+          } else if (videoConetntTypes.contains(mediaType)) {
+            // image file
+            isVideo = true;
+          } else {
+            // Cancel getMedia if media type is incompatible
+            debugPrint('mediaType is unsupported mediaType');
+            return;
+          }
+        }
+
+        // Add a question mark to the end of filePath and add a media type
+        final filePath =
+            '${pickedFile.path}?${Format.mimeTypeToExt(mediaType)}';
+
+        final inserted = isThumbnail
+            ? filePath
+            : isVideo
+                ? '\n[localVideo][][$filePath]\n'
+                : '\n[localImage][$filePath][]\n';
+
+        final newText = text.replaceRange(
+          start,
+          end,
+          inserted,
+        );
+
+        final newSelection = TextSelection.collapsed(
+            offset: selection.baseOffset + inserted.length);
+
+        if (_isCancelled) return;
+        if (mounted) {
+          setState(() {
+            _controller.value = TextEditingValue(
+              text: newText,
+              selection: newSelection,
+            );
+          });
+        }
+
+        _focusNode.requestFocus();
+      } catch (e) {
+        debugPrint('failed _getMedia: ${e.toString()}');
+      }
+    }
   }
 
   @override
@@ -208,6 +352,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
             if (useAiAssistant)
               InkWell(
                 onTap: () async {
+                  // when using ai assistant, upload images together
                   final imageMatchs =
                       Regex.localImageRegex.allMatches(_controller.text);
                   final List<String> imagePaths = [];
@@ -228,15 +373,12 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                     final start = selection.start;
                     final end = selection.end;
                     final inserted = '\n$result\n';
-                    final newText = text.replaceRange(
-                      start,
-                      end,
-                      inserted,
-                    );
+                    final newText = text.replaceRange(start, end, inserted);
+                    final newSelection = TextSelection.collapsed(
+                        offset: selection.baseOffset + inserted.length);
                     _controller.value = TextEditingValue(
                       text: newText,
-                      selection: TextSelection.collapsed(
-                          offset: selection.baseOffset + inserted.length),
+                      selection: newSelection,
                     );
                     _focusNode.requestFocus();
                   }
@@ -340,111 +482,5 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
             : null,
       ),
     );
-  }
-
-  Future<void> _getMedia(double mediaMaxMBSize) async {
-    final text = _controller.text;
-    final selection = _controller.selection;
-    final start = selection.start;
-    final end = selection.end;
-
-    bool isVideo = false;
-
-    final isThumbnail = start > 1 &&
-        end + 1 < text.length &&
-        text[start - 1] == r'[' &&
-        text[start - 2] == r']' &&
-        text[end] == r']' &&
-        text[end + 1] == r'[';
-
-    final XFile? pickedFile = await showImagePicker(
-      isImage: isThumbnail,
-      maxWidth: postImageMaxWidth,
-      imageQuality: postImageQuality,
-      mediaMaxMBSize: mediaMaxMBSize,
-    ).catchError((error) {
-      debugPrint('showImagePicker: ${error.toString()}');
-      if (mounted) {
-        showAdaptiveAlertDialog(
-            context: context,
-            title: context.loc.maxFileSizeErrorTitle,
-            content:
-                '${context.loc.maxFileSizedErrorContent} (${mediaMaxMBSize}MB)');
-      }
-      return null;
-    });
-
-    if (pickedFile != null) {
-      setState(
-        () {
-          String? mediaType = pickedFile.mimeType;
-
-          debugPrint('mt: $mediaType');
-
-          if (mediaType == null) {
-            final fileExt = pickedFile.name.split('.').last.toLowerCase();
-            debugPrint('ext: $fileExt');
-            debugPrint('is this video: ${videoExts.contains(fileExt)}');
-            if (videoExts.contains(fileExt)) {
-              mediaType = Format.extToMimeType(fileExt);
-              isVideo = true;
-            } else if (imageExts.contains(fileExt)) {
-              mediaType = Format.extToMimeType(fileExt);
-              isVideo = false;
-            } else {
-              debugPrint('ext is unsupported mediaType');
-              return;
-            }
-          } else {
-            if (imageContentTypes.contains(mediaType)) {
-              isVideo = false;
-            } else if (videoConetntTypes.contains(mediaType)) {
-              isVideo = true;
-            } else {
-              debugPrint('mediaType is unsupported mediaType');
-              return;
-            }
-
-            /*
-            isVideo = mediaType == contentTypeMp4 ||
-                mediaType == contentTypeM4v ||
-                mediaType == contentTypeWebm ||
-                mediaType == contentTypeQv ||
-                mediaType == contentTypeMp3 ||
-                pickedFile.path.endsWith('.mp4') ||
-                pickedFile.path.endsWith('.mp3') ||
-                pickedFile.path.endsWith('.mov');
-            */
-          }
-
-          /*
-          final inserted = isVideo
-              ? '\n[localVideo][][${pickedFile.path}]\n'
-              : '\n[localImage][${pickedFile.path}][]\n';
-          */
-
-          final filePath =
-              '${pickedFile.path}?${Format.mimeTypeToExt(mediaType)}';
-
-          final inserted = isThumbnail
-              ? filePath
-              : isVideo
-                  ? '\n[localVideo][][$filePath]\n'
-                  : '\n[localImage][$filePath][]\n';
-
-          final newText = text.replaceRange(
-            start,
-            end,
-            inserted,
-          );
-          _controller.value = TextEditingValue(
-            text: newText,
-            selection: TextSelection.collapsed(
-                offset: selection.baseOffset + inserted.length),
-          );
-          _focusNode.requestFocus();
-        },
-      );
-    }
   }
 }

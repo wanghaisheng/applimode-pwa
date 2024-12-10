@@ -34,6 +34,7 @@ class PostsDrawer extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: 16),
           children: [
+            // sign in of profile button
             appUser == null
                 ? ListTile(
                     leading: const Icon(Icons.face),
@@ -69,17 +70,7 @@ class PostsDrawer extends ConsumerWidget {
                     },
                   ),
             divider24,
-            /*
-            ListTile(
-              leading: const Icon(Icons.all_inclusive_outlined),
-              title: Text(context.loc.allPosts),
-              onTap: () {
-                if (context.canPop()) {
-                  context.pop();
-                }
-              },
-            ),
-            */
+            // recommeneded posts button
             if (adminSettings.useRecommendation)
               ListTile(
                 leading: const Icon(Icons.recommend_outlined),
@@ -91,6 +82,7 @@ class PostsDrawer extends ConsumerWidget {
                   context.push(ScreenPaths.recommendedPosts);
                 },
               ),
+            // ranking screen button
             if (adminSettings.useRanking)
               ListTile(
                 leading: const Icon(Icons.military_tech_outlined),
@@ -102,6 +94,7 @@ class PostsDrawer extends ConsumerWidget {
                   context.push(ScreenPaths.ranking);
                 },
               ),
+            // categories button
             if (adminSettings.mainCategory.length > 1 &&
                 adminSettings.useCategory)
               ...adminSettings.mainCategory.map(
@@ -124,15 +117,20 @@ class PostsDrawer extends ConsumerWidget {
                 adminSettings.useCategory ||
                 adminSettings.showAppStyleOption)
               divider24,
+            // app style button
             if (adminSettings.showAppStyleOption) const AppStyleButton(),
+            // app theme button
             const AppThemeButton(),
+            // app locale button
             const AppLocaleButton(),
+            // noti buttons
             if (isUsableFcm()) ...[
               const NewPostNotiButton(),
               if (user != null && appUser != null)
                 const LikeCommentNotiButton(),
             ],
             divider24,
+            // admin-settings button
             if (appUser != null && appUser.isAdmin)
               ListTile(
                 leading: const Icon(Icons.admin_panel_settings_outlined),
@@ -144,6 +142,7 @@ class PostsDrawer extends ConsumerWidget {
                   context.push(ScreenPaths.adminSettings);
                 },
               ),
+            // terms button
             ListTile(
               leading: const Icon(Icons.handshake_outlined),
               title: Text(context.loc.termsOfService),
@@ -160,6 +159,7 @@ class PostsDrawer extends ConsumerWidget {
                 }
               },
             ),
+            // privacy button
             ListTile(
               leading: const Icon(Icons.privacy_tip_outlined),
               title: Text(context.loc.privacyPolicy),
@@ -176,6 +176,7 @@ class PostsDrawer extends ConsumerWidget {
                 }
               },
             ),
+            // app info button
             ListTile(
               leading: const Icon(Icons.info_outline),
               title: Text(context.loc.appInfo),
@@ -186,6 +187,7 @@ class PostsDrawer extends ConsumerWidget {
                 context.push(ScreenPaths.appInfo);
               },
             ),
+            // sign out button
             if (user != null && adminSettings.showLogoutOnDrawer) ...[
               divider24,
               ListTile(

@@ -3,6 +3,11 @@
 ### New Features and Improvements
 ### Bug Fixes
 -->
+## Version 0.2.4 (December 10, 2024)
+- Improved SimplePageListView performance.
+- Improved soft keyboard focus management.
+- Enhanced EditorScreen.
+
 ## Version 0.2.3 (November 29, 2024)
 - Update to Gradle 8.
 - Replace the dependency used for video thumbnail extraction.

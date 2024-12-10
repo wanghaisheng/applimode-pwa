@@ -31,8 +31,8 @@ Future<XFile?> showImagePicker({
     // check file size
     if (pickedFile != null && mediaMaxMBSize != 0.0) {
       final length = await pickedFile.length();
-      dev.log('length: ${length / (1024 * 1024)}');
       final mbSize = length / (1024 * 1024);
+      dev.log('media size: $mbSize');
       if (mbSize > mediaMaxMBSize) {
         throw FileSizeException();
       }

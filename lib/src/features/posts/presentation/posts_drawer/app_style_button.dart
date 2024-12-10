@@ -27,7 +27,7 @@ class AppStyleButton extends ConsumerWidget {
         },
         leading: const Icon(Icons.space_dashboard_outlined),
         title: Text(context.loc.appStyle),
-        trailing: Text(getTrailingLabel(context, appStyle ?? 1)),
+        trailing: Text(getTrailingLabel(context, appStyle ?? 4)),
         leadingAndTrailingTextStyle: Theme.of(context).textTheme.labelLarge,
       ),
       menuChildren: [
