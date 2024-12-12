@@ -49,6 +49,14 @@ class Regex {
       r'''https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)''');
   static RegExp urlWithoutHttp = RegExp(
       '''[-a-zA-Z0-9@:%._+~#=]{1,256}.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&//=]*)''');
+  static RegExp urlForPreview = RegExp(
+    r'^(https?:\/\/)' // scheme
+    r'((?!\b(youtu|youtube)\b)[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}' // domain excluding youtube, youtu
+    r'(:\d+)?' // port number
+    r'(\/(?!.*\b(jpg|jpeg|gif|png|webp|mp4|webm)\b)\S*)?$', // path excluding media ext
+    caseSensitive: false,
+    multiLine: true,
+  );
 
   static RegExp searchRegex = RegExp(r'[^\p{Letter}0-9\n ]', unicode: true);
 
