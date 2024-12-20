@@ -1,4 +1,4 @@
-name: Build and Deploy pwa to GitHub Pages
+name: Build and Deploy PWA to GitHub Pages
 
 on:
   push:
@@ -29,10 +29,16 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         channel: stable
-        flutter-version: 3.19.0
+        flutter-version: '3.19.0'
 
     - name: Install dependencies
       run: flutter pub get
+
+    - name: Generate firebase_options.dart
+      run: flutterfire configure --platforms=web
+
+    - name: Generate env.g.dart
+      run: dart run build_runner build --delete-conflicting-outputs
 
     - name: Build Flutter web
       run: flutter build web --release
