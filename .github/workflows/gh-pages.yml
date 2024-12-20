@@ -44,7 +44,9 @@ jobs:
       run: flutter pub get
 
     - name: Generate firebase_options.dart
-      run: flutterfire configure --platforms=web --project=<YOUR_FIREBASE_PROJECT_ID>
+      run: |
+        firebase login:ci --token "${{ secrets.FIREBASE_TOKEN }}"
+        flutterfire configure --platforms=web --project="${{ secrets.FIREBASE_PROJECT_ID }}"
 
     - name: Generate env.g.dart
       run: dart run build_runner build --delete-conflicting-outputs
