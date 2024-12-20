@@ -1,3 +1,4 @@
+import 'package:applimode_app/src/utils/safe_build_call.dart';
 import 'package:flutter/foundation.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/common_widgets/search_page_list_view.dart';
@@ -29,27 +30,32 @@ class _SearchScreenState extends State<SearchScreen> {
   final controller = TextEditingController();
   String searchWords = '';
 
+  bool _isCancelled = false;
+
   @override
   void initState() {
     super.initState();
     if (widget.preSearchWord != null &&
         widget.preSearchWord!.trim().isNotEmpty) {
-      setState(() {
-        controller.text = widget.preSearchWord!;
-        searchWords = widget.preSearchWord!;
-      });
+      controller.text = widget.preSearchWord!;
+      searchWords = widget.preSearchWord!;
     }
   }
 
   @override
   void dispose() {
+    _isCancelled = true;
     controller.dispose();
     super.dispose();
   }
 
-  void _setState() {
-    searchWords = controller.text;
-    setState(() {});
+  void _safeSetState() {
+    if (_isCancelled) return;
+    if (mounted) {
+      safeBuildCall(() => setState(() {
+            searchWords = controller.text;
+          }));
+    }
   }
 
   @override
@@ -60,7 +66,7 @@ class _SearchScreenState extends State<SearchScreen> {
         leading: kIsWeb ? const WebBackButton() : null,
         title: CustomSearchBar(
           controller: controller,
-          onComplete: _setState,
+          onComplete: _safeSetState,
         ),
         shape: const Border(
             bottom: BorderSide(

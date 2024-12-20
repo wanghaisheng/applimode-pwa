@@ -7,7 +7,9 @@ import 'package:applimode_app/src/features/video_player/video_player_components/
 import 'package:applimode_app/src/features/video_player/video_player_components/video_volume_button.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/custom_settings.dart';
+import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/custom_headers.dart';
+import 'package:applimode_app/src/utils/safe_build_call.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -33,14 +35,15 @@ class PostVideoPlayer extends StatefulWidget {
 }
 
 class _PostVideoPlayerState extends State<PostVideoPlayer> {
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller;
   bool isLoading = false;
   double? thumbnailAspectRatio;
+
+  bool _isCancelled = false;
 
   @override
   void initState() {
     super.initState();
-
     if (widget.isIosLocal) {
       _controller = VideoPlayerController.file(File(widget.videoUrl));
     } else {
@@ -49,50 +52,91 @@ class _PostVideoPlayerState extends State<PostVideoPlayer> {
         httpHeaders: useRTwoSecureGet ? rTwoSecureHeader : const {},
       );
     }
-    _controller.addListener(_setState);
-    // _controller.setLooping(true);
-    if (widget.videoImageUrl == null || widget.videoImageUrl!.isEmpty) {
-      isLoading = true;
-      setState(() {});
-      _controller.initialize().then((value) {
-        isLoading = false;
-        setState(() {});
-      }, onError: (e) => debugPrint('videoInit: ${e.toString()}'));
+    if (_controller != null) {
+      _controller?.addListener(_setStateListener);
+      // _controller.setLooping(true);
+      if (widget.videoImageUrl == null || widget.videoImageUrl!.isEmpty) {
+        isLoading = true;
+        _controller?.initialize().then((value) {
+          isLoading = false;
+        },
+            onError: (e) =>
+                debugPrint('PostVideoPlayer-initState-error: ${e.toString()}'));
+      }
     }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _isCancelled = true;
+    _controller?.dispose();
     WakelockPlus.disable();
-    _controller.removeListener(_setState);
+    _controller?.removeListener(_setStateListener);
     super.dispose();
   }
 
-  void _setState() {
-    setState(() {
-      if (_controller.value.isPlaying) {
-        WakelockPlus.enable();
+  void _safeSetState([VoidCallback? callback]) {
+    if (_isCancelled) return;
+    if (mounted) {
+      safeBuildCall(() => setState(() {
+            callback?.call();
+          }));
+    }
+  }
+
+  void _setStateListener() {
+    if (_controller != null) {
+      try {
+        _safeSetState(() {
+          if (_controller!.value.isPlaying) {
+            WakelockPlus.enable();
+          }
+          if (!_controller!.value.isPlaying) {
+            WakelockPlus.disable();
+          }
+        });
+      } catch (e) {
+        debugPrint('MainVideoPlayer-_setStateListener: ${e.toString()}');
       }
-      if (!_controller.value.isPlaying) {
-        WakelockPlus.disable();
-      }
-    });
+    }
   }
 
   Future<void> _initializeVideo() async {
-    isLoading = true;
-    setState(() {});
-    _controller.initialize().then((value) {
-      isLoading = false;
-      setState(() {});
-    }, onError: (e) => debugPrint('videoInit: ${e.toString()}'));
-    _controller.play();
+    if (_controller != null) {
+      try {
+        // _safeSetState(() => isLoading = true);
+        isLoading = true;
+        _controller?.initialize().then((value) {
+          isLoading = false;
+        },
+            onError: (e) => debugPrint(
+                'PostVideoPlayer-_initializeVideo-error: ${e.toString()}'));
+        _controller?.play();
+      } catch (e) {
+        debugPrint('PostVideoPlayer-_initializeVideo-error: ${e.toString()}');
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_controller.value.isInitialized && widget.videoImageUrl != null) {
+    if (_controller == null) {
+      return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Container(
+          color: Colors.black,
+          child: Center(
+            child: Text(
+              context.loc.videoNotFound,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (!_controller!.value.isInitialized && widget.videoImageUrl != null) {
       return Stack(
         alignment: Alignment.center,
         children: [
@@ -142,7 +186,7 @@ class _PostVideoPlayerState extends State<PostVideoPlayer> {
             ),
         ],
       );
-    } else if (!_controller.value.isInitialized &&
+    } else if (!_controller!.value.isInitialized &&
         widget.videoImageUrl == null) {
       return AspectRatio(
         aspectRatio: 16 / 9,
@@ -159,11 +203,11 @@ class _PostVideoPlayerState extends State<PostVideoPlayer> {
       );
     } else {
       return AspectRatio(
-        aspectRatio: _controller.value.aspectRatio,
+        aspectRatio: _controller!.value.aspectRatio,
         child: Stack(
           alignment: Alignment.center,
           children: [
-            VideoPlayer(_controller),
+            VideoPlayer(_controller!),
             /*
             if (!_controller.value.isPlaying)
               Positioned.fill(
@@ -173,19 +217,20 @@ class _PostVideoPlayerState extends State<PostVideoPlayer> {
               ),
               */
             if (isLoading ||
-                _controller.value.isBuffering && !_controller.value.isCompleted)
+                _controller!.value.isBuffering &&
+                    !_controller!.value.isCompleted)
               const Align(
                 alignment: Alignment.center,
                 child: CupertinoActivityIndicator(
                   color: Colors.white,
                 ),
               ),
-            if (!_controller.value.isPlaying) const VideoPlayerCenterIcon(),
+            if (!_controller!.value.isPlaying) const VideoPlayerCenterIcon(),
             VideoPlayerGestureDetector(
-              controller: _controller,
+              controller: _controller!,
             ),
             VideoVolumeButton(
-              controller: _controller,
+              controller: _controller!,
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -194,14 +239,14 @@ class _PostVideoPlayerState extends State<PostVideoPlayer> {
                 child: IconButton(
                   onPressed: () async {
                     if (kIsWeb) {
-                      _controller.pause();
+                      _controller!.pause();
                       await context.push(
-                        ScreenPaths.video(widget.videoUrl),
+                        ScreenPaths.fullVideo(widget.videoUrl),
                         // extra: _controller,
                       );
                     } else {
                       await context.push(
-                        ScreenPaths.video(widget.videoUrl),
+                        ScreenPaths.fullVideo(widget.videoUrl),
                         extra: _controller,
                       );
                     }
@@ -213,7 +258,7 @@ class _PostVideoPlayerState extends State<PostVideoPlayer> {
                 ),
               ),
             ),
-            VideoProgressBar(controller: _controller),
+            VideoProgressBar(controller: _controller!),
           ],
         ),
       );

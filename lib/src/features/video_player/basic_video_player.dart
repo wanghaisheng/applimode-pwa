@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:applimode_app/src/common_widgets/gradient_color_box.dart';
 import 'package:applimode_app/src/utils/custom_headers.dart';
+import 'package:applimode_app/src/utils/safe_build_call.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
@@ -27,9 +28,11 @@ class BasicVideoPlayer extends StatefulWidget {
 }
 
 class _BasicVideoPlayerState extends State<BasicVideoPlayer> {
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller;
   bool isOverlay = true;
-  late Timer t;
+  Timer? t;
+
+  bool _isCancelled = false;
 
   static const List<double> _examplePlaybackRates = <double>[
     0.25,
@@ -53,68 +56,95 @@ class _BasicVideoPlayerState extends State<BasicVideoPlayer> {
     } else {
       _controller = widget.videoController!;
     }
-    _controller.addListener(_setState);
-    if (widget.videoController == null) {
-      // _controller.setLooping(true);
-      _controller.initialize().then((_) => setState(() {}));
-    }
-    t = Timer(overlayDuration, () {});
-    if (_controller.value.isPlaying) {
-      overlayTofalses();
+
+    if (_controller != null) {
+      _controller?.addListener(_setStateListener);
+      if (widget.videoController == null) {
+        // _controller.setLooping(true);
+        _controller?.initialize();
+      }
+      // t = Timer(overlayDuration, () {});
+      if (_controller!.value.isPlaying) {
+        overlayTofalse();
+      }
     }
   }
 
   @override
   void dispose() {
+    _isCancelled = true;
     if (widget.videoController == null) {
-      _controller.dispose();
+      _controller?.dispose();
     }
-    t.cancel();
-    _controller.removeListener(_setState);
+    t?.cancel();
+    _controller?.removeListener(_setStateListener);
     WakelockPlus.disable();
     super.dispose();
   }
 
-  void _setState() {
-    setState(() {
-      if (_controller.value.isPlaying) {
-        WakelockPlus.enable();
+  void _safeSetState([VoidCallback? callback]) {
+    if (_isCancelled) return;
+    if (mounted) {
+      safeBuildCall(() => setState(() {
+            callback?.call();
+          }));
+    }
+  }
+
+  void _setStateListener() {
+    if (_controller != null) {
+      try {
+        _safeSetState(() {
+          if (_controller!.value.isPlaying) {
+            WakelockPlus.enable();
+          }
+          if (!_controller!.value.isPlaying) {
+            WakelockPlus.disable();
+          }
+        });
+      } catch (e) {
+        debugPrint('BasicVideoPlayer-_setStateListener: ${e.toString()}');
       }
-      if (!_controller.value.isPlaying) {
-        WakelockPlus.disable();
-      }
-    });
+    }
   }
 
   void overlayToTrue() {
-    t.cancel();
-    setState(() {
-      isOverlay = true;
-    });
+    try {
+      t?.cancel();
+      _safeSetState(() => isOverlay = true);
+    } catch (e) {
+      debugPrint('BasicVideoPlayer-overlayToTrue-error: ${e.toString()}');
+    }
   }
 
-  void overlayTofalses() {
-    t.cancel();
-    setState(() {
-      isOverlay = false;
-    });
+  void overlayTofalse() {
+    try {
+      t?.cancel();
+      _safeSetState(() => isOverlay = false);
+    } catch (e) {
+      debugPrint('BasicVideoPlayer-overlayToFalse-error: ${e.toString()}');
+    }
   }
 
   void pauseWithOverlay() {
-    t.cancel();
-    setState(() {
+    try {
+      t?.cancel();
       isOverlay = true;
-    });
-    _controller.pause();
+      _controller?.pause();
+    } catch (e) {
+      debugPrint('BasicVideoPlayer-pauseWithOverlay-error: ${e.toString()}');
+    }
   }
 
   void lazyOverlayToFalse() {
-    t.cancel();
-    t = Timer(overlayDuration, () {
-      setState(() {
-        isOverlay = false;
+    try {
+      t?.cancel();
+      t = Timer(overlayDuration, () {
+        _safeSetState(() => isOverlay = false);
       });
-    });
+    } catch (e) {
+      debugPrint('BasicVideoPlayer-lazyOverlayToFalse-error: ${e.toString()}');
+    }
   }
 
   double getWidthForFullSizeMedia(double aspectRatio) {
@@ -126,7 +156,16 @@ class _BasicVideoPlayerState extends State<BasicVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return !_controller.value.isInitialized
+    // if VideoController is null
+    if (_controller == null) {
+      return Center(
+          child: Text(
+        context.loc.videoNotFound,
+        style: TextStyle(color: Colors.white),
+      ));
+    }
+
+    return !_controller!.value.isInitialized
         ? AspectRatio(
             aspectRatio: 16 / 9,
             child: GradientColorBox(
@@ -146,13 +185,13 @@ class _BasicVideoPlayerState extends State<BasicVideoPlayer> {
             ),
           )
         : AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
-            child: _controller.value.hasError
+            aspectRatio: _controller!.value.aspectRatio,
+            child: _controller!.value.hasError
                 ? const SizedBox.shrink()
                 : Stack(
                     alignment: Alignment.bottomCenter,
                     children: [
-                      VideoPlayer(_controller),
+                      VideoPlayer(_controller!),
                       if (isOverlay)
                         Positioned.fill(
                           child: Container(
@@ -161,23 +200,24 @@ class _BasicVideoPlayerState extends State<BasicVideoPlayer> {
                         ),
                       GestureDetector(
                         onTap: () {
-                          if (_controller.value.isPlaying && !isOverlay) {
+                          if (_controller!.value.isPlaying && !isOverlay) {
                             overlayToTrue();
                             lazyOverlayToFalse();
-                          } else if (_controller.value.isPlaying && isOverlay) {
-                            overlayTofalses();
-                          } else if (!_controller.value.isPlaying &&
+                          } else if (_controller!.value.isPlaying &&
+                              isOverlay) {
+                            overlayTofalse();
+                          } else if (!_controller!.value.isPlaying &&
                               !isOverlay) {
                             overlayToTrue();
                           } else {}
                         },
                       ),
-                      if (!_controller.value.isPlaying && isOverlay)
+                      if (!_controller!.value.isPlaying && isOverlay)
                         Center(
                           child: IconButton(
                             onPressed: () {
                               lazyOverlayToFalse();
-                              _controller.play();
+                              _controller!.play();
                             },
                             icon: const Icon(
                               Icons.play_arrow,
@@ -187,7 +227,7 @@ class _BasicVideoPlayerState extends State<BasicVideoPlayer> {
                             ),
                           ),
                         ),
-                      if (_controller.value.isPlaying && isOverlay)
+                      if (_controller!.value.isPlaying && isOverlay)
                         Center(
                           child: IconButton(
                             onPressed: () {
@@ -211,15 +251,15 @@ class _BasicVideoPlayerState extends State<BasicVideoPlayer> {
                               const SizedBox(width: 12),
                               IconButton(
                                 onPressed: () {
-                                  if (_controller.value.isPlaying) {
+                                  if (_controller!.value.isPlaying) {
                                     pauseWithOverlay();
                                   } else {
                                     lazyOverlayToFalse();
-                                    _controller.play();
+                                    _controller!.play();
                                   }
                                 },
                                 icon: Icon(
-                                  _controller.value.isPlaying
+                                  _controller!.value.isPlaying
                                       ? Icons.pause
                                       : Icons.play_arrow,
                                 ),
@@ -227,20 +267,20 @@ class _BasicVideoPlayerState extends State<BasicVideoPlayer> {
                               ),
                               IconButton(
                                 onPressed: () {
-                                  if (_controller.value.volume == 0.0) {
-                                    if (_controller.value.isPlaying) {
+                                  if (_controller!.value.volume == 0.0) {
+                                    if (_controller!.value.isPlaying) {
                                       lazyOverlayToFalse();
                                     }
-                                    _controller.setVolume(1.0);
+                                    _controller!.setVolume(1.0);
                                   } else {
-                                    if (_controller.value.isPlaying) {
+                                    if (_controller!.value.isPlaying) {
                                       lazyOverlayToFalse();
                                     }
-                                    _controller.setVolume(0.0);
+                                    _controller!.setVolume(0.0);
                                   }
                                 },
                                 icon: Icon(
-                                  _controller.value.volume == 0.0
+                                  _controller!.value.volume == 0.0
                                       ? Icons.volume_off
                                       : Icons.volume_up,
                                   color: Colors.white,
@@ -249,14 +289,14 @@ class _BasicVideoPlayerState extends State<BasicVideoPlayer> {
                               const SizedBox(width: 12),
                               Text(
                                 Format.durationToString(
-                                    _controller.value.position),
+                                    _controller!.value.position),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
                                 ),
                               ),
                               Text(
-                                ' / ${Format.durationToString(_controller.value.duration)}',
+                                ' / ${Format.durationToString(_controller!.value.duration)}',
                                 style: const TextStyle(
                                   color: Colors.white70,
                                   fontSize: 12,
@@ -271,12 +311,13 @@ class _BasicVideoPlayerState extends State<BasicVideoPlayer> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              if (!_controller.value.isPlaying)
+                              if (!_controller!.value.isPlaying)
                                 PopupMenuButton<double>(
-                                  initialValue: _controller.value.playbackSpeed,
+                                  initialValue:
+                                      _controller!.value.playbackSpeed,
                                   tooltip: 'Playback speed',
                                   onSelected: (double speed) {
-                                    _controller.setPlaybackSpeed(speed);
+                                    _controller!.setPlaybackSpeed(speed);
                                   },
                                   itemBuilder: (BuildContext context) {
                                     return <PopupMenuItem<double>>[
@@ -294,7 +335,7 @@ class _BasicVideoPlayerState extends State<BasicVideoPlayer> {
                                       horizontal: 16,
                                     ),
                                     child: Text(
-                                      '${_controller.value.playbackSpeed}x',
+                                      '${_controller!.value.playbackSpeed}x',
                                       style:
                                           const TextStyle(color: Colors.white),
                                     ),
@@ -322,7 +363,7 @@ class _BasicVideoPlayerState extends State<BasicVideoPlayer> {
                                             ScreenPaths.video(widget.videoUrl),
                                             extra: _controller,
                                           );
-                                          if (!_controller.value.isPlaying) {
+                                          if (!_controller!.value.isPlaying) {
                                             overlayToTrue();
                                           }
                                         }
@@ -332,9 +373,9 @@ class _BasicVideoPlayerState extends State<BasicVideoPlayer> {
                                           final startPosition =
                                               _controller.value.position;
                                           final volume =
-                                              _controller.value.volume;
-                                          _controller.initialize().then((_) {
-                                            _controller
+                                              _controller!.value.volume;
+                                          _controller!.initialize().then((_) {
+                                            _controller!
                                               ..seekTo(startPosition)
                                               ..setVolume(volume)
                                               ..play();
@@ -355,10 +396,10 @@ class _BasicVideoPlayerState extends State<BasicVideoPlayer> {
                           width: widget.videoController == null
                               ? MediaQuery.sizeOf(context).width
                               : getWidthForFullSizeMedia(
-                                  _controller.value.aspectRatio),
+                                  _controller!.value.aspectRatio),
                           bottom: 48,
                           child: VideoProgressIndicator(
-                            _controller,
+                            _controller!,
                             padding: const EdgeInsets.only(top: 32),
                             allowScrubbing: true,
                           ),

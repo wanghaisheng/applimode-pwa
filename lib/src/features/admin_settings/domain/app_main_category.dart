@@ -20,8 +20,7 @@ class MainCategory extends Equatable {
       index: json['index'] as int? ?? 0,
       path: json['path'] as String? ?? '/404',
       title: json['title'] as String? ?? 'Unsorted',
-      color:
-          Format.hexStringToColorForCat(json['color'] as String? ?? 'FCB126'),
+      color: Format.hexStringToColor(json['color'] as String? ?? 'FCB126'),
     );
   }
 

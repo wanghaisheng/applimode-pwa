@@ -18,8 +18,8 @@ class FadeInWidget extends StatefulWidget {
 
 class _FadeInWidgetState extends State<FadeInWidget>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
+  AnimationController? _controller;
+  Animation<double>? _animation;
 
   @override
   void initState() {
@@ -28,24 +28,31 @@ class _FadeInWidgetState extends State<FadeInWidget>
       duration: Duration(milliseconds: widget.millisecondes),
       vsync: this,
     );
-    _animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    );
-    widget.isRepeat ? _controller.repeat(reverse: true) : _controller.forward();
+    if (_controller != null) {
+      _animation = CurvedAnimation(
+        parent: _controller!,
+        curve: Curves.easeIn,
+      );
+    }
+
+    widget.isRepeat
+        ? _controller?.repeat(reverse: true)
+        : _controller?.forward();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _animation,
-      child: widget.child,
-    );
+    return _animation != null
+        ? FadeTransition(
+            opacity: _animation!,
+            child: widget.child,
+          )
+        : widget.child;
   }
 }

@@ -221,7 +221,7 @@ AdminSettings adminSettings(Ref ref) {
         sharedPreferences.getString(homeBarImageUrlKey) ?? spareHomeBarImageUrl,
     homeBarStyle:
         sharedPreferences.getInt(homeBarStyleKey) ?? spareHomeBarStyle,
-    mainColor: Format.hexStringToColorForCat(
+    mainColor: Format.hexStringToColor(
         sharedPreferences.getString(mainColorKey) ?? spareMainColor),
     mainCategory: (json.decode(sharedPreferences.getString(mainCategoryKey) ??
             spareMainCategory) as List<dynamic>)

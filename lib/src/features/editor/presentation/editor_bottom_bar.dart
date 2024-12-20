@@ -5,6 +5,7 @@ import 'package:applimode_app/src/features/editor/presentation/editor_screen_con
 import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/check_category.dart';
+import 'package:applimode_app/src/utils/safe_build_call.dart';
 import 'package:applimode_app/src/utils/shared_preferences.dart';
 import 'package:applimode_app/src/utils/show_adaptive_alert_dialog.dart';
 import 'package:flutter/foundation.dart';
@@ -40,12 +41,14 @@ class EditorBottomBar extends ConsumerStatefulWidget {
 
 class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
   static const iconSizeForBottomBar = 32.0;
-  late int category;
+  int category = 0;
+
+  bool _isCancelled = false;
 
   @override
   void initState() {
     category = widget.catetory ?? 0;
-    widget.controller.addListener(_setState);
+    widget.controller.addListener(_safeSetState);
     super.initState();
   }
 
@@ -59,12 +62,18 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
 
   @override
   void dispose() {
-    widget.controller.removeListener(_setState);
+    _isCancelled = true;
+    widget.controller.removeListener(_safeSetState);
     super.dispose();
   }
 
-  void _setState() {
-    setState(() {});
+  void _safeSetState([VoidCallback? callback]) {
+    if (_isCancelled) return;
+    if (mounted) {
+      safeBuildCall(() => setState(() {
+            callback?.call();
+          }));
+    }
   }
 
   @override
@@ -156,8 +165,7 @@ class _EditorBottomBarState extends ConsumerState<EditorBottomBar> {
                         menuChildren: [
                           ...categoryList.map((item) => MenuItemButton(
                                 onPressed: () {
-                                  category = item.index;
-                                  setState(() {});
+                                  _safeSetState(() => category = item.index);
                                 },
                                 child: Text(item.title),
                               )),

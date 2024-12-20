@@ -7,6 +7,7 @@ import 'package:applimode_app/src/features/prompts/show_ai_dialog.dart';
 import 'package:applimode_app/src/utils/adaptive_back.dart';
 import 'package:applimode_app/src/utils/format.dart';
 import 'package:applimode_app/src/utils/regex.dart';
+import 'package:applimode_app/src/utils/safe_build_call.dart';
 import 'package:applimode_app/src/utils/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'package:applimode_app/src/common_widgets/percent_circular_indicator.dart';
@@ -153,9 +154,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       currentCategory = postContent?.category ?? 0;
       if (_isCancelled) return;
       if (mounted) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          setState(() {});
-        });
+        safeBuildCall(() => setState(() {}));
       }
       _remoteMedia = buildRemoteMedia(_controller.text);
     } catch (e) {
@@ -174,9 +173,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
         currentCategory = currentPost?.category ?? 0;
         if (_isCancelled) return;
         if (mounted) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            setState(() {});
-          });
+          safeBuildCall(() => setState(() {}));
         }
         _remoteMedia = buildRemoteMedia(_controller.text);
       }
@@ -289,11 +286,13 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
 
         if (_isCancelled) return;
         if (mounted) {
-          setState(() {
-            _controller.value = TextEditingValue(
-              text: newText,
-              selection: newSelection,
-            );
+          safeBuildCall(() {
+            setState(() {
+              _controller.value = TextEditingValue(
+                text: newText,
+                selection: newSelection,
+              );
+            });
           });
         }
 

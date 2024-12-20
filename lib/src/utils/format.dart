@@ -1,3 +1,5 @@
+// import 'dart:developer' as dev;
+
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/regex.dart';
@@ -59,7 +61,7 @@ class Format {
     return formatter.format(payNotNegative);
   }
 
-  static Color hexStringToColorForCat(String hexString) {
+  static Color hexStringToColor(String hexString) {
     hexString = hexString.toUpperCase().replaceAll("#", "");
     if (hexString.length == 6 && Regex.hexColorRegex.hasMatch(hexString)) {
       hexString = 'FF$hexString';
@@ -70,8 +72,36 @@ class Format {
     return hexInt == null ? const Color(0xFFFCB126) : Color(hexInt);
   }
 
+  /*
   static String colorToHexString(Color color) {
+    debugPrint('color: ${color.toString()}');
     return color.value.toRadixString(16).substring(2, 8);
+  }
+  */
+
+  // flutter 3.27 color migration
+  static String colorToHexString(Color color) {
+    // sRGB to 0 ~ 255
+    int red = (color.r * 255).round();
+    int green = (color.g * 255).round();
+    int blue = (color.b * 255).round();
+
+    // to hex
+    String hexRed = red.toRadixString(16).padLeft(2, '0');
+    String hexGreen = green.toRadixString(16).padLeft(2, '0');
+    String hexBlue = blue.toRadixString(16).padLeft(2, '0');
+    // dev.log('color: ${color.toString()}');
+    // dev.log('hexColor: $hexRed$hexGreen$hexBlue');
+
+    return '$hexRed$hexGreen$hexBlue';
+  }
+
+  static int colorToIntHex(Color color) {
+    int red = (color.r * 255).round();
+    int green = (color.g * 255).round();
+    int blue = (color.b * 255).round();
+
+    return (0xFF << 24) | (red << 16) | (green << 8) | blue;
   }
 
   static String durationToString(Duration duration) {

@@ -12,7 +12,9 @@ import 'package:applimode_app/src/features/admin_settings/domain/app_main_catego
 import 'package:applimode_app/src/features/admin_settings/presentation/admin_settings_screen_controller.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/async_value_ui.dart';
+import 'package:applimode_app/src/utils/format.dart';
 import 'package:applimode_app/src/utils/regex.dart';
+import 'package:applimode_app/src/utils/safe_build_call.dart';
 import 'package:applimode_app/src/utils/show_color_picker.dart';
 import 'package:applimode_app/src/utils/show_image_picker.dart';
 import 'package:applimode_app/src/utils/show_selection_dialog.dart';
@@ -40,31 +42,33 @@ class AdminSettingsScreen extends ConsumerStatefulWidget {
 class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleTextController = TextEditingController();
-  late int _titleStyle;
-  late String _titleImageUrl;
+  int _titleStyle = spareHomeBarStyle;
+  String _titleImageUrl = spareHomeBarImageUrl;
   XFile? _pickedFile;
   String? _pickedFileMediaType;
-  late Color _mainColor;
+  Color _mainColor = Format.hexStringToColor(spareMainColor);
   final List<CategoryController> _categories = [];
-  late bool _showAppStyleOption;
-  late PostsListType _postsListType;
-  late BoxColorType _boxColorType;
-  late double _mediaMaxMBSize;
-  late bool _useRecommendation;
-  late bool _useRanking;
-  late bool _useCategory;
-  late bool _showLogoutOnDrawer;
-  late bool _showLikeCount;
-  late bool _showDislikeCount;
-  late bool _showCommentCount;
-  late bool _showSumCount;
-  late bool _showCommentPlusLikeCount;
-  late bool _isThumbUpToHeart;
-  late bool _showUserAdminLabel;
-  late bool _showUserLikeCount;
-  late bool _showUserDislikeCount;
-  late bool _showUserSumCount;
-  late bool _isMaintenance;
+  bool _showAppStyleOption = spareShowAppStyleOption;
+  PostsListType _postsListType = sparePostsListType;
+  BoxColorType _boxColorType = spareBoxColorType;
+  double _mediaMaxMBSize = spareMediaMaxMBSize;
+  bool _useRecommendation = spareUseRecommendation;
+  bool _useRanking = spareUseRanking;
+  bool _useCategory = spareUseCategory;
+  bool _showLogoutOnDrawer = spareShowLogoutOnDrawer;
+  bool _showLikeCount = spareShowLikeCount;
+  bool _showDislikeCount = spareShowDislikeCount;
+  bool _showCommentCount = spareShowCommentCount;
+  bool _showSumCount = spareShowSumCount;
+  bool _showCommentPlusLikeCount = spareShowCommentPlusLikeCount;
+  bool _isThumbUpToHeart = spareIsThumbUpToHeart;
+  bool _showUserAdminLabel = spareShowUserAdminLabel;
+  bool _showUserLikeCount = spareShowUserLikeCount;
+  bool _showUserDislikeCount = spareShowUserDislikeCount;
+  bool _showUserSumCount = spareShowUserSumCount;
+  bool _isMaintenance = false;
+
+  bool _isCancelled = false;
 
   @override
   void initState() {
@@ -80,7 +84,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
     _mainColor = currentValues.mainColor;
     for (final mainCategory in currentValues.mainCategory) {
       final index = mainCategory.index;
-      dev.log('index: $index');
+      // dev.log('index: $index');
       _categories.add(
         CategoryController(
           index: index,
@@ -117,12 +121,22 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
 
   @override
   void dispose() {
+    _isCancelled = true;
     _titleTextController.dispose();
     for (final category in _categories) {
       category.pathController.dispose();
       category.titleController.dispose();
     }
     super.dispose();
+  }
+
+  void _safeSetState([VoidCallback? callback]) {
+    if (_isCancelled) return;
+    if (mounted) {
+      safeBuildCall(() => setState(() {
+            callback?.call();
+          }));
+    }
   }
 
   Future<void> _submit() async {
@@ -287,25 +301,19 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                           menuChildren: [
                             MenuItemButton(
                               onPressed: () {
-                                setState(() {
-                                  _titleStyle = 0;
-                                });
+                                _safeSetState(() => _titleStyle = 0);
                               },
                               child: Text(context.loc.textStyle),
                             ),
                             MenuItemButton(
                               onPressed: () {
-                                setState(() {
-                                  _titleStyle = 1;
-                                });
+                                _safeSetState(() => _titleStyle = 1);
                               },
                               child: Text(context.loc.imageStyle),
                             ),
                             MenuItemButton(
                               onPressed: () {
-                                setState(() {
-                                  _titleStyle = 2;
-                                });
+                                _safeSetState(() => _titleStyle = 2);
                               },
                               child: Text(context.loc.textImageStyle),
                             ),
@@ -327,7 +335,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                               firstTitle: context.loc.defaultImage,
                               firstTap: () async {
                                 context.pop();
-                                setState(() {
+                                _safeSetState(() {
                                   _titleImageUrl = spareHomeBarImageUrl;
                                   _pickedFile = null;
                                 });
@@ -343,7 +351,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                                 if (_pickedFile != null) {
                                   _pickedFileMediaType = _pickedFile!.mimeType;
                                 }
-                                setState(() {});
+                                _safeSetState();
                               },
                             );
                           },
@@ -361,7 +369,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     ),
                     maxLength: 32,
                     onChanged: (value) {
-                      setState(() {});
+                      _safeSetState();
                     },
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -397,9 +405,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                               currentColor: _mainColor,
                             );
                             if (selectedColor != null) {
-                              setState(() {
-                                _mainColor = selectedColor;
-                              });
+                              _safeSetState(() => _mainColor = selectedColor);
                             }
                           },
                           child: Text(context.loc.changeMainColor),
@@ -484,7 +490,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                                   colorPalettes: boxSingleColorPalettes,
                                 );
                                 if (selectedColor != null) {
-                                  setState(() {});
+                                  _safeSetState();
                                 }
                               },
                               child: Container(
@@ -514,22 +520,21 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                             vertical: 16,
                           ))),
                           onPressed: () {
-                            setState(() {
-                              final currentIndex = _categories.length;
-                              _categories.add(
-                                CategoryController(
-                                  index: currentIndex,
-                                  pathController: TextEditingController(),
-                                  titleController: TextEditingController(),
-                                  color: boxSingleColorPalettes[
-                                      _categories.length %
-                                          boxSingleColorPalettes.length],
-                                ),
-                              );
-                              dev.log('index: $currentIndex');
-                              final indexForName = (_categories.length)
-                                  .toString()
-                                  .padLeft(3, '0');
+                            final currentIndex = _categories.length;
+                            _categories.add(
+                              CategoryController(
+                                index: currentIndex,
+                                pathController: TextEditingController(),
+                                titleController: TextEditingController(),
+                                color: boxSingleColorPalettes[
+                                    _categories.length %
+                                        boxSingleColorPalettes.length],
+                              ),
+                            );
+                            dev.log('index: $currentIndex');
+                            final indexForName =
+                                (_categories.length).toString().padLeft(3, '0');
+                            _safeSetState(() {
                               _categories[currentIndex].pathController.text =
                                   'cat$indexForName';
                               _categories[currentIndex].titleController.text =
@@ -551,12 +556,10 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                           ))),
                           onPressed: () {
                             if (_categories.length > 1) {
-                              setState(() {
-                                // remove controllers
-                                _categories.last.pathController.dispose();
-                                _categories.last.titleController.dispose();
-                                _categories.removeLast();
-                              });
+                              // remove controllers
+                              _categories.last.pathController.dispose();
+                              _categories.last.titleController.dispose();
+                              _safeSetState(() => _categories.removeLast());
                             }
                           },
                           icon: const Icon(Icons.remove),
@@ -571,9 +574,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     title: Text(context.loc.showAppStyleButton),
                     value: _showAppStyleOption,
                     onChanged: (value) {
-                      setState(() {
-                        _showAppStyleOption = value;
-                      });
+                      _safeSetState(() => _showAppStyleOption = value);
                     },
                   ),
                   const Divider(),
@@ -601,41 +602,36 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     menuChildren: [
                       MenuItemButton(
                         onPressed: () {
-                          setState(() {
-                            _postsListType = PostsListType.small;
-                          });
+                          _safeSetState(
+                              () => _postsListType = PostsListType.small);
                         },
                         child: Text(context.loc.listType),
                       ),
                       MenuItemButton(
                         onPressed: () {
-                          setState(() {
-                            _postsListType = PostsListType.square;
-                          });
+                          _safeSetState(
+                              () => _postsListType = PostsListType.square);
                         },
                         child: Text(context.loc.cardType),
                       ),
                       MenuItemButton(
                         onPressed: () {
-                          setState(() {
-                            _postsListType = PostsListType.page;
-                          });
+                          _safeSetState(
+                              () => _postsListType = PostsListType.page);
                         },
                         child: Text(context.loc.pageType),
                       ),
                       MenuItemButton(
                         onPressed: () {
-                          setState(() {
-                            _postsListType = PostsListType.round;
-                          });
+                          _safeSetState(
+                              () => _postsListType = PostsListType.round);
                         },
                         child: Text(context.loc.roundCardType),
                       ),
                       MenuItemButton(
                         onPressed: () {
-                          setState(() {
-                            _postsListType = PostsListType.mixed;
-                          });
+                          _safeSetState(
+                              () => _postsListType = PostsListType.mixed);
                         },
                         child: Text(context.loc.mixedType),
                       ),
@@ -666,28 +662,18 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     menuChildren: [
                       MenuItemButton(
                         onPressed: () {
-                          setState(() {
-                            _boxColorType = BoxColorType.single;
-                          });
+                          _safeSetState(
+                              () => _boxColorType = BoxColorType.single);
                         },
                         child: Text(context.loc.singleColor),
                       ),
                       MenuItemButton(
                         onPressed: () {
-                          setState(() {
-                            _boxColorType = BoxColorType.gradient;
-                          });
+                          _safeSetState(
+                              () => _boxColorType = BoxColorType.gradient);
                         },
                         child: Text(context.loc.gradientColor),
                       ),
-                      /*
-                      MenuItemButton(
-                        onPressed: () {
-                          _postsListType = PostsListType.page;
-                        },
-                        child: Text(context.loc.pageType),
-                      ),
-                      */
                     ],
                   ),
                   const Divider(),
@@ -714,9 +700,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                         .map<MenuItemButton>(
                           (double size) => MenuItemButton(
                             onPressed: () {
-                              setState(() {
-                                _mediaMaxMBSize = size;
-                              });
+                              _safeSetState(() => _mediaMaxMBSize = size);
                             },
                             child: Text('${size.round()} MB'),
                           ),
@@ -728,9 +712,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     title: Text(context.loc.useRecommendation),
                     value: _useRecommendation,
                     onChanged: (value) {
-                      setState(() {
-                        _useRecommendation = value;
-                      });
+                      _safeSetState(() => _useRecommendation = value);
                     },
                   ),
                   const Divider(),
@@ -738,9 +720,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     title: Text(context.loc.useRanking),
                     value: _useRanking,
                     onChanged: (value) {
-                      setState(() {
-                        _useRanking = value;
-                      });
+                      _safeSetState(() => _useRanking = value);
                     },
                   ),
                   const Divider(),
@@ -748,9 +728,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     title: Text(context.loc.useCategory),
                     value: _useCategory,
                     onChanged: (value) {
-                      setState(() {
-                        _useCategory = value;
-                      });
+                      _safeSetState(() => _useCategory = value);
                     },
                   ),
                   const Divider(),
@@ -758,9 +736,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     title: Text(context.loc.showLogoutOnDrawer),
                     value: _showLogoutOnDrawer,
                     onChanged: (value) {
-                      setState(() {
-                        _showLogoutOnDrawer = value;
-                      });
+                      _safeSetState(() => _showLogoutOnDrawer = value);
                     },
                   ),
                   const Divider(),
@@ -768,9 +744,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     title: Text(context.loc.showCommentCount),
                     value: _showCommentCount,
                     onChanged: (value) {
-                      setState(() {
-                        _showCommentCount = value;
-                      });
+                      _safeSetState(() => _showCommentCount = value);
                     },
                   ),
                   const Divider(),
@@ -778,9 +752,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     title: Text(context.loc.showLikeCount),
                     value: _showLikeCount,
                     onChanged: (value) {
-                      setState(() {
-                        _showLikeCount = value;
-                      });
+                      _safeSetState(() => _showLikeCount = value);
                     },
                   ),
                   const Divider(),
@@ -788,9 +760,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     title: Text(context.loc.showDislikeCount),
                     value: _showDislikeCount,
                     onChanged: (value) {
-                      setState(() {
-                        _showDislikeCount = value;
-                      });
+                      _safeSetState(() => _showDislikeCount = value);
                     },
                   ),
                   const Divider(),
@@ -798,9 +768,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     title: Text(context.loc.showSumCount),
                     value: _showSumCount,
                     onChanged: (value) {
-                      setState(() {
-                        _showSumCount = value;
-                      });
+                      _safeSetState(() => _showSumCount = value);
                     },
                   ),
                   const Divider(),
@@ -808,9 +776,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     title: Text(context.loc.showCommentPlusLikeCount),
                     value: _showCommentPlusLikeCount,
                     onChanged: (value) {
-                      setState(() {
-                        _showCommentPlusLikeCount = value;
-                      });
+                      _safeSetState(() => _showCommentPlusLikeCount = value);
                     },
                   ),
                   const Divider(),
@@ -818,9 +784,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     title: Text(context.loc.isThumbUpToHeart),
                     value: _isThumbUpToHeart,
                     onChanged: (value) {
-                      setState(() {
-                        _isThumbUpToHeart = value;
-                      });
+                      _safeSetState(() => _isThumbUpToHeart = value);
                     },
                   ),
                   const Divider(),
@@ -828,9 +792,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     title: Text(context.loc.showUserAdminLabel),
                     value: _showUserAdminLabel,
                     onChanged: (value) {
-                      setState(() {
-                        _showUserAdminLabel = value;
-                      });
+                      _safeSetState(() => _showUserAdminLabel = value);
                     },
                   ),
                   const Divider(),
@@ -838,9 +800,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     title: Text(context.loc.showUserLikeCount),
                     value: _showUserLikeCount,
                     onChanged: (value) {
-                      setState(() {
-                        _showUserLikeCount = value;
-                      });
+                      _safeSetState(() => _showUserLikeCount = value);
                     },
                   ),
                   const Divider(),
@@ -848,9 +808,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     title: Text(context.loc.showUserDislikeCount),
                     value: _showUserDislikeCount,
                     onChanged: (value) {
-                      setState(() {
-                        _showUserDislikeCount = value;
-                      });
+                      _safeSetState(() => _showUserDislikeCount = value);
                     },
                   ),
                   const Divider(),
@@ -858,9 +816,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     title: Text(context.loc.showUserSumCount),
                     value: _showUserSumCount,
                     onChanged: (value) {
-                      setState(() {
-                        _showUserSumCount = value;
-                      });
+                      _safeSetState(() => _showUserSumCount = value);
                     },
                   ),
                   const Divider(),
@@ -868,9 +824,7 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
                     title: Text(context.loc.systemMaintenanceMode),
                     value: _isMaintenance,
                     onChanged: (value) {
-                      setState(() {
-                        _isMaintenance = value;
-                      });
+                      _safeSetState(() => _isMaintenance = value);
                     },
                   ),
                   const Divider(),

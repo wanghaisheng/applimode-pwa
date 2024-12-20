@@ -16,8 +16,6 @@ class AppSettingsController extends _$AppSettingsController {
     final sharedPreferences = ref.read(prefsWithCacheProvider).requireValue;
     final appThemeMode =
         ThemeMode.values[sharedPreferences.getInt('appThemeMode') ?? 0];
-    final appMainColor =
-        Color(sharedPreferences.getInt('appColor') ?? Colors.orange.value);
     final appLocaleString = sharedPreferences.getString('appLocale');
     final appLocale = appLocaleString == null ? null : Locale(appLocaleString);
     final appStyle =
@@ -25,7 +23,6 @@ class AppSettingsController extends _$AppSettingsController {
 
     return AppSettings(
       appThemeMode: appThemeMode,
-      appMainColor: appMainColor,
       appLocale: appLocale,
       appStyle: appStyle,
     );
@@ -39,20 +36,6 @@ class AppSettingsController extends _$AppSettingsController {
 
     state = AppSettings(
       appThemeMode: appThemeMode,
-      appMainColor: state.appMainColor,
-      appLocale: state.appLocale,
-      appStyle: state.appStyle,
-    );
-  }
-
-  Future<void> setAppColor(Color color) async {
-    final sharedPreferences = ref.read(prefsWithCacheProvider).requireValue;
-    await sharedPreferences.setInt('appColor', color.value);
-    final appMainColor =
-        Color(sharedPreferences.getInt('appColor') ?? 0xFFFCB126);
-    state = AppSettings(
-      appThemeMode: state.appThemeMode,
-      appMainColor: appMainColor,
       appLocale: state.appLocale,
       appStyle: state.appStyle,
     );
@@ -65,7 +48,6 @@ class AppSettingsController extends _$AppSettingsController {
     final appLocale = appLocaleString == null ? null : Locale(appLocaleString);
     state = AppSettings(
       appThemeMode: state.appThemeMode,
-      appMainColor: state.appMainColor,
       appLocale: appLocale,
       appStyle: state.appStyle,
     );
@@ -76,7 +58,6 @@ class AppSettingsController extends _$AppSettingsController {
     await sharedPreferences.remove('appLocale');
     state = AppSettings(
       appThemeMode: state.appThemeMode,
-      appMainColor: state.appMainColor,
       appLocale: null,
       appStyle: state.appStyle,
     );
@@ -90,7 +71,6 @@ class AppSettingsController extends _$AppSettingsController {
 
     state = AppSettings(
       appThemeMode: state.appThemeMode,
-      appMainColor: state.appMainColor,
       appLocale: state.appLocale,
       appStyle: appStyle,
     );

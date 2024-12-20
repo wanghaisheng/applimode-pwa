@@ -13,6 +13,7 @@ import 'package:applimode_app/src/routing/app_router.dart';
 import 'package:applimode_app/src/utils/adaptive_back.dart';
 import 'package:applimode_app/src/utils/app_loacalizations_context.dart';
 import 'package:applimode_app/src/utils/format.dart';
+import 'package:applimode_app/src/utils/safe_build_call.dart';
 import 'package:applimode_app/src/utils/updated_post_ids_list.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -36,12 +37,20 @@ class PostScreenBottomBar extends ConsumerStatefulWidget {
 }
 
 class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
-  late Post currentPost;
+  Post? currentPost;
+
+  bool _isCancelled = false;
 
   @override
   void initState() {
     super.initState();
     currentPost = widget.post;
+  }
+
+  @override
+  void dispose() {
+    _isCancelled = true;
+    super.dispose();
   }
 
   // update post like, dislike count
@@ -51,8 +60,9 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
           await ref.read(postsRepositoryProvider).fetchPost(widget.post.id);
       if (updatedPost != null) {
         currentPost = updatedPost;
+        if (_isCancelled) return;
         if (mounted) {
-          setState(() {});
+          safeBuildCall(() => setState(() {}));
         }
       }
     }
@@ -60,6 +70,11 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
 
   @override
   Widget build(BuildContext context) {
+    // when currentPost is null, return empty box.
+    if (currentPost == null) {
+      return const SizedBox.shrink();
+    }
+
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final mainColor = colorScheme.secondary;
@@ -108,19 +123,19 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
             children: [
               if (adminSettings.showLikeCount) ...[
                 PostLikeButton(
-                  postId: currentPost.id,
-                  postWriterId: currentPost.uid,
+                  postId: currentPost!.id,
+                  postWriterId: currentPost!.uid,
                   isHeart: adminSettings.isThumbUpToHeart,
                   postWriter: widget.postWriter,
                   iconSize: postScreenBottomBarIconSize,
                 ),
                 InkWell(
                   onTap: () =>
-                      context.push(ScreenPaths.postLikes(currentPost.id)),
+                      context.push(ScreenPaths.postLikes(currentPost!.id)),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 2, right: 16),
                     child: Text(
-                      Format.formatNumber(context, currentPost.likeCount),
+                      Format.formatNumber(context, currentPost!.likeCount),
                       style: countTextStyle,
                     ),
                   ),
@@ -128,17 +143,17 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
               ],
               if (adminSettings.showDislikeCount) ...[
                 PostDislikeButton(
-                  postId: currentPost.id,
-                  postWriterId: currentPost.uid,
+                  postId: currentPost!.id,
+                  postWriterId: currentPost!.uid,
                   iconSize: postScreenBottomBarIconSize,
                 ),
                 InkWell(
                   onTap: () =>
-                      context.push(ScreenPaths.postDislikes(currentPost.id)),
+                      context.push(ScreenPaths.postDislikes(currentPost!.id)),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 2, right: 16),
                     child: Text(
-                      Format.formatNumber(context, currentPost.dislikeCount),
+                      Format.formatNumber(context, currentPost!.dislikeCount),
                       style: countTextStyle,
                     ),
                   ),
@@ -151,27 +166,27 @@ class _PostScreenBottomBarState extends ConsumerState<PostScreenBottomBar> {
                 Padding(
                   padding: const EdgeInsets.only(left: 2, right: 16),
                   child: Text(
-                    Format.formatNumber(context, currentPost.sumCount),
+                    Format.formatNumber(context, currentPost!.sumCount),
                     style: countTextStyle,
                   ),
                 ),
               ],
               if (adminSettings.showCommentCount) ...[
                 PostCommentButton(
-                  postId: currentPost.id,
+                  postId: currentPost!.id,
                   postWriter: widget.postWriter,
                   iconSize: postScreenBottomBarIconSize,
                 ),
                 InkWell(
                   onTap: () => context.push(
-                    ScreenPaths.comments(currentPost.id),
+                    ScreenPaths.comments(currentPost!.id),
                     extra: widget.postWriter,
                   ),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 2, right: 16),
                     child: Text(
                       Format.formatNumber(
-                          context, currentPost.postCommentCount),
+                          context, currentPost!.postCommentCount),
                       style: countTextStyle,
                     ),
                   ),

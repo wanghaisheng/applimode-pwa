@@ -1,6 +1,7 @@
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
 import 'package:applimode_app/src/features/editor/presentation/editor_screen_ai_controller.dart';
 import 'package:applimode_app/src/features/prompts/data/user_prompts_repository.dart';
+import 'package:applimode_app/src/utils/safe_build_call.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,11 +46,23 @@ class _AiDialogState extends ConsumerState<AiDialog> {
   final _newPromptController = TextEditingController();
   final _predefinedPromptController = TextEditingController();
 
+  bool _isCancelled = false;
+
   @override
   void dispose() {
+    _isCancelled = true;
     _newPromptController.dispose;
     _predefinedPromptController.dispose;
     super.dispose();
+  }
+
+  void _safeSetState([VoidCallback? callback]) {
+    if (_isCancelled) return;
+    if (mounted) {
+      safeBuildCall(() => setState(() {
+            callback?.call();
+          }));
+    }
   }
 
   @override
@@ -110,9 +123,8 @@ class _AiDialogState extends ConsumerState<AiDialog> {
                                   width: MediaQuery.sizeOf(context).width - 96,
                                   child: MenuItemButton(
                                     onPressed: () {
-                                      setState(() {
-                                        _newPromptController.text = e.$2;
-                                      });
+                                      _safeSetState(() =>
+                                          _newPromptController.text = e.$2);
                                     },
                                     trailingIcon: IconButton(
                                         onPressed: () async {
@@ -172,7 +184,7 @@ class _AiDialogState extends ConsumerState<AiDialog> {
                         hintText: context.loc.promptHint,
                       ),
                       onChanged: (_) {
-                        setState(() {});
+                        _safeSetState();
                       },
                     ),
                     const SizedBox(height: 16),

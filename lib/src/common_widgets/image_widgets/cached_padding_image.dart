@@ -39,7 +39,7 @@ class CachedPaddingImage extends StatelessWidget {
       child: InkWell(
         onTap: postId != null
             ? () => context.push(
-                  ScreenPaths.image(imageUrl),
+                  ScreenPaths.fullImage(imageUrl),
                   extra: MultiImages(
                     imageUrl: imageUrl,
                     imageUrlsList: imageUrlsList,

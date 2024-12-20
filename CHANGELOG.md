@@ -3,6 +3,13 @@
 ### New Features and Improvements
 ### Bug Fixes
 -->
+## Version 0.2.5 (December 20, 2024)
+- Requires Flutter 3.27 (please upgrade to Flutter 3.27).
+- Fixed lint issues.
+- Removed late variables.
+- Improved CustomColorPicker.
+- Updated the method for calling setState.
+
 ## Version 0.2.4 (December 10, 2024)
 - Improved SimplePageListView performance.
 - Improved soft keyboard focus management.

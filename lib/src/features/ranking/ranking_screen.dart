@@ -1,4 +1,5 @@
 import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
+import 'package:applimode_app/src/utils/safe_build_call.dart';
 import 'package:flutter/foundation.dart';
 import 'package:applimode_app/src/common_widgets/simple_page_list_view.dart';
 import 'package:applimode_app/src/common_widgets/user_items/user_item.dart';
@@ -44,25 +45,38 @@ class RankingScreen extends ConsumerStatefulWidget {
 }
 
 class _RankingScreenState extends ConsumerState<RankingScreen> {
-  late RankFirstFilter firstFilter;
-  late RankSecondFilter secondFilter;
-  late int currentYear;
-  late List<int> yearsList;
+  RankFirstFilter firstFilter = RankFirstFilter.post;
+  RankSecondFilter secondFilter = RankSecondFilter.likeCount;
+  int currentYear = rankingCurrentYear;
+  List<int> yearsList = [];
   int? yearFilter;
   int? monthFilter;
   int? dayFilter;
-  late Query<dynamic>? query;
+  Query<dynamic>? query;
+
+  bool _isCancelled = false;
 
   final List<int> monthsList = List<int>.generate(12, (index) => index + 1);
 
   @override
   void initState() {
     super.initState();
-    firstFilter = RankFirstFilter.post;
-    secondFilter = RankSecondFilter.likeCount;
     currentYear = int.tryParse(DateFormat('y').format(DateTime.now())) ??
         rankingCurrentYear;
     yearsList = [for (var i = currentYear; i >= currentYear - 4; i--) i];
+  }
+
+  @override
+  void dispose() {
+    _isCancelled = true;
+    super.dispose();
+  }
+
+  void _safeSetState() {
+    if (_isCancelled) return;
+    if (mounted) {
+      safeBuildCall(() => setState(() {}));
+    }
   }
 
   ProviderListenable<int>? _buildListState() {
@@ -221,7 +235,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                               monthFilter = null;
                               dayFilter = null;
                             }
-                            setState(() {});
+                            _safeSetState();
                           },
                           child: Text(getFirstLabel(item)),
                         ),
@@ -246,7 +260,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                         MenuItemButton(
                           onPressed: () {
                             secondFilter = RankSecondFilter.likeCount;
-                            setState(() {});
+                            _safeSetState();
                           },
                           child:
                               Text(getSecondLabel(RankSecondFilter.likeCount)),
@@ -255,7 +269,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                         MenuItemButton(
                           onPressed: () {
                             secondFilter = RankSecondFilter.dislikeCount;
-                            setState(() {});
+                            _safeSetState();
                           },
                           child: Text(
                               getSecondLabel(RankSecondFilter.dislikeCount)),
@@ -264,7 +278,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                         MenuItemButton(
                           onPressed: () {
                             secondFilter = RankSecondFilter.sumCount;
-                            setState(() {});
+                            _safeSetState();
                           },
                           child:
                               Text(getSecondLabel(RankSecondFilter.sumCount)),
@@ -274,7 +288,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                       (item) => MenuItemButton(
                         onPressed: () {
                           secondFilter = item;
-                          setState(() {});
+                          _safeSetState();
                         },
                         child: Text(getSecondLabel(item)),
                       ),
@@ -302,7 +316,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                           yearFilter = null;
                           monthFilter = null;
                           dayFilter = null;
-                          setState(() {});
+                          _safeSetState();
                         },
                         child: Text(context.loc.allTime),
                       ),
@@ -310,7 +324,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                         (year) => MenuItemButton(
                           onPressed: () {
                             yearFilter = year;
-                            setState(() {});
+                            _safeSetState();
                           },
                           child: Text(year.toString()),
                         ),
@@ -339,7 +353,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                         onPressed: () {
                           monthFilter = null;
                           dayFilter = null;
-                          setState(() {});
+                          _safeSetState();
                         },
                         child: Text(context.loc.allMonths),
                       ),
@@ -347,7 +361,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                         (month) => MenuItemButton(
                           onPressed: () {
                             monthFilter = month;
-                            setState(() {});
+                            _safeSetState();
                           },
                           child: Text(Format.getMonthLabel(context, month)),
                         ),
@@ -381,7 +395,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                       MenuItemButton(
                         onPressed: () {
                           dayFilter = null;
-                          setState(() {});
+                          _safeSetState();
                         },
                         child: Text(context.loc.allDays),
                       ),
@@ -390,7 +404,7 @@ class _RankingScreenState extends ConsumerState<RankingScreen> {
                           (day) => MenuItemButton(
                             onPressed: () {
                               dayFilter = day;
-                              setState(() {});
+                              _safeSetState();
                             },
                             child: Text(
                               Format.getDayLabel(
@@ -737,7 +751,10 @@ class RankingMenuAnchorButton extends StatelessWidget {
           ),
           backgroundColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.disabled)) {
-              return Theme.of(context).colorScheme.onSurface.withOpacity(0.12);
+              return Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.12);
             } else {
               return buttonBackgroundColor;
             }

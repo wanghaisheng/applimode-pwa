@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:applimode_app/src/utils/safe_build_call.dart';
 import 'package:applimode_app/src/utils/string_converter.dart';
 import 'package:flutter/material.dart';
 
@@ -16,25 +17,30 @@ class MarkdownField extends StatefulWidget {
 }
 
 class _MarkdownFieldState extends State<MarkdownField> {
-  late Timer t;
+  bool _isCancelled = false;
+  Timer? _debounceTimer;
+
   @override
   void initState() {
-    t = Timer(const Duration(milliseconds: 0), () {});
     widget.controller.addListener(_renderText);
     super.initState();
   }
 
   @override
   void dispose() {
-    t.cancel();
+    _isCancelled = true;
+    _debounceTimer?.cancel();
     widget.controller.removeListener(_renderText);
     super.dispose();
   }
 
   void _renderText() {
-    t.cancel();
-    t = Timer(const Duration(milliseconds: 500), () {
-      setState(() {});
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      if (_isCancelled) return;
+      if (mounted) {
+        safeBuildCall(() => setState(() {}));
+      }
     });
   }
 

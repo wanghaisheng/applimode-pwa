@@ -10,6 +10,7 @@ import 'package:applimode_app/src/utils/custom_headers.dart';
 import 'package:applimode_app/src/utils/posts_item_mute_state.dart';
 import 'package:applimode_app/custom_settings.dart';
 import 'package:applimode_app/src/utils/posts_item_playing_state.dart';
+import 'package:applimode_app/src/utils/safe_build_call.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,8 +46,10 @@ class MainVideoPlayer extends ConsumerStatefulWidget {
 }
 
 class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller;
   bool isLoading = false;
+
+  bool _isCancelled = false;
 
   @override
   void initState() {
@@ -55,65 +58,104 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
       Uri.parse(widget.videoUrl),
       httpHeaders: useRTwoSecureGet ? rTwoSecureHeader : const {},
     );
-    _controller.addListener(_setState);
-    final isMute = ref.read(postsItemMuteStateProvider);
-    // _controller.setLooping(true);
-    if (isMute) {
-      _controller.setVolume(0.0);
-    }
-    if (widget.videoImageUrl == null || widget.videoImageUrl!.isEmpty) {
-      isLoading = true;
-      setState(() {});
-      _controller.initialize().then((value) {
-        isLoading = false;
-        setState(() {});
-      }, onError: (e) => debugPrint('videoInit: ${e.toString()}'));
+    if (_controller != null) {
+      _controller?.addListener(_setStateListener);
+      final isMute = ref.read(postsItemMuteStateProvider);
+      // _controller.setLooping(true);
+      if (isMute) {
+        _controller?.setVolume(0.0);
+      }
+      if (widget.videoImageUrl == null || widget.videoImageUrl!.isEmpty) {
+        isLoading = true;
+        _controller?.initialize().then((_) {
+          isLoading = false;
+        },
+            onError: (e) =>
+                debugPrint('MainVideoPlayer-initState-error: ${e.toString()}'));
+      }
     }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _isCancelled = true;
+    _controller?.dispose();
     WakelockPlus.disable();
-    _controller.removeListener(_setState);
+    _controller?.removeListener(_setStateListener);
     super.dispose();
   }
 
-  void _setState() {
-    setState(() {
-      if (_controller.value.isPlaying) {
-        WakelockPlus.enable();
+  void _safeSetState([VoidCallback? callback]) {
+    if (_isCancelled) return;
+    if (mounted) {
+      safeBuildCall(() => setState(() {
+            callback?.call();
+          }));
+    }
+  }
+
+  void _setStateListener() {
+    if (_controller != null) {
+      try {
+        _safeSetState(() {
+          if (_controller!.value.isPlaying) {
+            WakelockPlus.enable();
+          }
+          if (!_controller!.value.isPlaying) {
+            WakelockPlus.disable();
+          }
+        });
+      } catch (e) {
+        debugPrint('MainVideoPlayer-_setStateListener: ${e.toString()}');
       }
-      if (!_controller.value.isPlaying) {
-        WakelockPlus.disable();
-      }
-    });
+    }
   }
 
   Future<void> _initializeVideo() async {
-    isLoading = true;
-    setState(() {});
-    _controller.initialize().then((value) {
-      isLoading = false;
-      setState(() {});
-    }, onError: (e) => debugPrint('videoInit: ${e.toString()}'));
-    _controller.play();
+    if (_controller != null) {
+      try {
+        // _safeSetState(() => isLoading = true);
+        isLoading = true;
+        _controller?.initialize().then((value) {
+          isLoading = false;
+        },
+            onError: (e) => debugPrint(
+                'MainVideoPlayer-_initializeVideo-error: ${e.toString()}'));
+        _controller?.play();
+      } catch (e) {
+        debugPrint('MainVideoPlayer-_initializeVideo-error: ${e.toString()}');
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     ref.listen(postsItemPlayingStateProvider, (_, next) {
       if (next == false) {
-        _controller.pause();
+        _controller?.pause();
       }
     });
+
+    // VideoPlayerController is null
+    if (_controller == null) {
+      return Container(
+        color: Colors.black,
+        child: Center(
+          child: Text(
+            context.loc.videoNotFound,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+    }
+
     return AspectRatio(
       aspectRatio: widget.aspectRatio ?? 1.0,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          if (widget.videoImageUrl != null &&
-              !_controller.value.isInitialized) ...[
+          if (widget.videoImageUrl != null) ...[
             /*
             Positioned.fill(
               child: Container(
@@ -150,7 +192,7 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
               ),
             ),
             */
-            if (!isLoading)
+            if (!isLoading && !_controller!.value.isInitialized)
               Padding(
                 padding: widget.isRound
                     ? const EdgeInsets.only(bottom: 64)
@@ -162,13 +204,13 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
                   color: Colors.white70,
                 ),
               ),
-            if (isLoading)
+            if (isLoading && !_controller!.value.isInitialized)
               const CupertinoActivityIndicator(
                 color: Colors.white,
               ),
           ],
           // Positioned.fill(child: Container(color: Colors.black)),
-          if (_controller.value.hasError)
+          if (_controller!.value.hasError)
             Positioned.fill(
               child: Container(
                 color: Colors.black,
@@ -181,8 +223,8 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
                 ),
               ),
             ),
-          if (_controller.value.isInitialized &&
-              !_controller.value.hasError) ...[
+          if (_controller!.value.isInitialized &&
+              !_controller!.value.hasError) ...[
             /*
             Positioned.fill(
               child: Container(
@@ -196,9 +238,9 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
                 clipBehavior: Clip.hardEdge,
                 fit: BoxFit.cover,
                 child: SizedBox(
-                  width: _controller.value.size.width,
-                  height: _controller.value.size.height,
-                  child: VideoPlayer(_controller),
+                  width: _controller!.value.size.width,
+                  height: _controller!.value.size.height,
+                  child: VideoPlayer(_controller!),
                 ),
               ),
             ),
@@ -211,17 +253,18 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
               ),
               */
             if (isLoading ||
-                _controller.value.isBuffering && !_controller.value.isCompleted)
+                _controller!.value.isBuffering &&
+                    !_controller!.value.isCompleted)
               const Align(
                 alignment: Alignment.center,
                 child: CupertinoActivityIndicator(color: Colors.white),
               ),
-            if (!_controller.value.isPlaying)
+            if (!_controller!.value.isPlaying)
               VideoPlayerCenterIcon(
                 isRound: widget.isRound,
               ),
             VideoPlayerGestureDetector(
-              controller: _controller,
+              controller: _controller!,
             ),
             SafeArea(
               top: widget.isPage ? true : false,
@@ -230,7 +273,7 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
               right: widget.isPage ? true : false,
               child: VideoVolumeButton(
                 padding: const EdgeInsets.only(top: 8, left: 8),
-                controller: _controller,
+                controller: _controller!,
               ),
             ),
             SafeArea(
@@ -239,14 +282,14 @@ class _MainVideoPlayerState extends ConsumerState<MainVideoPlayer> {
               left: widget.isPage ? true : false,
               right: widget.isPage ? true : false,
               child: VideoProgressBar(
-                controller: _controller,
+                controller: _controller!,
               ),
             ),
           ],
           /*
           if (widget.writer != null && widget.post != null)
             VideoContents(
-              controller: _controller,
+              controller: _controller!,
               post: widget.post!,
               writer: widget.writer!,
               index: widget.index,

@@ -152,23 +152,6 @@ const zeroDivider24 = Divider(
   height: 0,
 );
 
-// colors for the color picker slide. don't change this.
-const List<Color> colorPickerColors = [
-  Color.fromARGB(255, 255, 0, 0),
-  Color.fromARGB(255, 255, 128, 0),
-  Color.fromARGB(255, 255, 255, 0),
-  Color.fromARGB(255, 128, 255, 0),
-  Color.fromARGB(255, 0, 255, 0),
-  Color.fromARGB(255, 0, 255, 128),
-  Color.fromARGB(255, 0, 255, 255),
-  Color.fromARGB(255, 0, 128, 255),
-  Color.fromARGB(255, 0, 0, 255),
-  Color.fromARGB(255, 127, 0, 255),
-  Color.fromARGB(255, 255, 0, 255),
-  Color.fromARGB(255, 255, 0, 127),
-  Color.fromARGB(255, 128, 128, 128),
-];
-
 // enum type
 enum PostsListType {
   small,

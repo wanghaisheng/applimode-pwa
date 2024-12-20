@@ -27,45 +27,65 @@ class AnimatedColorContainer extends StatefulWidget {
 
 class _AnimatedColorContainerState extends State<AnimatedColorContainer>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<Color?> _animationOne;
-  late Animation<Color?> _animationTwo;
+  AnimationController? _controller;
+  Animation<Color?>? _animationOne;
+  Animation<Color?>? _animationTwo;
+
+  final colorCount = Random().nextInt(gradientColorPalettes.length);
 
   @override
   void initState() {
     super.initState();
-    final colorCount = Random().nextInt(25);
-    final firstColor = gradientColorPalettes[colorCount][0];
-    final secondColor = gradientColorPalettes[colorCount][1];
 
-    _controller = AnimationController(
-      duration: Duration(milliseconds: widget.millisecondes),
-      vsync: this,
-    );
+    if (widget.storyImageUrl == null) {
+      final firstColor = gradientColorPalettes[colorCount][0];
+      final secondColor = gradientColorPalettes[colorCount][1];
 
-    _animationOne = ColorTween(begin: firstColor, end: secondColor).animate(
-        CurvedAnimation(parent: _controller, curve: Curves.easeOutSine));
-    _animationTwo = ColorTween(begin: secondColor, end: firstColor).animate(
-        CurvedAnimation(parent: _controller, curve: Curves.easeOutSine));
+      _controller = AnimationController(
+        duration: Duration(milliseconds: widget.millisecondes),
+        vsync: this,
+      );
 
-    widget.isRepeat ? _controller.repeat(reverse: true) : _controller.forward();
+      _animationOne = _controller != null
+          ? ColorTween(begin: firstColor, end: secondColor).animate(
+              CurvedAnimation(parent: _controller!, curve: Curves.easeOutSine))
+          : null;
+      _animationTwo = _controller != null
+          ? ColorTween(begin: secondColor, end: firstColor).animate(
+              CurvedAnimation(parent: _controller!, curve: Curves.easeOutSine))
+          : null;
+
+      widget.isRepeat
+          ? _controller?.repeat(reverse: true)
+          : _controller?.forward();
+    }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return SingleChildScrollView(
+    return _controller != null
+        ? AnimatedBuilder(
+            animation: _controller!,
+            builder: (context, child) {
+              return _buildProfilebox();
+            },
+          )
+        : _buildProfilebox();
+  }
+
+  Widget _buildProfilebox() {
+    final headers = useRTwoSecureGet ? rTwoSecureHeader : null;
+    return CustomScrollView(
+      slivers: [
+        SliverFillRemaining(
+          hasScrollBody: false,
           child: Container(
-            constraints:
-                BoxConstraints(minHeight: MediaQuery.sizeOf(context).height),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary,
               gradient: widget.storyImageUrl != null
@@ -74,7 +94,12 @@ class _AnimatedColorContainerState extends State<AnimatedColorContainer>
                       // stops: const [0.2, 0.6],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [_animationOne.value!, _animationTwo.value!],
+                      colors: [
+                        _animationOne?.value ??
+                            gradientColorPalettes[colorCount][0],
+                        _animationTwo?.value ??
+                            gradientColorPalettes[colorCount][1]
+                      ],
                     ),
               image: widget.storyImageUrl == null
                   ? null
@@ -82,13 +107,11 @@ class _AnimatedColorContainerState extends State<AnimatedColorContainer>
                       image: kIsWeb
                           ? NetworkImage(
                               widget.storyImageUrl!,
-                              headers:
-                                  useRTwoSecureGet ? rTwoSecureHeader : null,
+                              headers: headers,
                             )
                           : CachedNetworkImageProvider(
                               widget.storyImageUrl!,
-                              headers:
-                                  useRTwoSecureGet ? rTwoSecureHeader : null,
+                              headers: headers,
                             ) as ImageProvider,
                       fit: BoxFit.cover,
                       onError: (exception, stackTrace) =>
@@ -97,8 +120,8 @@ class _AnimatedColorContainerState extends State<AnimatedColorContainer>
             ),
             child: widget.child,
           ),
-        );
-      },
+        )
+      ],
     );
   }
 }

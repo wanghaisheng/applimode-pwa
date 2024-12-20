@@ -25,7 +25,7 @@ final adminSettingsServiceProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AdminSettingsServiceRef = AutoDisposeProviderRef<AdminSettingsService>;
-String _$adminSettingsHash() => r'c9f2c581e3faf4478664d8b13f17d65d4ce4a91b';
+String _$adminSettingsHash() => r'404f43f632aa8798723ba983fb0b11433c45c06b';
 
 /// See also [adminSettings].
 @ProviderFor(adminSettings)

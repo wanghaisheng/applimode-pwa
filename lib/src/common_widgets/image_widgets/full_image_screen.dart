@@ -23,12 +23,10 @@ class FullImageScreen extends StatefulWidget {
 }
 
 class _FullImageScreenState extends State<FullImageScreen> {
-  late bool showOverlay;
-  late PageController? controller;
+  PageController? controller;
 
   @override
   void initState() {
-    showOverlay = false;
     if (widget.currentIndex != null && widget.imageUrlsList != null) {
       controller = PageController(initialPage: widget.currentIndex!);
     }
@@ -45,24 +43,14 @@ class _FullImageScreenState extends State<FullImageScreen> {
   Widget build(BuildContext context) {
     final urls = widget.imageUrlsList;
     final currentIndex = widget.currentIndex;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          showOverlay = !showOverlay;
-        });
-      },
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        body: urls != null && urls.isNotEmpty && currentIndex != null
-            ? PageView(
-                controller: controller,
-                children: urls
-                    .map((url) =>
-                        FullImageStack(url: url, showOverlay: showOverlay))
-                    .toList(),
-              )
-            : FullImageStack(url: widget.imageUrl, showOverlay: showOverlay),
-      ),
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: urls != null && urls.isNotEmpty && currentIndex != null
+          ? PageView(
+              controller: controller,
+              children: urls.map((url) => FullImageStack(url: url)).toList(),
+            )
+          : FullImageStack(url: widget.imageUrl),
     );
   }
 }
@@ -71,11 +59,9 @@ class FullImageStack extends StatelessWidget {
   const FullImageStack({
     super.key,
     required this.url,
-    required this.showOverlay,
   });
 
   final String url;
-  final bool showOverlay;
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +82,6 @@ class FullImageStack extends StatelessWidget {
             */
           ),
         ),
-        // if (showOverlay && !kIsWeb)
         const Positioned(
           top: 12,
           left: 12,

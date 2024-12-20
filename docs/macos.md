@@ -481,6 +481,7 @@ exit
 * If you have prepared images for the app icon and launch screen of your project, follow the steps below. If you don't have them yet, you can skip this step and set them later.
 <!--Todos 피그마 공유 템플릿 파일 만들고 링크 제공할 것-->
 > [!NOTE]
+> * Create the icons using the Figma template provided in the [following link](https://www.figma.com/design/mm8b6pe8GFmyz9ZUKenveu/applimode-icons?t=UMJbxaifsW2ssi6e-1) or by referring to the sizes listed below with your preferred tool.
 > * app-bar-logo.png - 128 * 128 (Margin of about 4 px, no background)
 > * app-icon-512.png - 512 * 512 (Use an image of 1024 px)
 > * app-icon-1024.png - 1024 * 1024 (Margin of about 160 px)

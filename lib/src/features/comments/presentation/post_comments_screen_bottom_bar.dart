@@ -5,6 +5,7 @@ import 'package:applimode_app/src/features/admin_settings/application/admin_sett
 import 'package:applimode_app/src/features/authentication/data/auth_repository.dart';
 import 'package:applimode_app/src/features/authentication/domain/app_user.dart';
 import 'package:applimode_app/src/features/comments/presentation/post_comment_controller.dart';
+import 'package:applimode_app/src/utils/safe_build_call.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:applimode_app/src/routing/app_router.dart';
@@ -40,6 +41,8 @@ class _PostCommentsScreenBottomBarState
   XFile? _pickedFile;
   String? _mediaType;
 
+  bool _isCancelled = false;
+
   @override
   void initState() {
     super.initState();
@@ -49,7 +52,17 @@ class _PostCommentsScreenBottomBarState
   void dispose() {
     _controller.dispose();
     _focusNode.dispose();
+    _isCancelled = true;
     super.dispose();
+  }
+
+  void _safeSetState([VoidCallback? callback]) {
+    if (_isCancelled) return;
+    if (mounted) {
+      safeBuildCall(() => setState(() {
+            callback?.call();
+          }));
+    }
   }
 
   Future<void> _submit() async {
@@ -75,11 +88,7 @@ class _PostCommentsScreenBottomBarState
             );
     if (success == true) {
       _controller.clear();
-      if (mounted) {
-        setState(() {
-          _pickedFile = null;
-        });
-      }
+      _safeSetState(() => _pickedFile = null);
       /*
       if (mounted) {
         FocusScope.of(context).unfocus();
@@ -123,9 +132,7 @@ class _PostCommentsScreenBottomBarState
                         ),
                         IconButton(
                           onPressed: () {
-                            setState(() {
-                              _pickedFile = null;
-                            });
+                            _safeSetState(() => _pickedFile = null);
                           },
                           icon: const Icon(
                             Icons.close,
@@ -163,7 +170,7 @@ class _PostCommentsScreenBottomBarState
                           }
                         }
                       }
-                      setState(() {});
+                      _safeSetState();
                     },
                     icon: const Icon(Icons.image_outlined),
                   ),

@@ -36,8 +36,8 @@ class PostScreen extends ConsumerStatefulWidget {
 }
 
 class _PostScreenState extends ConsumerState<PostScreen> {
-  late AsyncValue<Post?> postAsync;
-  late AsyncValue<AppUser?> writerAsync;
+  AsyncValue<Post?> postAsync = AsyncData(null);
+  AsyncValue<AppUser?> writerAsync = AsyncData(null);
 
   @override
   void initState() {

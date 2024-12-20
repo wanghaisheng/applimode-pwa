@@ -76,7 +76,7 @@ class AdminSettings extends Equatable {
       homeBarImageUrl:
           map[homeBarImageUrlKey] as String? ?? spareHomeBarImageUrl,
       homeBarStyle: map[homeBarStyleKey] as int? ?? spareHomeBarStyle,
-      mainColor: Format.hexStringToColorForCat(
+      mainColor: Format.hexStringToColor(
           map[mainColorKey] as String? ?? spareMainColor),
       mainCategory:
           (json.decode((map[mainCategoryKey] as String?) ?? spareMainCategory)

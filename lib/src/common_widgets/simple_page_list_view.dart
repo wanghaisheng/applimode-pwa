@@ -7,10 +7,10 @@ import 'package:applimode_app/src/common_widgets/list_empty_widget.dart';
 import 'package:applimode_app/src/common_widgets/list_loading_widget.dart';
 import 'package:applimode_app/src/constants/constants.dart';
 import 'package:applimode_app/src/features/admin_settings/application/admin_settings_service.dart';
+import 'package:applimode_app/src/utils/safe_build_call.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 typedef SimplePageListItemBuilder<Document> = Widget Function(
@@ -303,7 +303,7 @@ class _SimplePageListViewState<Document>
             if (recentSnapshot.docs.length <= listFetchLimit) {
               if (_isCancelled) return;
               if (mounted) {
-                SchedulerBinding.instance.addPostFrameCallback((_) {
+                safeBuildCall(() {
                   setState(() {
                     // If there is a main item, add new posts after the main item
                     // 메인 아이템이 있는 경우에는 메인 아이템 이후로 추가
@@ -337,8 +337,7 @@ class _SimplePageListViewState<Document>
           // cancel when there is no doc in event
           if (event.docs.isEmpty || _isCancelled) return;
           if (mounted) {
-            SchedulerBinding.instance.scheduleFrame();
-            SchedulerBinding.instance.addPostFrameCallback((_) {
+            safeBuildCall(() {
               setState(() {
                 docs = event.docs;
               });
@@ -357,8 +356,7 @@ class _SimplePageListViewState<Document>
           if (_isCancelled) return;
           if (mounted) {
             _debounceSetState(() {
-              SchedulerBinding.instance.scheduleFrame();
-              SchedulerBinding.instance.addPostFrameCallback((_) {
+              safeBuildCall(() {
                 setState(() {
                   // If there is a main item, add new posts after the main item
                   // 메인 아이템이 있는 경우에는 메인 아이템 이후로 추가
@@ -409,9 +407,12 @@ class _SimplePageListViewState<Document>
         // 새로 고침했을 경우와 같이 docs를 새로 부르면 hasMain도 다시 초기화
         hasMain = false;
         if (mounted) {
-          SchedulerBinding.instance.addPostFrameCallback((_) {
+          safeBuildCall(() => setState(() {}));
+          /*
+          WidgetsBinding.instance.addPostFrameCallback((_) {
             setState(() {});
           });
+          */
         }
       }
 
@@ -480,7 +481,7 @@ class _SimplePageListViewState<Document>
       // 현재 창의 상태를 변경시킴
       if (_isCancelled) return;
       if (mounted) {
-        SchedulerBinding.instance.addPostFrameCallback((_) {
+        safeBuildCall(() {
           setState(() {
             isFetching = false;
             isFetchingMore = false;
@@ -502,8 +503,10 @@ class _SimplePageListViewState<Document>
     } catch (e) {
       if (_isCancelled) return;
       if (e.toString().contains('permission-denied') && mounted) {
-        setState(() {
-          isPermissionDenied = true;
+        safeBuildCall(() {
+          setState(() {
+            isPermissionDenied = true;
+          });
         });
         debugPrint('fetch docs error: ${e.toString()}');
       }
@@ -560,9 +563,7 @@ class _SimplePageListViewState<Document>
         if (mounted) {
           // Update the state of the current list
           // 현재 리스트의 상태 업데이트
-          SchedulerBinding.instance.addPostFrameCallback((_) {
-            setState(() {});
-          });
+          safeBuildCall(() => setState(() {}));
         }
         // Initialize the list to be modified when the update is finished
         // 업데이트가 끝날 경우 수정할 목록을 초기화

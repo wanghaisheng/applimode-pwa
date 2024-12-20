@@ -85,8 +85,8 @@ class ScreenPaths {
   static String commentLikes(String commentId) => '/comment/$commentId/likes';
   static String commentDislikes(String commentId) =>
       '/comment/$commentId/dislikes';
-  static String image(String imageUrl) => '/image?imageUrl=$imageUrl';
-  static String video(String videoUrl) => '/video?videoUrl=$videoUrl';
+  static String fullImage(String imageUrl) => '/fullImage?imageUrl=$imageUrl';
+  static String fullVideo(String videoUrl) => '/fullVideo?videoUrl=$videoUrl';
   static String appInfo = '/appInfo';
   static String appPrivacy = '/privacy';
   static String appTerms = '/terms';
@@ -430,11 +430,12 @@ GoRouter goRouter(Ref ref) {
         },
       ),
       GoRoute(
-        path: '/image',
+        path: '/fullImage',
         pageBuilder: (context, state) {
           String imageUrl = state.uri.queryParameters['imageUrl']!;
           if (imageUrl.startsWith('https://firebasestorage.googleapis.com/')) {
-            imageUrl = state.uri.toString().replaceAll('/image?imageUrl=', '');
+            imageUrl =
+                state.uri.toString().replaceAll('/fullImage?imageUrl=', '');
             final splits = imageUrl.split('/o/');
             imageUrl = '${splits[0]}/o/${splits[1].replaceAll('/', '%2f')}';
           }
@@ -449,11 +450,12 @@ GoRouter goRouter(Ref ref) {
         },
       ),
       GoRoute(
-        path: '/video',
+        path: '/fullVideo',
         pageBuilder: (context, state) {
           String videoUrl = state.uri.queryParameters['videoUrl']!;
           if (videoUrl.startsWith('https://firebasestorage.googleapis.com/')) {
-            videoUrl = state.uri.toString().replaceAll('/video?videoUrl=', '');
+            videoUrl =
+                state.uri.toString().replaceAll('/fullVideo?videoUrl=', '');
             final splits = videoUrl.split('/o/');
             videoUrl = '${splits[0]}/o/${splits[1].replaceAll('/', '%2f')}';
           }

@@ -24,7 +24,7 @@ class PercentCircularIndicator extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 24),
       padding: const EdgeInsets.all(48),
       decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
           borderRadius: const BorderRadius.all(Radius.circular(24))),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
