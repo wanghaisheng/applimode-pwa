@@ -29,7 +29,13 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         channel: stable
-        flutter-version: '3.27.0' # Updated to a version that includes Dart SDK ^3.5.0
+        flutter-version: '3.19.0'
+
+    - name: Check Flutter and Dart versions
+      run: flutter --version
+
+    - name: Install flutterfire CLI
+      run: dart pub global activate flutterfire_cli
 
     - name: Install dependencies
       run: flutter pub get
