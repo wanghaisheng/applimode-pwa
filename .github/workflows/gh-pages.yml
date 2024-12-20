@@ -1,9 +1,10 @@
-name: Build and Deploy Flutter Web App to GitHub Pages
+name: Build and Deploy pwa to GitHub Pages
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build:
