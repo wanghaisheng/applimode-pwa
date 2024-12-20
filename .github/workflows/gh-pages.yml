@@ -40,11 +40,11 @@ jobs:
     - name: Install dependencies
       run: flutter pub get
 
-    # - name: Generate firebase_options.dart
-      # run: flutterfire configure --platforms=web
+    - name: Generate firebase_options.dart
+      run: flutterfire configure --platforms=web
 
-    # - name: Generate env.g.dart
-      # run: dart run build_runner build --delete-conflicting-outputs
+    - name: Generate env.g.dart
+      run: dart run build_runner build --delete-conflicting-outputs
 
     - name: Build Flutter web
       run: flutter build web --release
