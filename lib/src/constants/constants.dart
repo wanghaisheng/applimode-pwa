@@ -26,6 +26,8 @@ const String showUserLikeCountKey = 'showUserLikeCount';
 const String showUserDislikeCountKey = 'showUserDislikeCount';
 const String showUserSumCountKey = 'showUserSumCount';
 const String isMaintenanceKey = 'isMaintenance';
+const String adminOnlyWriteKey = 'adminOnlyWrite';
+const String isPostsItemVideoMuteKey = 'isPostsItemVideoMute';
 
 // media max sizes for admin settings
 const List<double> mediaMaxMBSizesList = [
@@ -56,6 +58,13 @@ const List<double> mediaMaxMBSizesList = [
 // split tag in text to create widget. Dont touch.
 // 절대 만지지 말 것. 변경 시 직접 코드 수정 필요
 const String splitTag = '<split>';
+
+const String basicPromptStartTag = '<basicPromptStart>';
+const String basicPromptEndTag = '<basicPromptEnd>';
+const String userPromptStartTag = '<userPromptStart>';
+const String userPromptEndTag = '<userPromptEnd>';
+const String contentStartTag = '<contentStart>';
+const String contentEndTag = '<contentEnd>';
 
 const String noTitleTag = '#!title';
 const String noWriterTag = '#!writer';
@@ -125,7 +134,7 @@ const String gcpStorageUrlHead = 'https://storage.googleapis.com';
 const String youtubeThumbnailName = 'yt-thumbnail.jpeg';
 
 // Used when the ranking screen fails to analyze the current year.
-const int rankingCurrentYear = 2024;
+const int rankingCurrentYear = 2025;
 
 const divider16 = Divider(
   indent: 16,
@@ -171,4 +180,9 @@ enum TitleTextAlign {
   start,
   center,
   end,
+}
+
+enum FBAuthProvider {
+  email,
+  phone,
 }

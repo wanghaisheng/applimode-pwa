@@ -15,7 +15,7 @@ const String firebaseProjectId = 'my-applimode';
 const String appCreator = 'JongsukOh';
 const String appEmail = 'yourEmail@email.com';
 const String appEffectiveDate = '2024-08-06';
-const String appVersion = '0.2.5+1';
+const String appVersion = '0.3.3+1';
 
 // spare values when admin settings is not set
 const String spareHomeBarTitle = 'My Applimode';
@@ -47,6 +47,8 @@ const bool spareShowUserAdminLabel = true;
 const bool spareShowUserLikeCount = true;
 const bool spareShowUserDislikeCount = true;
 const bool spareShowUserSumCount = false;
+const bool spareAdminOnlyWrite = false;
+const bool spareIsPostsItemVideoMute = false;
 
 // Link that connects when you tap on the Terms of Service
 // 서비스약관을 탭했을 경우 연결되는 링크
@@ -55,15 +57,15 @@ const String termsUrl = '';
 // 개인보호정책을 탭했을 경우 연결되는 링크
 const String privacyUrl = '';
 
+// auth providers. email, phone supported
+// if the list is empty, email provider is adopted
+const List<String> fbAuthProviders = ['email'];
+
 // Change the start screen to the login screen
 // 시작 화면을 로그인 화면으로 변경
 // To prevent use if not logged in. Security rules must also be changed.
 // 로그인을 안할 경우 사용하지 못하도록 할때. 보안 룰도 함께 변경해야 함
 const bool isInitialSignIn = false;
-
-// Only administrators can write
-// 관리자만 글을 쓸 수 있음
-const bool adminOnlyWrite = false;
 
 // Only verified users can write
 // 관리자에 의해 인증된 사용자만 글을 쓸 수 있음
@@ -98,14 +100,14 @@ const bool useApns = false;
 // 파이어베이스 콘솔에서 vertex ai 사용 설정해야 함
 const bool useAiAssistant = false;
 
+// ai default instructions
+const String aiInstructions =
+    'These are the conditions for generating text. The basic prompt starts with <basicPromptStart> and ends with <basicPromptEnd>. The user prompt starts with <userPromptStart> and ends with <userPromptEnd>. The main content starts with <contentStart> and ends with <contentEnd>. The main content should be written using Markdown. Generate the text based on the language used in the main content. If the main content is missing or empty, generate the text based on the user prompt. Include the main content in the generated text and remove the <contentStart> and <contentEnd> tags in the final output. Do not modify any links, URLs, or URIs within the main content. Analyze the main content and if there is no title, add one in the format # Title and add a summary at the bottom of the content in the format * Summary: summary content. Analyze the main content and append search tags at the bottom in the format #tag #tag. Add a blank line before the search tags. For multi-word tags like "miscellaneous travel," format them as #miscellaneous_travel. Unless otherwise specified, only correct spelling errors in the main content.';
+
 // Model type to use as AI assistant
 // ai assistant로 사용할 모델 타입
-// gemini-1.5-flash, gemini-1.5-pro
-const String aiModelType = 'gemini-1.5-flash';
-
-// Mute home screen video sound
-// 홈화면 영상 소리 뮤트
-const bool isPostsItemVideoMute = false;
+// gemini-2.0-flash, gemini-2.0-flash-lite, gemini-2.0-pro-exp-02-05, gemini-2.0-flash-thinking-exp-01-21
+const String aiModelType = 'gemini-2.0-flash';
 
 // Color type of basic post box. single, gradient, animation. basic gradient
 // 베이직 포스트 박스의 컬러 타입. single, gradient, animattion. 기본 gradient
@@ -159,12 +161,6 @@ const int listFetchLimit = 10;
 // Number of items loaded in the main head view of the home screen. default 1
 // 홈화면 상단 메인 뷰에서 사용하기 위해 블러오는 아이템 숫자. 기본 1
 const int mainFetchLimit = 1;
-// fetch limit for FirestoreListView
-// FirestoreListView 에서 사용할 fecth limit
-// The number of reads in FirestoreListView is the number of previous reads plus the current number of reads,
-// so it should be set large from the beginning.
-// FirestoreListView 의 read 수는 이전 읽기 수 더하기 현재 읽기 수이므로 처음부터 크게 잡을 것
-const int firebaseListFetchLimit = 100;
 
 // Refresh cycle through main screen pull-to-refresh. Default 10 seconds
 // 메인화면 풀투리프레쉬를 통한 새로고침 주기. 기본 10초

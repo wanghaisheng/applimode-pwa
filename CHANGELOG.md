@@ -3,6 +3,44 @@
 ### New Features and Improvements
 ### Bug Fixes
 -->
+## Version 0.3.3 (March 29, 2025)
+- Modify the location of the permission required message.
+- Updated a dependency to the latest release.
+
+## Version 0.3.2 (March 21, 2025)
+- Used WebHtmlElementStrategy.fallback in Flutter web (CORS issue)
+- Added some settings to the admin settings.
+- Updated a dependency to the latest release.
+
+## Version 0.3.1 (March 08, 2025)
+- Added pull-to-jump functionality on the post screen to navigate to the comment screen.
+- Updated localization to use direct file imports instead of deprecated synthetic package.
+- Adjusted the refreshTriggerPullDistance.
+- Changed drawImageScaled to drawImage.
+- Updated a dependency to the latest release.
+
+## Version 0.3.0 (February 21, 2025)
+- WASM support
+- Updated a dependency to the latest release.
+
+## Version 0.2.9 (February 10, 2025)
+- Updated a dependency to the latest release.
+- Improved some docs.
+
+## Version 0.2.8 (February 3, 2025)
+- Enhanced AI Assistant functionality.
+- Added korean docs.
+- Improved some docs.
+
+## Version 0.2.7 (January 15, 2025)
+- Added functionality to report posts and comments.
+- Integrated Firebase Analytics.
+- Adjusted the position of addListener in VideoPlayer.
+
+## Version 0.2.6 (January 03, 2025)
+- Added phone sign-in.
+- Temporary fix for EditorField positioning issue on the web.
+
 ## Version 0.2.5 (December 20, 2024)
 - Requires Flutter 3.27 (please upgrade to Flutter 3.27).
 - Fixed lint issues.
