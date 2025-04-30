@@ -15,7 +15,7 @@ const String firebaseProjectId = 'my-applimode';
 const String appCreator = 'JongsukOh';
 const String appEmail = 'yourEmail@email.com';
 const String appEffectiveDate = '2024-08-06';
-const String appVersion = '0.3.3+1';
+const String appVersion = '0.3.7+1';
 
 // spare values when admin settings is not set
 const String spareHomeBarTitle = 'My Applimode';
@@ -100,13 +100,9 @@ const bool useApns = false;
 // 파이어베이스 콘솔에서 vertex ai 사용 설정해야 함
 const bool useAiAssistant = false;
 
-// ai default instructions
-const String aiInstructions =
-    'These are the conditions for generating text. The basic prompt starts with <basicPromptStart> and ends with <basicPromptEnd>. The user prompt starts with <userPromptStart> and ends with <userPromptEnd>. The main content starts with <contentStart> and ends with <contentEnd>. The main content should be written using Markdown. Generate the text based on the language used in the main content. If the main content is missing or empty, generate the text based on the user prompt. Include the main content in the generated text and remove the <contentStart> and <contentEnd> tags in the final output. Do not modify any links, URLs, or URIs within the main content. Analyze the main content and if there is no title, add one in the format # Title and add a summary at the bottom of the content in the format * Summary: summary content. Analyze the main content and append search tags at the bottom in the format #tag #tag. Add a blank line before the search tags. For multi-word tags like "miscellaneous travel," format them as #miscellaneous_travel. Unless otherwise specified, only correct spelling errors in the main content.';
-
 // Model type to use as AI assistant
 // ai assistant로 사용할 모델 타입
-// gemini-2.0-flash, gemini-2.0-flash-lite, gemini-2.0-pro-exp-02-05, gemini-2.0-flash-thinking-exp-01-21
+// gemini-2.0-flash, gemini-2.0-flash-lite, gemini-2.5-pro-exp-03-25, gemini-2.5-flash-preview-04-17
 const String aiModelType = 'gemini-2.0-flash';
 
 // Color type of basic post box. single, gradient, animation. basic gradient
@@ -174,33 +170,17 @@ const int videoMaxDuration = 60;
 // 포스트에서 비디오 영상 프레임 비율
 const double postVideoAspectRatio = 1.0;
 
-// Profile image max width
-// 프로필 이미지 최대 너비
-const double profileMaxWidth = 160.0;
+// Profile image max length
+// 프로필 이미지 최대 길이
+const int profileImageMaxLength = 240;
 
-// Profile image max height
-// 프로필 이미지 최대 높이
-const double profileMaxHeight = 160.0;
+// defalut image max width for post, comment
+// 기본 이미지 최대 너비 (포스트, 댓글 이미지에 적용)
+const int defaultImageMaxWidth = 1080;
 
-// Story image max width
-// 스토리 이미지 최대 너비
-const double storyMaxWidth = 1080.0;
-
-// Story image max height
-// 스토리 이미지 최대 높이
-const double storyMaxHeight = 1920.0;
-
-// Post image max width
-// 포스트 이미지 최대 너비
-const double postImageMaxWidth = 1080.0;
-
-// Post image max height
-// 포스트 이미지 최대 높이
-const double postImageMaxHeight = 1920.0;
-
-// Post image quality
-// 포스트 이미지 품질
-const int postImageQuality = 90;
+// default image quality
+// 기본 이미지 품질
+const int defaultImageQuality = 90;
 
 // Video thumbnail max width
 // 비디오 썸네일 최대 너비

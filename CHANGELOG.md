@@ -3,6 +3,26 @@
 ### New Features and Improvements
 ### Bug Fixes
 -->
+## Version 0.3.7 (April 30, 2025)
+- Code optimization.
+- Enhanced video gesture functionality.
+- Updated a dependency to the latest release.
+
+## Version 0.3.6 (April 22, 2025)
+- Video player optimization.
+- Optimized post generation feature using AI.
+- Updated a dependency to the latest release.
+
+## Version 0.3.5 (April 16, 2025)
+- Support for Spanish, Japanese, and Simplified Chinese.
+- Image upload optimization.
+- Code optimization.
+
+## Version 0.3.4 (April 08, 2025)
+- Fixed error message in phone number sign-up.
+- Added progress indicator to splash screen.
+- Updated a dependency to the latest release.
+
 ## Version 0.3.3 (March 29, 2025)
 - Modify the location of the permission required message.
 - Updated a dependency to the latest release.

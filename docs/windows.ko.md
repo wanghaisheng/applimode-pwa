@@ -53,11 +53,11 @@ git --version
 
 ## VSCode 및 Flutter SDK 설치
 * [VSCode](https://code.visualstudio.com/)를 다운로드, 설치 및 실행합니다.
-* Command Palette를 열려면 VSCode 상단 메뉴에서 **View**를 클릭하고 **Command Palette...**를 선택합니다. (또는 ```Ctrl``` + ```Shift``` + ```P```를 누릅니다.)
-* *shell*을 입력하고 **Shell Command: Install 'code' command in PATH**를 선택합니다.
+<!--* Command Palette를 열려면 VSCode 상단 메뉴에서 **View**를 클릭하고 **Command Palette...**를 선택합니다. (또는 ```Ctrl``` + ```Shift``` + ```P```를 누릅니다.)
+* *shell*을 입력하고 **Shell Command: Install 'code' command in PATH**를 선택합니다.-->
 * VSCode 상단 메뉴에서 **View**를 클릭하고 **Extensions**를 선택합니다. (또는 ```Ctrl``` + ```Shift``` + ```X```를 누릅니다.)
 * *flutter*를 입력하고 **Install**을 클릭합니다.
-* VSCode 상단 메뉴에서 **View**를 클릭하고 **Command Palette...**를 선택합니다. (또는 ```Ctrl``` + ```Shift``` + ```P```를 누릅니다.)
+* Command Palette를 열려면 VSCode 상단 메뉴에서 **View**를 클릭하고 **Command Palette...**를 선택합니다. (또는 ```Ctrl``` + ```Shift``` + ```P```를 누릅니다.)
 * **Command Palette**에서 *flutter*를 입력합니다.
 * **Flutter: New Project**를 선택합니다.
 * 오른쪽 하단에서 **Download SDK**를 클릭합니다.
@@ -363,6 +363,9 @@ dart run flutter_native_splash:create
 ```
 ```sh
 flutter pub run flutter_launcher_icons
+```
+```sh
+node ./applimode-tool/index.js splash
 ```
 
 
@@ -844,6 +847,9 @@ dart run flutter_native_splash:create
 flutter pub run flutter_launcher_icons
 ```
 ```sh
+node ./applimode-tool/index.js splash
+```
+```sh
 dart run build_runner build -d
 ```
 ```sh
@@ -863,7 +869,7 @@ firebase deploy --only storage
 > [!NOTE]
 > * 명령을 한 번에 모두 입력하려면 다음 명령을 실행하십시오.
 > ```sh
-> flutter pub get; dart run flutter_native_splash:create; flutter pub run flutter_launcher_icons; dart run build_runner build -d; flutterfire configure --platforms=android,ios,web; node ./applimode-tool/index.js firebaserc; firebase deploy --only firestore; firebase deploy --only storage;
+> flutter pub get; dart run flutter_native_splash:create; flutter pub run flutter_launcher_icons; node ./applimode-tool/index.js splash; dart run build_runner build -d; flutterfire configure --platforms=android,ios,web; node ./applimode-tool/index.js firebaserc; firebase deploy --only firestore; firebase deploy --only storage;
 > ```
 -->
 * 이전 프로젝트 폴더를 삭제합니다.
